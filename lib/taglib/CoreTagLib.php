@@ -1,15 +1,17 @@
 <?php
 class CoreTagLib {
     public function tagVar($attrs,$view) {
-        echo $view->data[$attrs->name];
+		echo $view->data[$attrs->name];
     }
     public function tagTabPage($body,$attrs,$view) {
-        echo"TABPAGE START:
-                $body
-            TABPAGE END";
+        echo '<div class="tabpage">',chr(10),
+                $body,chr(10),
+            '</div>';
     }
     public function tagPage($body,$attrs,$view) {
-        echo "PAGE:\n".$body;
+        echo '<div class="page">',chr(10),
+				$body,chr(10),
+			'</div>';
     }
     public function tagBody($attrs,$view) {
         echo Pimple::instance()->getBody();

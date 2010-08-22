@@ -68,8 +68,8 @@ class Pimple {
         if (!method_exists($ctrl,$this->action)) {
             throw new Exception(T('Action not found: %s::%s',$ctrlClass,$this->action));
         }
-        
-        $data = $ctrl->$this->action();
+        $action = $this->action;
+        $data = $ctrl->$action();
 
         
         if (is_file($viewFile)) {
@@ -82,7 +82,7 @@ class Pimple {
 
     }
     public function render() {
-        return $this->view->render();
+        echo $this->view->render();
     }
     public static function getPath() {
         $uri = $_SERVER['REQUEST_URI'];
@@ -104,3 +104,4 @@ class Pimple {
     }
 }
 Pimple::instance()->registerTagLib('p',new CoreTagLib());
+Pimple::instance()->registerTagLib('f',new FormTagLib());

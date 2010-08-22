@@ -14,8 +14,9 @@ class Dir {
             foreach($dirs as $dir)
                 self::ensure($dir);
         } else {
-            if (!self::exist($dirs))
-                mkdir($dirs,null,true);
+            if (!self::exist($dirs)) {
+				mkdir($dirs,0775,true);
+			}
         }
     }
     public static function exist($dir) {

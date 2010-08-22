@@ -34,6 +34,7 @@ require_once 'lib/Controller.php';
 
 //Main class
 require_once 'lib/taglib/CoreTagLib.php';
+require_once 'lib/taglib/FormTagLib.php';
 require_once 'lib/Pimple.php';
 define('CACHEDIR',Dir::normalize(BASEDIR).'cache');
 Dir::ensure(CACHEDIR);
