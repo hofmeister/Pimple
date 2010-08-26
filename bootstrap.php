@@ -28,9 +28,15 @@ require_once 'lib/Dir.php';
 require_once 'lib/String.php';
 
 //MVC
+require_once 'lib/model/ISession.php';
+require_once 'lib/model/IUser.php';
 require_once 'lib/Model.php';
 require_once 'lib/View.php';
 require_once 'lib/Controller.php';
+
+//Handlers
+require_once 'lib/handlers/SessionHandler.php';
+require_once 'lib/handlers/AccessHandler.php';
 
 //Main class
 require_once 'lib/taglib/CoreTagLib.php';

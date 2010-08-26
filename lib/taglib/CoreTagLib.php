@@ -25,4 +25,7 @@ class CoreTagLib {
     public function tagBody($attrs,$view) {
         echo Pimple::instance()->getBody();
     }
+	public function tagMenu($attrs) {
+		
+	}
 }
