@@ -36,6 +36,9 @@ class SessionHandler {
 		$this->getSession()->loadFromSID($this->SID);
 		setcookie($this->sessionKey, $this->SID,$this->getExpires());
 	}
+    public function save() {
+        $this->getSession()->commit();
+    }
 
 	/**
 	 *

@@ -289,8 +289,9 @@ class Url {
         return Router::getAbsoluteRoot($parts[0], $parts[1]).$Url;
     }
     public static function makeLink($controller,$action,$parms = array()) {
-        $url = BASEURL.'/'.String::UrlEncode($controller)
-                .'/'.String::UrlEncode($action).'/';
+        $url = Dir::concat(BASEURL,String::UrlEncode($controller));
+        if ($action)
+            $url .= String::UrlEncode($action).'/';
 
         if (count($parms) > 0) {
             $url .= '?'.self::Array2GetParms($parms);

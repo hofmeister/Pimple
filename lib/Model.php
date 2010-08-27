@@ -4,6 +4,7 @@ class Model {
 
 	private $data;
 	private $columns = array();
+    private $primKey;
 	private $name;
 	private $isNew = true;
 
@@ -18,11 +19,20 @@ class Model {
 		if ($data)
 			$this->setData($data);
 	}
-	public function setData($data) {
+    public function getPrimKey() {
+        return $this->primKey;
+    }
+
+    public function setPrimKey($primKey) {
+        $this->primKey = $primKey;
+    }
+
+    	public function setData($data) {
 		$this->isNew = false;
 		foreach($data as $key=>$value) {
 			$this->$key($value);
 		}
+        $this->unserialize();
 		return $this;
 	}
 
@@ -45,29 +55,46 @@ class Model {
 		if ($this->isNew) {
 			$this->insert();
 		} else {
-			if ($keyName)
-				$this->update($keyName);
-			else
-				throw new Exception ('Cannot update without key name');
+            if (!$this->checkKey($keyName)) {
+                $keyName = $this->getPrimKey();
+            }
+            $this->update($keyName);
 		}
 	}
-	public function update($keyName) {
+    public function checkKey($keyName) {
+        if (!$keyName) {
+            $keyName = $this->getPrimKey();
+            return false;
+        }
+        if (!$keyName)
+			throw new Exception ('Cannot update without key name');
+        return true;
+    }
+	public function update($keyName = null) {
+        if (!$this->checkKey($keyName)) {
+            $keyName = $this->getPrimKey();
+        }
+        $this->serialize();
 		$sql = sprintf('UPDATE `%s` SET ',$this->name);
 		$sqlFields = array();
 		foreach($this->data as $colName=>$value) {
 			if ($keyName == $colName) continue;
 			$sqlFields[] = sprintf('`%s` = %s',ucfirst($colName),DB::value($value));
 		}
-		return DB::q(sql.' '.implode(',',$sqlFields)
-				.sprintf(' WHERE `%s` = %s',$keyName,$this->data->$keyName()));
+		return DB::q($sql.' '.implode(',',$sqlFields)
+				.sprintf(' WHERE `%s` = %s',$keyName,DB::value($this->data->$keyName)));
 	}
-	public function load($keyName,$value) {
+	public function load($value,$keyName = null) {
+        if (!$this->checkKey($keyName)) {
+            $keyName = $this->getPrimKey();
+        }
 		$data = DB::fetchOne(sprintf('SELECT * FROM `%s` WHERE `%s` = %s',$this->name,$keyName,DB::value($value)));
-		if ($data)
+        if ($data)
 			$this->setData($data);
 		return $this;
 	}
 	public function insert() {
+        $this->serialize();
 		$sql = sprintf('INSERT INTO `%s` SET ',$this->name);
 		$sqlFields = array();
 		
@@ -77,9 +104,18 @@ class Model {
 		$sql .= ' '.implode(',',$sqlFields);
 		return DB::q($sql);
 	}
-	public function delete($keyName) {
+	public function delete($keyName = null) {
+        if (!$this->checkKey($keyName)) {
+            $keyName = $this->getPrimKey();
+        }
 		$sql = sprintf('DELETE FROM `%s` WHERE `%s` = %s',$this->name,$keyName,$this->$keyName());
 		return DB::q($sql);
 	}
+    public function serialize() {
+        
+    }
+    public function unserialize() {
+
+    }
 
 }

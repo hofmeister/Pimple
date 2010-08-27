@@ -18,10 +18,10 @@ class View {
             $phtml = preg_replace('/\{(.+)\}/','<?=$this->_eval(\'$1;\');?>',$phtml);
 			
             //Matches single elements
-            $phtml = preg_replace('/<([\w]+):([\w]+) ?([^>]*)\/>/is','<'.'?$this->lib("$1")->tag$2($this->attr("$3"),$this);?'.'>',$phtml);
+            $phtml = preg_replace('/<([\w]+):([\w]+) ?([^>]*)\/>/is','<'.'?$this->lib("$1")->tag$2($this->attr("$3"),null,$this);?'.'>',$phtml);
 			
             while(true) {
-                $newPhtml = preg_replace('/<(([\w]+):([\w]+)) ?([^>]*)>(.*?)<\/\\1>/is','<?ob_start();?>$5<?$this->lib("$2")->tag$3(ob_get_clean(),$this->attr("$4"),$this);?>',$phtml);
+                $newPhtml = preg_replace('/<(([\w]+):([\w]+)) ?([^>]*)>(.*?)<\/\\1>/is','<?ob_start();?>$5<?$this->lib("$2")->tag$3($this->attr("$4"),ob_get_clean(),$this);?>',$phtml);
                 if ($newPhtml != $phtml)
                     $phtml = $newPhtml;
                 else
@@ -54,11 +54,13 @@ class View {
     }
     private function attr($string) {
 		$attrs = new stdClass();
-		preg_match_all('/(\w+)=("|\')([^\2]*)\2/is',$string,$matches);
+		preg_match_all('/(\w+)=("|\')([^\2]*?)\2/is',$string,$matches);
+        
 		foreach($matches[1] as $i=>$name) {
 			$value = $matches[3][$i];
 			$attrs->$name = $value;
 		}
+        
         return $attrs;
     }
 }

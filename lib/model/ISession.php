@@ -7,4 +7,5 @@ interface ISession {
 	public function setUser(IUser $user);
 	public function set($key,$value);
 	public function get($key);
+    public function commit();
 }
