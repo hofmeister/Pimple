@@ -34,10 +34,11 @@ class AccessHandler {
 
 	}
 
-	public function hasAccess(IUser $user, $tag) {
+	public function hasAccess($tag) {
 		$entry = $this->tagRoles[strtoupper($tag)];
 		if (!$entry) return true;
-		return $entry->isValid($user->getRole());
+		$user = SessionHandler::instance()->getUser();
+		return $entry->isValid($user ? $user->getRole() : self::R_GUEST);
 	}
 
 	public function setTagAccess($tag, $role, $exact = false) {

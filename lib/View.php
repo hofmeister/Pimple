@@ -13,7 +13,11 @@ class View {
         $cachename = Dir::normalize(CACHEDIR).Dir::normalize($dirname).basename($this->template);
 		umask(0002);
         if (!is_file($cachename)) {
-            $phtml = addslashes(file_get_contents($this->template));
+			ob_start();
+			include $this->template;
+			$phtml = ob_get_clean();
+			
+            $phtml = addslashes($phtml);
 			
             $phtml = preg_replace('/\{(.+)\}/','<?=$this->_eval(\'$1;\');?>',$phtml);
 			
@@ -34,10 +38,15 @@ class View {
 
         }
 		ob_start();
-        $this->_include($cachename);
+		try {
+			$this->_include($cachename);
+		} catch(Exception $e) {
+			//TODO: Handle errors
+			echo $e;
+		}
 		unlink($cachename);
         $result = ob_get_clean();
-		return $result;
+		return stripslashes($result);
     }
     private function _include($file) {
         extract($this->data);

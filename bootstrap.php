@@ -28,6 +28,7 @@ require_once 'lib/Dir.php';
 require_once 'lib/String.php';
 
 //MVC
+require_once 'lib/Request.php';
 require_once 'lib/model/ISession.php';
 require_once 'lib/model/IUser.php';
 require_once 'lib/Model.php';

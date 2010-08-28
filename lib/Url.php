@@ -225,6 +225,19 @@ class Url {
 		}
 		return implode('&',$parms);
 	}
+	/**
+	 * Convert an object to a HTTP Request string
+	 *
+	 * @param stdClass $object
+	 * @return string
+	 */
+	public static function Object2GetParms($object) {
+		$parms = array();
+		foreach ($object as $key=>$value) {
+			$parms[] = self::flattenUrlParms($key,$value);
+		}
+		return implode('&',$parms);
+	}
     public static function toNameValue($array) {
         $result = array();
         foreach($array as $name=>$value) {
@@ -288,14 +301,16 @@ class Url {
         $parts = explode('/',$temp['path']);
         return Router::getAbsoluteRoot($parts[0], $parts[1]).$Url;
     }
-    public static function makeLink($controller,$action,$parms = array()) {
+    public static function makeLink($controller,$action,$parms = null) {
         $url = Dir::concat(BASEURL,String::UrlEncode($controller));
         if ($action)
             $url .= String::UrlEncode($action).'/';
-
-        if (count($parms) > 0) {
-            $url .= '?'.self::Array2GetParms($parms);
-        }
+		if ($parms) {
+			$parms = get_object_vars($parms);
+			if (count($parms) > 0) {
+				$url .= '?'.self::Array2GetParms($parms);
+			}
+		}
         return $url;
     }
 }

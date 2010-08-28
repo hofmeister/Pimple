@@ -6,7 +6,7 @@ class Model {
 	private $columns = array();
     private $primKey;
 	private $name;
-	private $isNew = true;
+	private $new = true;
 
 	public function __construct($name,$columns = array(), $data = null) {
 		$this->name = $name;
@@ -27,8 +27,8 @@ class Model {
         $this->primKey = $primKey;
     }
 
-    	public function setData($data) {
-		$this->isNew = false;
+	public function setData($data) {
+		$this->new = false;
 		foreach($data as $key=>$value) {
 			$this->$key($value);
 		}
@@ -52,7 +52,7 @@ class Model {
 		}
 	}
 	public function commit($keyName = null) {
-		if ($this->isNew) {
+		if ($this->new) {
 			$this->insert();
 		} else {
             if (!$this->checkKey($keyName)) {
@@ -117,5 +117,8 @@ class Model {
     public function unserialize() {
 
     }
+	public function isNew() {
+		return $this->new;
+	}
 
 }
