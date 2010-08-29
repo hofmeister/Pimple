@@ -11,10 +11,16 @@ class Pimple {
         }
         return self::$instance;
     }
+    public static function end() {
+        SessionHandler::instance()->save();
+        exit();
+    }
 
 
     private $controller,$action,$parms = array();
+    private $controllerInstance = null;
     private $body = '';
+    private $siteName;
     private $tagLibs = array();
     public function init() {
         $this->getPath();
@@ -41,48 +47,60 @@ class Pimple {
             $this->controller = 'index';
         if (!$this->action)
             $this->action = 'index';
-        if (!String::isAlphaNum($this->controller)) {
-            throw new Exception(T('Invalid controller: %s',$this->controller));
-        }
-        if (!String::isAlphaNum($this->action)) {
-            throw new Exception(T('Invalid action: %s',$this->action));
-        }
+        try {
+            if (!String::isAlphaNum($this->controller)) {
+                throw new Exception(T('Invalid controller: %s',$this->controller));
+            }
+            if (!String::isAlphaNum($this->action)) {
+                throw new Exception(T('Invalid action: %s',$this->action));
+            }
 
-        
-        $ctrlClass = ucfirst($this->controller).'Controller';
-        $appViewFile = Dir::normalize(BASEDIR).'view/application.php';
-        $viewFile = Dir::normalize(BASEDIR).'view/'.$this->controller.'/'.$this->action.'.php';
-        if (!class_exists($ctrlClass)) {
-            $ctrlFile = Dir::normalize(BASEDIR).'controller/'.$ctrlClass.'.php';
-            if (!File::exists($ctrlFile))
-                throw new Exception(T('Controller not found: %s',$ctrlFile));
-            require_once $ctrlFile;
-        }
-        
-        if (!class_exists($ctrlClass)) {
-            throw new Exception(T('Controller not found: %s',$ctrlClass));
-        }
 
-        $ctrl = new $ctrlClass();
+            $ctrlClass = ucfirst($this->controller).'Controller';
+            $appViewFile = Dir::normalize(BASEDIR).'view/application.php';
+            $viewFile = Dir::normalize(BASEDIR).'view/'.$this->controller.'/'.$this->action.'.php';
+            if (!class_exists($ctrlClass)) {
+                $ctrlFile = Dir::normalize(BASEDIR).'controller/'.$ctrlClass.'.php';
+                if (!File::exists($ctrlFile))
+                    throw new Exception(T('Controller not found: %s',$ctrlFile));
+                require_once $ctrlFile;
+            }
 
-        if (!method_exists($ctrl,$this->action)) {
-            throw new Exception(T('Action not found: %s::%s',$ctrlClass,$this->action));
-        }
-        $action = $this->action;
-        $data = $ctrl->$action();
+            if (!class_exists($ctrlClass)) {
+                throw new Exception(T('Controller not found: %s',$ctrlClass));
+            }
 
-        
-        if (is_file($viewFile)) {
-            $view = new View($viewFile,$data);
-            $this->body = $view->render();
-        } else {
-            throw new Exception(T('View not found: %s',$viewFile));
+            $ctrl = new $ctrlClass();
+            $this->controllerInstance = $ctrl;
+            if (!method_exists($ctrl,$this->action)) {
+                throw new Exception(T('Action not found: %s::%s',$ctrlClass,$this->action));
+            }
+            $action = $this->action;
+            if (is_file($viewFile)) {
+                $view = new View($viewFile);
+            }
+            try {
+                $data = $ctrl->$action();
+            } catch(ValidationException $e) {
+                //Do nothing...
+            } catch(Interrupt $e) {
+                //Do nothing...
+            } catch(ErrorException $e) {
+                MessageHandler::instance()->addError($e->getMessage());
+            }
+            if ($view) {
+                $this->body = $view->render($data);
+            } else {
+                throw new Exception(T('View not found: %s',$viewFile));
+            }
+        } catch(Exception $e ) {
+            $this->body = nl2br(htmlentities($e->__toString()));
         }
-        $this->view = new View($appViewFile,array('body'=>$this-body));
+        $this->view = new View($appViewFile);
 
     }
     public function render() {
-        echo $this->view->render();
+        echo $this->view->render(array('body'=>$this-body));
     }
     public static function getPath() {
         $uri = $_SERVER['REQUEST_URI'];
@@ -92,6 +110,10 @@ class Pimple {
             $path = '/';
         return $path;
     }
+    public function getControllerInstance() {
+        return $this->controllerInstance;
+    }
+
     public function getBody() {
         return $this->body;
     }
@@ -101,6 +123,21 @@ class Pimple {
     }
     public function getTagLibs() {
         return $this->tagLibs;
+    }
+    public function getSiteName() {
+        return $this->siteName;
+    }
+
+    public function setSiteName($siteName) {
+        $this->siteName = $siteName;
+    }
+    public function getBaseDir() {
+        
+        return Dir::normalize(realpath(dirname(__FILE__).'/../'));
+    }
+    public function getRessource($path) {
+        return $this->getBaseDir().'ressource/'.$path;
+
     }
 }
 Pimple::instance()->registerTagLib('p',new CoreTagLib());

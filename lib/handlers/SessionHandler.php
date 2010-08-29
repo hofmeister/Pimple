@@ -10,6 +10,12 @@ class SessionHandler {
 		}
 		return self::$_instance;
 	}
+    public static function user() {
+        return self::instance()->getUser();
+    }
+    public static function isLoggedIn() {
+        return self::user() != null;
+    }
 
 	protected $SID;
 	protected $sessionKey = 'PSID';
@@ -34,7 +40,7 @@ class SessionHandler {
 			$this->SID = md5($this->sessionSecret . microtime());
 		}
 		$this->getSession()->loadFromSID($this->SID);
-		setcookie($this->sessionKey, $this->SID,$this->getExpires());
+		setcookie($this->sessionKey, $this->SID,$this->getExpires(),BASEURL);
 	}
     public function save() {
         $this->getSession()->commit();
@@ -107,5 +113,6 @@ class SessionHandler {
 	public function setSession($session) {
 		$this->session = $session;
 	}
+
 
 }

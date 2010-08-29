@@ -29,9 +29,11 @@ class Model {
 
 	public function setData($data) {
 		$this->new = false;
-		foreach($data as $key=>$value) {
-			$this->$key($value);
-		}
+        if (is_array($data) || is_object($data)) {
+            foreach($data as $key=>$value) {
+                $this->$key($value);
+            }
+        }
         $this->unserialize();
 		return $this;
 	}
