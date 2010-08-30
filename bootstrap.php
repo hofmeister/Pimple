@@ -9,6 +9,7 @@ if (!is_dir(BASEDIR))
 
 //Various functions
 require_once 'lib/functions.php';
+require_once 'lib/Settings.php';
 
 //DB Handling
 require_once 'lib/Db.php';

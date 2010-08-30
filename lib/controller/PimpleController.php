@@ -2,7 +2,7 @@
 class PimpleController {
 
     public function captcha() {
-        $width = Request::get('w',230);
+        $width = Request::get('w',210);
         $height = Request::get('h',40);
         $characters = Request::get('c',6);
         $font = Pimple::instance()->getRessource('monofont.ttf');
@@ -39,6 +39,13 @@ class PimpleController {
         imagejpeg($image);
         imagedestroy($image);
         SessionHandler::instance()->set('CAPTCHA',$code);
+        Pimple::end();
+    }
+    public function mailpreview() {
+        $data = Request::get();
+        $view = $data->view;
+
+        echo Mail::preview($view,$data);
         Pimple::end();
     }
 }

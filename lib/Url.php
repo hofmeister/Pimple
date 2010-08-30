@@ -311,6 +311,11 @@ class Url {
 				$url .= '?'.self::Array2GetParms($parms);
 			}
 		}
-        return $url;
+        $host = $_SERVER['HTTP_HOST'];
+        if ($_SERVER['HTTPS'])
+            $p = 'https';
+        else
+            $p = 'http';
+        return "$p://$host".$url;
     }
 }

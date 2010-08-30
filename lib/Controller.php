@@ -8,10 +8,10 @@ class Controller {
     public function __construct() {
         $this->name = get_class($this);
     }
-	public function redirect($controller,$action,$parms = array()) {
+	public function redirect($controller = null,$action = null,$parms = array()) {
 		$url = Url::makeLink($controller, $action, $parms);
+        Pimple::instance()->save();
 		header('Location: '.$url);
-		die();
 	}
     public function validate($fields,$data = null) {
         $this->validation = $fields;

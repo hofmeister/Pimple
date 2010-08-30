@@ -8,7 +8,7 @@ class Model {
 	private $name;
 	private $new = true;
 
-	public function __construct($name,$columns = array(), $data = null) {
+	public function __construct($name,$columns = array(),$primKey = null,$data = null) {
 		$this->name = $name;
 		$this->data = new stdClass();
 		foreach ($columns as $colName) {
@@ -16,6 +16,7 @@ class Model {
 				$this->data->$colName = null;
 			}
 		}
+        $this->setPrimKey($primKey);
 		if ($data)
 			$this->setData($data);
 	}
@@ -26,14 +27,22 @@ class Model {
     public function setPrimKey($primKey) {
         $this->primKey = $primKey;
     }
+    public function getPrimValue() {
+        if (!$this->primKey) return null;
+        $key = $this->primKey;
+        return $this->data->$key;
+    }
 
 	public function setData($data) {
-		$this->new = false;
         if (is_array($data) || is_object($data)) {
             foreach($data as $key=>$value) {
                 $this->$key($value);
             }
         }
+        if ($this->primKey) {
+            $this->new = $this->getPrimValue() == null;
+        }
+        
         $this->unserialize();
 		return $this;
 	}

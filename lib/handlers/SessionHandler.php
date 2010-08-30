@@ -16,6 +16,12 @@ class SessionHandler {
     public static function isLoggedIn() {
         return self::user() != null;
     }
+    public static function get($name) {
+        return self::instance()->getSession()->get($name);
+    }
+    public static function set($name,$value) {
+        self::instance()->getSession()->set($name,$value);
+    }
 
 	protected $SID;
 	protected $sessionKey = 'PSID';

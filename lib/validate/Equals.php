@@ -6,7 +6,7 @@ class EqualsValidate extends AbstractValidate {
         $equals = $this->args[0];
         if (!$equals) throw new Exception(T('Missing argument for equals validation'));
         $value2 = $data->$equals;
-        return $value === $value2;
+        return $value == $value2;
     }
     public function getError() {
         return T('Values do not match');

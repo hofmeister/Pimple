@@ -11,7 +11,12 @@ class CoreTagLib extends TagLib {
 		return $this->uid();
 	}
     protected function tagVar($attrs,$body,$view) {
-		return $view->data[$attrs->name];
+        $key = $attrs->name;
+        if (!$key) return null;
+        if (is_array($view->data))
+            return $view->data[$key];
+        else
+            return $view->data->$key;
     }
 	protected function tagButtonGroup($attrs,$body,$view) {
 		return '<div class="horizontal line right buttongroup '.$attrs->class.'">'.chr(10).
@@ -32,7 +37,9 @@ class CoreTagLib extends TagLib {
         return sprintf('<img src="%s" alt="%s">',Dir::normalize(BASEURL).$attrs->src,$attrs->alt);
     }
     protected function tagBody($attrs,$body,$view) {
-        return Pimple::instance()->getBody();
+        $attrs = new stdClass();
+        $attrs->name = 'body';
+        return $this->tagVar($attrs,$body,$view);
     }
 	protected function tagMenu($attrs,$body,$view) {
 		
@@ -46,10 +53,14 @@ class CoreTagLib extends TagLib {
         unset($attrs->action);
         unset($attrs->id);
         $link = Url::makeLink($controller,$action,$attrs);
+        if (!$body)
+            $body = $link;
 		return sprintf('<a href="%s">%s</a>',$link,$body);
 	}
     protected function tagMessages($attrs) {
         $msgs = MessageHandler::instance()->getMessages();
+        MessageHandler::instance()->clear();
+        
         $output = '<div class="pimple-messages">';
         foreach($msgs as $msg) {
             $class = ($msg->isError()) ? 'error' : 'success';
@@ -60,7 +71,18 @@ class CoreTagLib extends TagLib {
         return $output.'</div>';
     }
 	protected function tagStylesheet($attrs) {
-		return sprintf('<link href="%s" rel="stylesheet" type="text/css" />',Dir::normalize(BASEURL).$attrs->path);
+        $baseurl = Dir::normalize(BASEURL);
+        $url = $baseurl.$attrs->path;
+        if ($attrs->inline != 'true')
+            return sprintf('<link href="%s" rel="stylesheet" type="text/css" />',$url);
+
+        $path = Dir::normalize(BASEDIR).$attrs->path;
+        $dir = Dir::normalize(dirname($path));
+        $css = file_get_contents($path);
+        $host = $_SERVER['HTTP_HOST'];
+        $css = str_replace('url(../',"url(http://$host$baseurl",$css);
+        return sprintf('<style type="text/css">%s</style>',$css);
+
 	}
 	protected function tagJavascript($attrs) {
 		return sprintf('<script src="%s"></script>',Dir::normalize(BASEURL).$attrs->path);

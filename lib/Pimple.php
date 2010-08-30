@@ -11,8 +11,12 @@ class Pimple {
         }
         return self::$instance;
     }
-    public static function end() {
+    public static function save() {
+        MessageHandler::instance()->save();
         SessionHandler::instance()->save();
+    }
+    public static function end() {
+        self::save();
         exit();
     }
 
@@ -100,7 +104,7 @@ class Pimple {
 
     }
     public function render() {
-        echo $this->view->render(array('body'=>$this-body));
+        echo $this->view->render(array('body'=>$this->body));
     }
     public static function getPath() {
         $uri = $_SERVER['REQUEST_URI'];

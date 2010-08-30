@@ -25,7 +25,7 @@ class FormTagLib extends TagLib {
         $body = Request::post($attrs->name,$body);
 		return $this->formElementContainer(
                     sprintf('<textarea name="%s" class="form-textarea">%s</textarea>',
-					$attrs->name,htmlentities($body)),$attrs);
+					$attrs->name,htmlentities($body,ENT_QUOTES,'UTF-8')),$attrs);
 	}
     public function tagSelect($attrs,$body,$view) {
         
@@ -77,7 +77,7 @@ class FormTagLib extends TagLib {
         if ($attrs->name)
             $attrs->value = Request::post($attrs->name,$attrs->value);
         $inputElm = sprintf('<input type="%s" name="%s" value="%s" class="form-%s" id="%s" />',
-					$type,$attrs->name,htmlentities($attrs->value),$type,$attrs->id);
+					$type,$attrs->name,htmlentities($attrs->value,ENT_QUOTES,'UTF-8'),$type,$attrs->id);
 		$attrs->id = $this->tagId($attrs);
         if ($attrs->container == 'false')
                 return $inputElm;

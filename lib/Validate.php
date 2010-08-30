@@ -6,6 +6,7 @@ require_once 'validate/Equals.php';
 require_once 'validate/Max.php';
 require_once 'validate/Min.php';
 require_once 'validate/NotEmpty.php';
+require_once 'validate/Captcha.php';
 
 class Validate {
     private static $validators = array();
@@ -13,7 +14,7 @@ class Validate {
     public static function getValidator($identifier) {
         list($id,$args) = explode('[',rtrim($identifier,']'));
         if (self::$validators[$id]) {
-            self::$validators[$id]->setArgs($args);
+            self::$validators[$id]->setArgs(explode(',',$args));
             return self::$validators[$id];
         } else {
             throw new Exception(T('Unknown validator: %s',$id));
@@ -28,6 +29,11 @@ class Validate {
     public static function getFieldErrors($field) {
         return self::$errors[$field];
     }
+    public static function addFieldError($field,$error) {
+        if (!is_array(self::$errors[$field]))
+            self::$errors[$field] = array();
+        self::$errors[$field][] = $error;
+    }
     public static function isFieldValid($field) {
         if (count(self::$errors) > 0) {
             return @count(self::$errors[$field]) == 0;
@@ -39,3 +45,4 @@ Validate::registerValidator('email',new EmailValidate());
 Validate::registerValidator('min',new MinValidate());
 Validate::registerValidator('max',new MaxValidate());
 Validate::registerValidator('equal',new EqualsValidate());
+Validate::registerValidator('captcha',new CaptchaValidate());
