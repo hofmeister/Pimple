@@ -12,11 +12,17 @@ class Pimple {
         return self::$instance;
     }
     public static function save() {
-        MessageHandler::instance()->save();
-        SessionHandler::instance()->save();
+        try {
+            MessageHandler::instance()->save();
+            SessionHandler::instance()->save();
+        } catch (Exception $e) {
+            //Do nothing...
+        }
+
     }
-    public static function end() {
+    public static function end($msg = null) {
         self::save();
+        echo $msg;
         exit();
     }
 

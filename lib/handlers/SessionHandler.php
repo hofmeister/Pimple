@@ -2,8 +2,12 @@
 
 class SessionHandler {
 
-	public static $_instance;
+	private static $_instance;
 
+    /**
+     *
+     * @return SessionHandler
+     */
 	public static function instance() {
 		if (!self::$_instance) {
 			self::$_instance = new self();
@@ -41,7 +45,7 @@ class SessionHandler {
 
 	public function init() {
 		//var_dump($_COOKIE);
-		$this->SID = $_COOKIE[$this->sessionKey];
+        $this->SID = $_COOKIE[$this->sessionKey];
 		if (!$this->SID) {
 			$this->SID = md5($this->sessionSecret . microtime());
 		}

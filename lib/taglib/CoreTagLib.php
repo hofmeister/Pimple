@@ -2,6 +2,7 @@
 
 class CoreTagLib extends TagLib {
 	private static $uidCount = 0;
+    private $lastIfOutcome = true;
 	protected function uid() {
 		$uid = 'pimple-core-uid-'.(self::$uidCount);
 		self::$uidCount++;
@@ -97,4 +98,16 @@ class CoreTagLib extends TagLib {
     protected function tagPanel($attrs,$body) {
         return sprintf('<div class="panel %s"><h2>%s</h2>%s</div>',$attrs->class,$attrs->title,$body);
     }
+    protected function tagIf($attrs,$body) {
+        $this->lastIfOutcome = eval('return '.$attrs->test.';');
+        if ($this->lastIfOutcome) {
+            return $body;
+        }
+    }
+    protected function tagElse($attrs,$body) {
+        if (!$this->lastIfOutcome) {
+            return $body;
+        }
+    }
+
 }

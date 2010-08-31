@@ -8,13 +8,17 @@ class Controller {
     public function __construct() {
         $this->name = get_class($this);
     }
-	public function redirect($controller = null,$action = null,$parms = array()) {
-		$url = Url::makeLink($controller, $action, $parms);
-        Pimple::instance()->save();
-		header('Location: '.$url);
+	protected function redirect($controller = null,$action = null,$parms = array()) {
+		Url::redirect($controller, $action, $parms);
 	}
-    public function validate($fields,$data = null) {
+    protected function setFields($fields) {
         $this->validation = $fields;
+    }
+    protected function validate($fields = null,$data = null) {
+        if ($fields)
+            $this->validation = $fields;
+        else
+            $fields = $this->validation;
         if (!$data)
             $data = Request::post();
         if (!$data) throw new Interrupt(); //Not yet submitted...

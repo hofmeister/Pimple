@@ -319,4 +319,12 @@ class Url {
             $p = 'http';
         return "$p://$host".$url;
     }
+    public static function redirect($controller,$action,$parms = null) {
+        $url = self::makeLink($controller, $action, $parms);
+        self::gotoUrl($url);
+    }
+    public static function gotoUrl($url) {
+        Pimple::instance()->save();
+        header(sprintf('Location: %s',$url));
+    }
 }

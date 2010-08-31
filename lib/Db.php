@@ -7,6 +7,7 @@ class DB {
 	public static function connect($host, $user, $pass, $dbName) {
 		mysql_connect($host, $user, $pass) or die(mysql_error());
 		mysql_select_db($dbName) or die(mysql_error());
+        self::q('SET NAMES utf8');
 	}
 
 	private static function processArgs($args) {
