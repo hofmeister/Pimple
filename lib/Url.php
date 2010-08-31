@@ -306,7 +306,8 @@ class Url {
         if ($action)
             $url .= String::UrlEncode($action).'/';
 		if ($parms) {
-			$parms = get_object_vars($parms);
+			if (is_object($parms))
+				$parms = get_object_vars($parms);
 			if (count($parms) > 0) {
 				$url .= '?'.self::Array2GetParms($parms);
 			}

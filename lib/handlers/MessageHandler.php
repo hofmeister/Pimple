@@ -29,8 +29,8 @@ class MessageHandler {
             }
         }
     }
-    public function flash($text) {
-        $this->flash[] = new MessageHandler_Message($text);
+    public function flash($text,$error = false) {
+        $this->flash[] = new MessageHandler_Message($text,$error);
     }
 
 	public function addMessage($text, $field = null) {

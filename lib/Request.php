@@ -54,4 +54,9 @@ class Request_Parms {
         }
         return $result;
     }
+	public function clear() {
+		foreach($this as $key=>$value) {
+			unset($this->$key);
+		}
+	}
 }

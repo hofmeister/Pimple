@@ -4,6 +4,7 @@ class Model {
 
 	private $data;
 	private $columns = array();
+	private $noAutoUpdate = array();
     private $primKey;
 	private $name;
 	private $new = true;
@@ -20,7 +21,11 @@ class Model {
 		if ($data)
 			$this->setData($data);
 	}
-    public function getPrimKey() {
+	public function setNoAutoUpdate() {
+		$this->noAutoUpdate = func_get_args();
+	}
+
+	public function getPrimKey() {
         return $this->primKey;
     }
 
@@ -36,7 +41,7 @@ class Model {
 	public function setData($data) {
         if (is_array($data) || is_object($data)) {
             foreach($data as $key=>$value) {
-                $this->$key($value);
+				$this->$key($value);
             }
         }
         if ($this->primKey) {
@@ -62,6 +67,10 @@ class Model {
 			throw new Exception(sprintf('Unknown field: %s.%s', $this->name, $colName), E_ERROR);
 		}
 	}
+	public function  __get($name) {
+		return $this->$name();
+	}
+
 	public function commit($keyName = null) {
 		if ($this->new) {
 			$this->insert();
@@ -90,7 +99,8 @@ class Model {
 		$sqlFields = array();
 		foreach($this->data as $colName=>$value) {
 			if ($keyName == $colName) continue;
-			$sqlFields[] = sprintf('`%s` = %s',ucfirst($colName),DB::value($value));
+			if (!in_array($colName,$this->noAutoUpdate))
+				$sqlFields[] = sprintf('`%s` = %s',ucfirst($colName),DB::value($value));
 		}
 		return DB::q($sql.' '.implode(',',$sqlFields)
 				.sprintf(' WHERE `%s` = %s',$keyName,DB::value($this->data->$keyName)));

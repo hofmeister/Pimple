@@ -61,6 +61,9 @@ class SessionHandler {
 			throw new ErrorException(t('Unknown username and/or password'), E_ERROR);
 		$this->getSession()->set('__PUSER', $user);
 	}
+	public function clearUser() {
+		$this->getSession()->set('__PUSER',null);
+	}
 
 	/**
 	 *
