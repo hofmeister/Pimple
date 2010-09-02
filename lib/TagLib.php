@@ -1,5 +1,14 @@
 <?php
 class TagLib {
+    private $preprocess = false;
+    function __construct($preprocess = false) {
+        $this->preprocess = $preprocess;
+    }
+    public function isPreprocess() {
+        return $this->preprocess;
+    }
+
+
     public function __call($name,$args) {
         $method = 'tag'.ucfirst($name);
         if (!method_exists($this,$method)) {
@@ -8,13 +17,14 @@ class TagLib {
         $attrs = $args[0];
         if ($attrs) {
             //var_dump($args[0]);
+            $attrObj = new stdClass();
             foreach($attrs as $key=>$value) {
-                $attrs->$key = $this->evalAttr($value,$args[2]);
+                $attrObj->$key = $value;
             }
 
         }
 
-        return $this->$method($attrs,$args[1],$args[2]);
+        return $this->$method($attrObj,$args[1],$args[2]);
     }
     private function evalAttr($value,$view) {
         

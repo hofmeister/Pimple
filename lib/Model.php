@@ -5,6 +5,7 @@ class Model {
 	private $data;
 	private $columns = array();
 	private $noAutoUpdate = array();
+    private $primIsAI = true;
     private $primKey;
 	private $name;
 	private $new = true;
@@ -21,7 +22,11 @@ class Model {
 		if ($data)
 			$this->setData($data);
 	}
-	public function setNoAutoUpdate() {
+    public function setPrimIsAI($primIsAI) {
+        $this->primIsAI = $primIsAI;
+    }
+
+    public function setNoAutoUpdate() {
 		$this->noAutoUpdate = func_get_args();
 	}
 
@@ -118,12 +123,16 @@ class Model {
         $this->serialize();
 		$sql = sprintf('INSERT INTO `%s` SET ',$this->name);
 		$sqlFields = array();
-		
+		$primKey = $this->getPrimKey();
 		foreach($this->data as $colName=>$value) {
+            if ($colName == $primKey && $this->primIsAI) continue;
 			$sqlFields[] = sprintf('`%s` = %s',ucfirst($colName),DB::value($value));
 		}
 		$sql .= ' '.implode(',',$sqlFields);
-		return DB::q($sql);
+		$result =  DB::q($sql);
+        if ($result && $primKey && $this->primIsAI) {
+            $this->$primKey(DB::lastId());
+        }
 	}
 	public function delete($keyName = null) {
         if (!$this->checkKey($keyName)) {
@@ -141,5 +150,12 @@ class Model {
 	public function isNew() {
 		return $this->new;
 	}
+    public function toArray() {
+        $array = array();
+        foreach($this->data as $key=>$val) {
+            $array[$key] = $val;
+        }
+        return $array;
+    }
 
 }

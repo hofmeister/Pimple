@@ -16,30 +16,16 @@ class View {
         $cachename = $this->getCacheName();
 		umask(0002);
         if (!is_file($cachename)) {
+
 			ob_start();
             $this->_include($this->template);
 			$phtml = ob_get_clean();
-
-            $phtml = addslashes($phtml);
-
-            $phtml = preg_replace('/\$eval\{(.+)\}/','<?=$this->_eval(\'$1;\');?>',$phtml);
-
-            //Matches single elements
-            $phtml = preg_replace('/<([\w]+):([\w]+) ?([^>]*)\/>/is','<'.'?=$$1->$2($this->attr(\'$3\'),null,$this).chr(10);?'.'>',$phtml);
-
-            while(true) {
-                $newPhtml = preg_replace('/<(([\w]+):([\w]+)) ?([^>]*)>(.*?)<\/\\1>/is','<?ob_start();?>$5<?=$$2->$3($this->attr(\'$4\'),ob_get_clean(),$this).chr(10);?>',$phtml);
-                if ($newPhtml != $phtml)
-                    $phtml = $newPhtml;
-                else
-                    break;
-            }
-            $phtml = preg_replace('/\{(.+)\}/','<?=$this->_var("$1");?>',$phtml);
-
+            $parser = new Phtml();
+            $parsed = $parser->read($phtml);
+            
             Dir::ensure(dirname($cachename));
-
-			file_put_contents($cachename,$phtml);
-
+            //die($parsed->toPhp());
+            $parsed->toPhp($cachename);
         }
     }
     public function render($data) {
@@ -58,15 +44,20 @@ class View {
         
 		return stripslashes($result);
     }
-    private function _include($file) {
+    protected function _include($file) {
+        
+        if ($this->data instanceof Model)
+            $this->data = $this->data->toArray();
         $data = $this->data;
-        if (is_array($this->data))
+        if (is_array($this->data)) {
             extract($this->data);
+        }
+        //print_r($this->data);
         extract($this->taglibs);
         
         require $file;
     }
-    private function _eval($expr) {
+    protected function _eval($expr) {
         $data = $this->data;
         if (is_array($this->data))
             return $this->data;
@@ -75,8 +66,7 @@ class View {
         return eval("return ".stripslashes($expr));
     }
 
-    public function _var($varname) {
-        
+    protected function _var($varname) {
         if (is_array($this->data))
             return $this->data[$varname];
         else

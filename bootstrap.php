@@ -33,6 +33,7 @@ require_once 'lib/Request.php';
 require_once 'lib/model/ISession.php';
 require_once 'lib/model/IUser.php';
 require_once 'lib/Model.php';
+require_once 'lib/Phtml.php';
 require_once 'lib/View.php';
 require_once 'lib/Controller.php';
 require_once 'lib/controller/PimpleController.php';
@@ -45,6 +46,7 @@ require_once 'lib/handlers/AccessHandler.php';
 //Main class
 require_once 'lib/TagLib.php';
 require_once 'lib/taglib/CoreTagLib.php';
+require_once 'lib/taglib/BasicTagLib.php';
 require_once 'lib/taglib/FormTagLib.php';
 require_once 'lib/Pimple.php';
 define('CACHEDIR',Dir::normalize(BASEDIR).'cache');

@@ -99,6 +99,7 @@ class Pimple {
                 MessageHandler::instance()->addError($e->getMessage());
             }
             if ($view) {
+                
                 $this->body = $view->render($data);
             } else {
                 throw new Exception(T('View not found: %s',$viewFile));
@@ -149,6 +150,13 @@ class Pimple {
         return $this->getBaseDir().'ressource/'.$path;
 
     }
+    public function loadZendClass($class) {
+        if (class_exists($class)) return;
+        $path = str_replace('_','/',$class).'.php';
+        require_once $this->getRessource('lib/'.$path);
+
+    }
 }
-Pimple::instance()->registerTagLib('p',new CoreTagLib());
+Pimple::instance()->registerTagLib('c',new CoreTagLib());
+Pimple::instance()->registerTagLib('p',new BasicTagLib());
 Pimple::instance()->registerTagLib('f',new FormTagLib());

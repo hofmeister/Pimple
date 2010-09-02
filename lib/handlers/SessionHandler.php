@@ -49,7 +49,7 @@ class SessionHandler {
 		if (!$this->SID) {
 			$this->SID = md5($this->sessionSecret . microtime());
 		}
-		$this->getSession()->loadFromSID($this->SID);
+        $this->getSession()->loadFromSID($this->SID);
 		setcookie($this->sessionKey, $this->SID,$this->getExpires(),BASEURL);
 	}
     public function save() {
