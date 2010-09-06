@@ -157,6 +157,3 @@ class Pimple {
 
     }
 }
-Pimple::instance()->registerTagLib('c',new CoreTagLib());
-Pimple::instance()->registerTagLib('p',new BasicTagLib());
-Pimple::instance()->registerTagLib('f',new FormTagLib());

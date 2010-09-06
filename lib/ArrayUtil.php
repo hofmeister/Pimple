@@ -62,5 +62,15 @@ class ArrayUtil {
     public static function isList($array) {
         return !self::isMap($array);
     }
+	public static function fromObject($obj) {
+		return get_object_vars($obj);
+	}
+	public static function toObject($array) {
+		$obj = new stdClass();
+		foreach($array as $key=>$value) {
+			$obj->$key = $value;
+		}
+		return $obj;
+	}
 }
 

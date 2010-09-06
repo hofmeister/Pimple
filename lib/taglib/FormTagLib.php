@@ -11,6 +11,7 @@ class FormTagLib extends TagLib {
             $field = $attrs->field;
             $attr = clone $attrs;
             $attr->value = $elm->$field;
+			$attr->after = '<a href="javascript:;" class="button remove-normal js-btn-remove" >x</a>';
             $out .= $this->text($attr,null,$view);
         }
 
@@ -22,7 +23,7 @@ class FormTagLib extends TagLib {
         if ($attrs->checker) {
             $attr->class .= ' no-checker';
         }
-        $attr->after = '<a href="javascript:;" class="button add-normal js-btn-add" >'.T('Add').'</a>';
+        $attr->after = '<a href="javascript:;" class="button add-normal js-btn-add" >+</a>';
         $out .= $this->text($attr, null,$view);
 
         $out .= '</div>';

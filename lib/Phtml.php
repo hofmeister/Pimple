@@ -1,4 +1,6 @@
 <?php
+require_once 'Html.php';
+
 class Phtml {
     const NOTHING = 'NOTHING';
     const STRING = 'STRING';
@@ -222,31 +224,9 @@ class Phtml {
         $this->debug = $debug;
     }
 }
-class PhtmlNode {
+class PhtmlNode extends HtmlElement {
     private $ns;
-    private  $tag;
-    private $parent;
-    private $attrs = array();
-    private $children = array();
-    private $container = false;
-
-    public function getAttrs() {
-        return $this->attrs;
-    }
-
-    public function setAttrs($attrs) {
-        $this->attrs = $attrs;
-    }
-
-    public function isContainer() {
-        return $this->container;
-    }
-
-    public function setContainer($container) {
-        $this->container = $container;
-    }
-
-        public function getNs() {
+    public function getNs() {
         return $this->ns;
     }
 
@@ -254,68 +234,11 @@ class PhtmlNode {
         $this->ns = $ns;
     }
 
-    public function getTag() {
-        return $this->tag;
-    }
-
-    public function setTag($tag) {
-        $this->tag = $tag;
-    }
-
-    public function getParent() {
-        return $this->parent;
-    }
-
-    public function setParent($parent) {
-        $this->parent = $parent;
-    }
-
-    public function addChild($node) {
-        $this->children[] = $node;
-        $node->setParent($this);
-    }
-    public function getChildren() {
-        return $this->children;
-    }
-
-    public function setAttribute($name,$value) {
-        $this->attrs[$name] = $value;
-    }
-    public function getAttribute($name) {
-        return $this->attrs[$name];
-    }
-
-    public function getOuterString() {
-
-    }
     public function __toString() {
-        if ($this->tag == 'phtml') {
+        if ($this->getTag() == 'phtml') {
             return $this->getInnerString();
         }
-        $str = "<";
-        $tagName = '';
-        if ($this->ns) {
-            $tagName .= $this->ns.':';
-        }
-        $tagName .= $this->tag;
-        $str .= $tagName;
-        if (count($this->attrs) > 0) {
-            $str .= ' ';
-            foreach($this->attrs as $name=>$val) {
-                $str .= sprintf('%s="%s" ',$name,$val);
-            }
-            $str = trim($str);
-        }
-        if ($this->isContainer()) {
-            $str .= '>';
-            foreach($this->children as &$child) {
-                $str .= $child->__toString();
-            }
-            $str .= "</$tagName>";
-        } else {
-            $str .= '/>';
-        }
-        return $str;
+		return parent::__toString();
     }
 
     public function getInnerString() {
@@ -334,7 +257,7 @@ class PhtmlNode {
     }
     public function toPHP($filename = null) {
         
-        if ($this->tag == 'phtml') {
+        if ($this->getTag() == 'phtml') {
             $result =  $this->getInnerPHP();
             if ($filename)
                 file_put_contents($filename,$result);
@@ -348,21 +271,21 @@ class PhtmlNode {
         $tagName = '';
 
 
-        if ($this->ns) {
+        if ($this->getNs()) {
             $method = true;
             
-            $str = '<?=$'.$this->ns.'->'.$this->tag.'(';
+            $str = '<?=$'.$this->getNs().'->'.$this->getTag().'(';
         } else {
-            $str .= $this->tag;
+            $str .= $this->getTag();
         }
 
         
-        if (count($this->attrs) > 0) {
+        if (count($this->getAttrs()) > 0) {
             if ($method)
                 $str .= 'array(';
             else
                 $str .= ' ';
-            foreach($this->attrs as $name=>$val) {
+            foreach($this->getAttrs() as $name=>$val) {
                 if ($method)
                     $str .= sprintf('"%s"=>%s,',$name,$this->processAttrValue($val));
                 else
@@ -388,21 +311,21 @@ class PhtmlNode {
             
             if ($method) {
                 $taglibs = Pimple::instance()->getTagLibs();
-                if ($taglibs[$this->ns] && $taglibs[$this->ns]->isPreprocess()) {
-                    $tag = $this->tag;
-                    $str = $taglibs[$this->ns]->$tag($this->attrs,$body,null);
+                if ($taglibs[$this->getNs()] && $taglibs[$this->getNs()]->isPreprocess()) {
+                    $tag = $this->getTag();
+                    $str = $taglibs[$this->ns]->$tag($this->getAttrs(),$body,null);
                 } else {
                     $str .= 'ob_get_clean(),$this);?>';
-                    $str = sprintf("\n<?ob_start();//%s start\n?>",$this->tag).chr(10).$body.chr(10).$str;
+                    $str = sprintf("\n<?ob_start();//%s start\n?>",$this->getTag()).chr(10).$body.chr(10).$str;
                 }
                 
             } else
-                $str .= "</$this->tag>";
+                $str .= sprintf("</%s>",$this->getTag());
         } else {
             if ($method) {
-                if ($taglibs[$this->ns] && $taglibs[$this->ns]->isPreprocess()) {
-                    $tag = $this->tag;
-                    $str = $taglibs[$this->ns]->$tag($this->attrs,null,null);
+                if ($taglibs[$this->getNs()] && $taglibs[$this->getNs()]->isPreprocess()) {
+                    $tag = $this->getTag();
+                    $str = $taglibs[$this->getNs()]->$tag($this->getAttrs(),null,null);
                 } else {
                     $str .= 'null,$this);?>';
                 }
@@ -423,31 +346,7 @@ class PhtmlNode {
     }
 }
 
-class PhtmlNodeText {
-    private $parent;
-    private $text;
-    function __construct($text) {
-        $this->text = $text;
-    }
-
-    public function getParent() {
-        return $this->parent;
-    }
-
-    public function setParent($parent) {
-        $this->parent = $parent;
-    }
-
-    public function getText() {
-        return $this->text;
-    }
-
-    public function setText($text) {
-        $this->text = $text;
-    }
-    public function __toString() {
-        return $this->text;
-    }
+class PhtmlNodeText extends HtmlText {
     public function toPHP() {
         return $this->__toString();
     }

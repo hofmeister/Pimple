@@ -48,8 +48,14 @@ require_once 'lib/TagLib.php';
 require_once 'lib/taglib/CoreTagLib.php';
 require_once 'lib/taglib/BasicTagLib.php';
 require_once 'lib/taglib/FormTagLib.php';
+require_once 'lib/taglib/WidgetTagLib.php';
 require_once 'lib/Pimple.php';
+
 define('CACHEDIR',Dir::normalize(BASEDIR).'cache');
 Dir::ensure(CACHEDIR);
 
+Pimple::instance()->registerTagLib('c',new CoreTagLib());
+Pimple::instance()->registerTagLib('p',new BasicTagLib());
+Pimple::instance()->registerTagLib('f',new FormTagLib());
+Pimple::instance()->registerTagLib('w',new WidgetTagLib());
 
