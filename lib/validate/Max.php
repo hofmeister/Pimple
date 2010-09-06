@@ -3,6 +3,7 @@ require_once 'Abstract.php';
 
 class MaxValidate extends AbstractValidate {
     public function validate($value,$data) {
+        if (!$value) return true; //No value is allowed - use required to require
         $min = (int)$this->args[0];
         $type = $this->args[1];
         if ($min == 0) throw new Exception (T('max validator requires an int argument of 1 or higher'));

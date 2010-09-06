@@ -91,6 +91,7 @@ class Pimple {
             }
             try {
                 $data = $ctrl->$action();
+                
             } catch(ValidationException $e) {
                 //Do nothing...
             } catch(Interrupt $e) {
@@ -98,6 +99,8 @@ class Pimple {
             } catch(ErrorException $e) {
                 MessageHandler::instance()->addError($e->getMessage());
             }
+            if (!$data)
+                $data = $ctrl->getData();
             if ($view) {
                 
                 $this->body = $view->render($data);

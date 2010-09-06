@@ -5,10 +5,19 @@ require_once 'Validate.php';
 class Controller {
     protected $name;
     protected $validation = array();
+    protected $data;
     public function __construct() {
         $this->name = get_class($this);
     }
-	protected function redirect($controller = null,$action = null,$parms = array()) {
+    public function getData() {
+        return $this->data;
+    }
+
+    public function setData($data) {
+        $this->data = $data;
+    }
+
+    protected function redirect($controller = null,$action = null,$parms = array()) {
 		Url::redirect($controller, $action, $parms);
 	}
     protected function setFields($fields) {
@@ -25,14 +34,32 @@ class Controller {
 
         $errors = array();
         foreach($fields as $field=>$validation) {
-            $value = $data->$field;
+            if (String::EndsWith($field,'[]')) {
+                $fieldName = str_replace('[]','',$field);
+            } else {
+                $fieldName = $field;
+            }
+            $value = $data->$fieldName;
+            if (!is_array($value)) {
+                $valArr = array($value);
+            } else {
+                $valArr = $value;
+            }
             $validations = explode(',',$validation);
             foreach($validations as $validator) {
                 $v = Validate::getValidator($validator);
-                if (!$v->validate($value,$data)) {
-                    if (!is_array($errors[$field]))
-                        $errors[$field] = array();
-                    $errors[$field][] = $v->getError();
+                foreach($valArr as $i=>$val) {
+                    if (String::EndsWith($field,'[]')) {
+                        $validationName = str_replace('[]',"[$i]",$field);
+                    } else {
+                        $validationName = $field;
+                    }
+                    
+                    if (!$v->validate($val,$data)) {
+                        if (!is_array($errors[$validationName]))
+                            $errors[$validationName] = array();
+                        $errors[$validationName][] = $v->getError();
+                    }
                 }
             }
         }

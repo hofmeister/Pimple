@@ -25,8 +25,10 @@ require_once 'lib/Url.php';
 require_once 'lib/File.php';
 require_once 'lib/Dir.php';
 
-//String handling
+//Utils
+require_once 'lib/Util.php';
 require_once 'lib/String.php';
+require_once 'lib/ArrayUtil.php';
 
 //MVC
 require_once 'lib/Request.php';

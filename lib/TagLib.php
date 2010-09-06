@@ -36,4 +36,12 @@ class TagLib {
         $result =  ob_get_clean();
         return $result;
     }
+    protected function toAttrString($arrayOrObject) {
+        $array = ArrayUtil::fromObject($arrayOrObject);
+        $out = '';
+        foreach($array as $key=>$value) {
+            $out .= $key.'="'.htmlentities($value,ENT_COMPAT,'UTF-8').'" ';
+        }
+        return trim($out);
+    }
 }

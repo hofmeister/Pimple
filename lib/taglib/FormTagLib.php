@@ -3,48 +3,24 @@
 class FormTagLib extends TagLib {
     private $formData;
     protected function tagText($attrs,$body,$view) {
-		return $this->inputElement('text',$attrs,$view);
-    }
-    protected function tagTextList($attrs,$body,$view) {
-        $out = '<div class="form-text-list">';
-        foreach($attrs->value as $elm) {
-            $field = $attrs->field;
-            $attr = clone $attrs;
-            $attr->value = $elm->$field;
-			$attr->after = '<a href="javascript:;" class="button remove-normal js-btn-remove" >x</a>';
-            $out .= $this->text($attr,null,$view);
-        }
-
-        $attr = clone $attrs;
-        $attr->checker = false;
-        $attr->value = '';
-        $attr->class .= ' form-text-list-new';
-
-        if ($attrs->checker) {
-            $attr->class .= ' no-checker';
-        }
-        $attr->after = '<a href="javascript:;" class="button add-normal js-btn-add" >+</a>';
-        $out .= $this->text($attr, null,$view);
-
-        $out .= '</div>';
-        return $out;
+		return $this->inputElement('text',$attrs,$body,$view);
     }
 	protected function tagSubmit($attrs,$body,$view) {
         $attrs->container = 'false';
-		return $this->inputElement('submit',$attrs,$view);
+		return $this->inputElement('submit',$attrs,$body,$view);
     }
 	protected function tagButton($attrs,$body,$view) {
         $attrs->container = 'false';
-		return $this->inputElement('button',$attrs,$view);
+		return $this->inputElement('button',$attrs,$body,$view);
     }
 	protected function tagPassword($attrs,$body,$view) {
-		return $this->inputElement('password',$attrs,$view);
+		return $this->inputElement('password',$attrs,$body,$view);
     }
 	protected function tagCheckbox($attrs,$body,$view) {
-		return $this->inputElement('checkbox',$attrs,$view);
+		return $this->inputElement('checkbox',$attrs,$body,$view);
     }
 	protected function tagRadio($attrs,$body,$view) {
-		return $this->inputElement('radio',$attrs,$view);
+		return $this->inputElement('radio',$attrs,$body,$view);
     }
     protected function tagTextArea($attrs,$body,$view) {
         $body = Request::post($attrs->name,$body);
@@ -82,7 +58,7 @@ class FormTagLib extends TagLib {
 	}
 	protected function tagId($attrs) {
 		if ($attrs->id) return $attrs->id;
-		else if ($attrs->name) {
+		else if ($attrs->name && substr($attrs->name,-2) != '[]') {
 			return preg_replace('/[^A-Z0-9_]/i','_',$attrs->name);
 		}
 		return null;
@@ -99,7 +75,7 @@ class FormTagLib extends TagLib {
         return $this->formElementContainer($body,$attrs);
     }
 
-	private function inputElement($type,$attrs,$view) {
+	private function inputElement($type,$attrs,$body,$view) {
 
         if ($attrs->name) {
             if (!$attrs->value && $this->formData) {
@@ -111,13 +87,25 @@ class FormTagLib extends TagLib {
             }
             $attrs->value = Request::post($attrs->name,$attrs->value);
         }
+        
+        $behaviours = explode(' ',$attrs->behaviour);
+        foreach($behaviours as $i=>$behaviour) {
+            $behaviours[$i] = 'pb-'.$behaviour;
+        }
+        $behaviour = implode(' ',$behaviours);
         $inputElm = '';
         if ($attrs->checker) {
-            $inputElm .= '<div class="form-checker js-checker"><input type="checkbox" class="form-checkbox" checked="true" />';
+            $inputElm .= '<div class="form-checker pw-checker"><input type="checkbox" class="form-checkbox" checked="true" />';
         }
+        
         $inputElm .= $attrs->before;
-        $inputElm .= sprintf('<input type="%s" name="%s" value="%s" class="form-%s %s" id="%s" />',
-					$type,$attrs->name,htmlentities($attrs->value,ENT_QUOTES,'UTF-8'),$type,$attrs->class,$attrs->id);
+        $inputElm .= sprintf('<input type="%s" name="%s" value="%s" class="form-%s %s" %s  />%s',
+					$type,$attrs->name,
+                    htmlentities($attrs->value,ENT_QUOTES,'UTF-8'),
+                    $type,
+                    trim($attrs->class.' '.$behaviour),
+                    ($attrs->id ? "id=\"$attrs->id\"" : ''),
+                    $body);
         $inputElm .= $attrs->after;
         if ($attrs->checker) {
             $inputElm .= '<div class="clear"></div></div>';
@@ -138,7 +126,14 @@ class FormTagLib extends TagLib {
         
         
         if (count($validators) > 0) {
-            $errors = Validate::getFieldErrors($attrs->name);
+            if (String::EndsWith($attrs->name,'[]')) {
+                $i = Util::count($attrs->name);
+                $fieldName = str_replace('[]',"[$i]",$attrs->name);
+            } else {
+                $fieldName = $attrs->name;
+            }
+            $errors = Validate::getFieldErrors($fieldName);
+
             if (!$errors)
                 $errors = array();
 
@@ -167,7 +162,13 @@ class FormTagLib extends TagLib {
             $classes[] = 'valid';
 
         $output = '<div class="line form-item '.implode(' ',$classes).'">';
-        $output .= sprintf('<label for="%s">%s</label>',$attrs->id,$label);
+        $label = trim($label);
+        if (!$label)
+            $label = '&nbsp;';
+        if ($attrs->id)
+            $output .= sprintf('<label for="%s">%s</label>',$attrs->id,$label);
+        else
+            $output .= sprintf('<label>%s</label>',$attrs->id,$label);
         
         $output .= '<div class="element">'.$formElement.'</div>';
         if ($hasInstructions) {

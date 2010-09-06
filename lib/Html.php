@@ -32,6 +32,7 @@ class HtmlElement implements HtmlNode {
 			case 'div':
 			case 'span':
 			case 'strong':
+            case 'a':
 			case 'b':
 			case 'em':
 			case 'i':

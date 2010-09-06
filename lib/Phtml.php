@@ -226,9 +226,19 @@ class Phtml {
 }
 class PhtmlNode extends HtmlElement {
     private $ns;
+    private $container = false;
     public function getNs() {
         return $this->ns;
     }
+    
+    public function isContainer() {
+        return $this->container;
+    }
+
+    public function setContainer($container) {
+        $this->container = $container;
+    }
+
 
     public function setNs($ns) {
         $this->ns = $ns;
@@ -243,14 +253,14 @@ class PhtmlNode extends HtmlElement {
 
     public function getInnerString() {
         $str = '';
-        foreach($this->children as &$child) {
+        foreach($this->getChildren() as $child) {
             $str .= $child->__toString();
         }
         return $str;
     }
     public function getInnerPHP() {
         $str = '';
-        foreach($this->children as &$child) {
+        foreach($this->getChildren() as $child) {
             $str .= $child->toPHP();
         }
         return $str;

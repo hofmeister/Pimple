@@ -2,7 +2,7 @@
 
 class WidgetTagLib extends TagLib {
 	const CSS_LIST			= 'pw-list';
-	const CSS_BTN			= 'pw-btn';
+	const CSS_BTN			= 'pw-button';
 	const CSS_EVT_RMV		= 'pw-evt-remove';
 	const CSS_EVT_ADD		= 'pw-evt-add';
 	const CSS_EVT_SUBMIT	= 'pw-evt-submit';
@@ -40,10 +40,12 @@ class WidgetTagLib extends TagLib {
 		$elmAttr = ArrayUtil::fromObject($attrs);
 
 		unset($elmAttr['elm']);
-		return new HtmlElement($attrs->elm, $elmAttr);
+		$elm = new HtmlElement($attrs->elm, $elmAttr);
+        $elm->addChild(new HtmlText($body));
+        return $elm;
 	}
 
-	protected function tagBtn($attrs, $body, $view) {
+	protected function tagButton($attrs,$body, $view) {
 		if (!$attrs->elm)
 			$attrs->elm = 'a';
 		if (!$attrs->class)
@@ -55,7 +57,10 @@ class WidgetTagLib extends TagLib {
 		$elmAttr = ArrayUtil::fromObject($attrs);
 
 		unset($elmAttr['elm']);
-		return new HtmlElement($attrs->elm, $elmAttr);
+        unset($elmAttr['event']);
+		$elm = new HtmlElement($attrs->elm, $elmAttr);
+        $elm->addChild(new HtmlText(trim($body)));
+        return $elm;
 	}
 	private function evt2css($type) {
 		switch (strtolower($type)) {
@@ -72,7 +77,7 @@ class WidgetTagLib extends TagLib {
 			case self::EVT_OPEN:
 				return self::CSS_EVT_OPEN;
 			case self::EVT_CANCEL:
-				return self::CSS_EVT_CANCE
+				return self::CSS_EVT_CANCEL;
 			case self::EVT_EDIT:
 				return self::CSS_EVT_EDIT;
 			case self::EVT_CREATE:
