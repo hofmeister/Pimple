@@ -7,6 +7,7 @@ require_once 'validate/Max.php';
 require_once 'validate/Min.php';
 require_once 'validate/NotEmpty.php';
 require_once 'validate/Captcha.php';
+require_once 'validate/Optional.php';
 
 class Validate {
     private static $validators = array();
@@ -41,6 +42,7 @@ class Validate {
     }
 }
 Validate::registerValidator('required',new NotEmptyValidate());
+Validate::registerValidator('optional',new OptionalValidate());
 Validate::registerValidator('email',new EmailValidate());
 Validate::registerValidator('min',new MinValidate());
 Validate::registerValidator('max',new MaxValidate());

@@ -15,16 +15,24 @@ class TagLib {
             throw new Exception(T('Unknown tag: %s::%s',get_class($this),$name),E_ERROR);
         }
         $attrs = $args[0];
+        $view = $args[2];
+        if (!$view) {
+            $view = View::current();
+        }
         if ($attrs) {
-            //var_dump($args[0]);
-            $attrObj = new stdClass();
-            foreach($attrs as $key=>$value) {
-                $attrObj->$key = $value;
-            }
+            if (is_array($attrs) || is_object($attrs)) {
+                //var_dump($args[0]);
+                $attrObj = new stdClass();
+                foreach($attrs as $key=>$value) {
+                    $attrObj->$key = $value;
+                }
 
+            } else {
+                throw new InvalidArgumentException('Tags accept only arrays and objects as attributes');
+            }
         }
 
-        return $this->$method($attrObj,$args[1],$args[2]);
+        return $this->$method($attrObj,$args[1],$view);
     }
     private function evalAttr($value,$view) {
         

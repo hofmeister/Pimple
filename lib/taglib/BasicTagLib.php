@@ -2,6 +2,7 @@
 
 class BasicTagLib extends TagLib {
 	private static $uidCount = 0;
+    private static $globalVars = array();
     private $lastIfOutcome = true;
 	protected function uid() {
 		$uid = 'pimple-core-uid-'.(self::$uidCount);
@@ -14,10 +15,30 @@ class BasicTagLib extends TagLib {
     protected function tagVar($attrs,$body,$view) {
         $key = $attrs->name;
         if (!$key) return null;
-        if (is_array($view->data))
-            return $view->data[$key];
-        else
-            return $view->data->$key;
+        
+        if (DataUtil::has($view->data,$key)) {
+            return DataUtil::get($view->data,$key);
+        } else {
+            return DataUtil::get(self::$globalVars,$key);
+        }
+    }
+    protected function tagSet($attrs,$body,$view) {
+        $value = ($attrs->value) ? $attrs->value : $body ;
+        if ($attrs->global == 'true') {
+            DataUtil::set(self::$globalVars,$attrs->name,$value);
+        } else {
+            DataUtil::set($view->data,$attrs->name,$value);
+            
+        }
+    }
+    protected function tagInclude($attrs,$body,$view) {
+        $file = Dir::concat(BASEDIR,'view').$attrs->file;
+        $include = new View($file);
+        $result = $include->render($view->data);
+        
+        $view->data = DataUtil::merge($view->data,$include->data);
+        
+        return $result;
     }
 
     protected function tagConstant($attrs,$body,$view) {
@@ -41,7 +62,8 @@ class BasicTagLib extends TagLib {
 			'</div>';
     }
     protected function tagImg($attrs) {
-        return sprintf('<img src="%s" alt="%s">',Dir::normalize(BASEURL).$attrs->src,$attrs->alt);
+        $attrs->src = Dir::normalize(BASEURL).$attrs->src;
+        return new HtmlElement('img',ArrayUtil::fromObject($attrs),false);
     }
     protected function tagBody($attrs,$body,$view) {
         
@@ -101,8 +123,5 @@ class BasicTagLib extends TagLib {
     protected function tagLoggedin($attrs,$body) {
         if (SessionHandler::isLoggedIn() == ($attrs->not != 'true'))
             return $body;
-    }
-    protected function tagPanel($attrs,$body) {
-        return sprintf('<div class="panel %s"><h2>%s</h2>%s</div>',$attrs->class,$attrs->title,$body);
     }
 }

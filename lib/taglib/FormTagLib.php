@@ -24,12 +24,16 @@ class FormTagLib extends TagLib {
     }
     protected function tagTextArea($attrs,$body,$view) {
         $body = Request::post($attrs->name,$body);
-		return $this->formElementContainer(
-                    sprintf('<textarea name="%s" class="form-textarea %s">%s</textarea>',
-					$attrs->name,$attrs->class,htmlentities($body,ENT_QUOTES,'UTF-8')),$attrs);
+        unset($attrs->checker);
+        unset($attrs->behaviour);
+        unset($attrs->help);
+        unset($attrs->label);
+        $elm = new HtmlElement('textarea',$attrs,true);
+        $elm->addChild(new HtmlText(htmlentities($body,ENT_QUOTES,'UTF-8')));
+		return $this->formElementContainer($elm,$attrs);
 	}
     protected function tagSelect($attrs,$body,$view) {
-        
+
         $keyVal = json_decode(str_replace('\'','"',stripslashes($attrs->options)));
         $options = "";
         foreach($keyVal as $key=>$val) {
@@ -64,7 +68,7 @@ class FormTagLib extends TagLib {
 		return null;
 	}
     protected function tagCaptcha($attrs) {
-        
+
         $inputElm = sprintf('<img src="%s" alt="Captcha" class="captcha" />
                     <input type="text" name="%s"  class="form-captcha" id="%s" />',
                     Url::makeLink('pimple','captcha')
@@ -87,31 +91,43 @@ class FormTagLib extends TagLib {
             }
             $attrs->value = Request::post($attrs->name,$attrs->value);
         }
-        
+
         $behaviours = explode(' ',$attrs->behaviour);
         foreach($behaviours as $i=>$behaviour) {
-            $behaviours[$i] = 'pb-'.$behaviour;
+            if ($behaviour)
+                $behaviours[$i] = 'pb-'.$behaviour;
         }
         $behaviour = implode(' ',$behaviours);
         $inputElm = '';
-        if ($attrs->checker) {
+        $checker = $attrs->checker;
+        $container = $attrs->container;
+        if ($checker) {
             $inputElm .= '<div class="form-checker pw-checker"><input type="checkbox" class="form-checkbox" checked="true" />';
         }
         
+
         $inputElm .= $attrs->before;
-        $inputElm .= sprintf('<input type="%s" name="%s" value="%s" class="form-%s %s" %s  />%s',
-					$type,$attrs->name,
-                    htmlentities($attrs->value,ENT_QUOTES,'UTF-8'),
-                    $type,
-                    trim($attrs->class.' '.$behaviour),
-                    ($attrs->id ? "id=\"$attrs->id\"" : ''),
-                    $body);
-        $inputElm .= $attrs->after;
-        if ($attrs->checker) {
+        $attrs->id = $this->tagId($attrs);
+        $attrs->type = $type;
+        $attrs->value = htmlentities($attrs->value,ENT_QUOTES,'UTF-8');
+        $attrs->class = trim("form-".$attrs->type.' '.trim($attrs->class.' '.$behaviour));
+
+        $elmAttr = clone $attrs;
+        unset($elmAttr->before);
+        unset($elmAttr->after);
+        unset($elmAttr->checker);
+        unset($elmAttr->behaviour);
+        unset($elmAttr->help);
+        unset($elmAttr->label);
+
+        $inputElm .= new HtmlElement('input',$elmAttr,false);
+
+        $inputElm .= $body.$attrs->after;
+        if ($checker) {
             $inputElm .= '<div class="clear"></div></div>';
         }
-		$attrs->id = $this->tagId($attrs);
-        if ($attrs->container == 'false')
+		
+        if ($container == 'false')
                 return $inputElm;
         return $this->formElementContainer($inputElm,$attrs);
 	}
@@ -123,8 +139,6 @@ class FormTagLib extends TagLib {
         $help = $attrs->help;
         $validators = Pimple::instance()->getControllerInstance()->getFieldValidation($attrs->name);
 
-        
-        
         if (count($validators) > 0) {
             if (String::EndsWith($attrs->name,'[]')) {
                 $i = Util::count($attrs->name);
@@ -137,7 +151,7 @@ class FormTagLib extends TagLib {
             if (!$errors)
                 $errors = array();
 
-            if (in_array('required',$validators)) {
+
                 $classes[] = 'v-enabled';
 
                 foreach($validators as $validator) {
@@ -145,6 +159,7 @@ class FormTagLib extends TagLib {
                     $classes[] = "v-$validator";
                 }
 
+            if (in_array('required',$validators)) {
                 $info = T('This field is required');
                 if (!$attrs->help)
                      $attrs->help = $info;
@@ -169,7 +184,7 @@ class FormTagLib extends TagLib {
             $output .= sprintf('<label for="%s">%s</label>',$attrs->id,$label);
         else
             $output .= sprintf('<label>%s</label>',$attrs->id,$label);
-        
+
         $output .= '<div class="element">'.$formElement.'</div>';
         if ($hasInstructions) {
             $output .= sprintf('<div class="instructions">

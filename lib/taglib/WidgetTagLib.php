@@ -85,5 +85,11 @@ class WidgetTagLib extends TagLib {
 		}
 		return '';
 	}
+    protected function tagPanel($attrs,$body) {
+        return sprintf('<div class="panel %s"><h2>%s</h2>%s</div>',$attrs->class,$attrs->title,$body);
+    }
+    protected function tagWizard($attrs,$body) {
+        return sprintf('<div class="panel wizard %s"><h2>%s<strong>'.T('Step %s of %s',$attrs->step,$attrs->total).'</strong></h2>%s</div>',$attrs->class,$attrs->title,$body);
+    }
 
 }

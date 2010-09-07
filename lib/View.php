@@ -1,12 +1,22 @@
 <?php
 class View {
+    private static $_current = array();
+    public static function current() {
+        return end(self::$_current);
+    }
+    public static function addCurrent($view) {
+        array_push(self::$_current,$view);
+    }
+    public static function removeCurrent() {
+        array_pop(self::$_current);
+    }
     private $template,$taglibs;
-	public $data;
-
+	public $data = array();
+    
     public function  __construct($template) {
         $this->template = $template;
+        $this->parent = $parent;
         $this->taglibs = Pimple::instance()->getTagLibs();
-        
     }
     public function getCacheName() {
         $dirname = dirname(substr($this->template,strlen(BASEDIR)));
@@ -29,8 +39,12 @@ class View {
         }
     }
     public function render($data) {
+        self::addCurrent($this);
         $cachename = $this->getCacheName();
-        $this->data = $data;
+        if ($data instanceof Model)
+            $data = $data->toArray();
+        $this->data = DataUtil::merge($this->data,$data);
+        
         $this->parseTemplate();
 		ob_start();
 		try {
@@ -41,13 +55,10 @@ class View {
 		}
 		unlink($cachename);
         $result = ob_get_clean();
-        
+        self::removeCurrent();
 		return stripslashes($result);
     }
     protected function _include($file) {
-        
-        if ($this->data instanceof Model)
-            $this->data = $this->data->toArray();
         $data = $this->data;
         if (is_array($this->data)) {
             extract($this->data);
@@ -55,7 +66,7 @@ class View {
         //print_r($this->data);
         extract($this->taglibs);
         
-        require $file;
+        include $file;
     }
     protected function _eval($expr) {
         $data = $this->data;

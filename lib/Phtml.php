@@ -16,6 +16,11 @@ class Phtml {
     private $debug = false;
     private $stringStartChar = '';
 
+    /**
+     *
+     * @param phtml $string
+     * @return PhtmlNode
+     */
     public function read($string) {
         $this->withinStack = array(self::NOTHING);
         $this->current = '';
@@ -343,9 +348,14 @@ class PhtmlNode extends HtmlElement {
                 $str .= '/>';
             }
         }
-        if ($filename)
+        $str = $this->processEvals($str);
+        if ($filename) {
             file_put_contents($filename, $str);
+        }
         return $str;
+    }
+    private function processEvals($phtml) {
+        return preg_replace('/%\{([^\}]*)\}/i','<?=$1?>',$phtml);
     }
     private function processAttrValue($val) {
         $val = preg_replace('/%\{([^\}]*)\}/i','".$1."','"'.$val.'"');

@@ -11,12 +11,10 @@ class HtmlElement implements HtmlNode {
 	private $parent;
 	private $attrs = array();
 	private $children = array();
-	private $container = false;
 
-	public function __construct($tag = null, $attrs=array(), $container=false) {
+	public function __construct($tag = null, $attrs=array()) {
 		$this->tag = $tag;
 		$this->attrs = $attrs;
-		$this->container = $container;
 	}
 
 	public function getAttrs() {
@@ -53,6 +51,7 @@ class HtmlElement implements HtmlNode {
 			case 'title':
 			case 'head':
 			case 'body':
+			case 'textarea':
 			case 'html':
 			case 'pre':
 			case 'code':
@@ -66,10 +65,6 @@ class HtmlElement implements HtmlNode {
 				return true;
 		}
 		return false;
-	}
-
-	public function setContainer($container) {
-		$this->container = $container;
 	}
 
 	public function getTag() {
