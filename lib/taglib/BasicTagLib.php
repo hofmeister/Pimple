@@ -62,7 +62,7 @@ class BasicTagLib extends TagLib {
 			'</div>';
     }
     protected function tagImg($attrs) {
-        $attrs->src = Dir::normalize(BASEURL).$attrs->src;
+        $attrs->src = Url::basePath().$attrs->src;
         return new HtmlElement('img',ArrayUtil::fromObject($attrs),false);
     }
     protected function tagBody($attrs,$body,$view) {

@@ -10,12 +10,15 @@ if (!is_dir(BASEDIR))
 //Various functions
 require_once 'lib/functions.php';
 require_once 'lib/Settings.php';
+require_once 'lib/IncludePath.php';
+
 
 //DB Handling
 require_once 'lib/Db.php';
 
 //Localization
 require_once 'lib/Locale.php';
+require_once 'lib/Validate.php';
 
 //Mail handling
 require_once 'lib/Mail.php';
@@ -53,6 +56,8 @@ require_once 'lib/taglib/BasicTagLib.php';
 require_once 'lib/taglib/FormTagLib.php';
 require_once 'lib/taglib/WidgetTagLib.php';
 require_once 'lib/Pimple.php';
+
+IncludePath::instance()->addPath(Pimple::instance()->getRessource('lib/'));
 
 define('CACHEDIR',Dir::normalize(BASEDIR).'cache');
 Dir::ensure(CACHEDIR);

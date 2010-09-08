@@ -16,15 +16,7 @@ class IncludePath {
     protected $paths = array();
 	public function __construct() {
 		$this->paths = $this->getPaths();
-		
-		foreach($this->paths as $key=>$path) {
-			if ($path == '')
-				unset($this->paths[$key]);
-			else
-				$this->paths[$key] = rtrim($path,'\\/');
-		}
 		array_unique($this->paths);
-		ksort($this->paths);
 	}
     
     public function getPaths() {
@@ -32,10 +24,10 @@ class IncludePath {
     }
 
    
-	private function addPath($path) {
+	public function addPath($path) {
 		$path = rtrim($path,'\\/');
 		if (!in_array($path,$this->paths))
-			array_push($array,$this->paths);
+			array_push($this->paths,$path);
 		$this->setIncludePath();
 	}
 	public function setIncludePath() {

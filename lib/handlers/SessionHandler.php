@@ -50,7 +50,7 @@ class SessionHandler {
 			$this->SID = md5($this->sessionSecret . microtime());
 		}
         $this->getSession()->loadFromSID($this->SID);
-		setcookie($this->sessionKey, $this->SID,$this->getExpires(),BASEURL);
+		setcookie($this->sessionKey, $this->SID,$this->getExpires(),COOKIEURL);
 	}
     public function save() {
         $this->getSession()->commit();

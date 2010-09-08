@@ -13,20 +13,22 @@ class Mail {
 	private static $init = false;
 	public static function init() {
 		if (!self::$init) {
-			require_once Pimple::instance()->getRessource('lib/Zend/Mail/Transport/Smtp.php');
-			require_once Pimple::instance()->getRessource('lib/Zend/Mail.php');
-			$config = array(
-				'auth'=>'login',
-				'username'=>Settings::get(self::SMTP_USER,''),
-				'password'=>Settings::get(self::SMTP_PASS,''),
-				'port'=>Settings::get(self::SMTP_PORT,25)
-			);
-			
-			if (Settings::get(self::SMTP_SSL,false))
-				$config['ssl'] = Settings::get(self::SMTP_SSL);
-			
-			$transport = new Zend_Mail_Transport_Smtp(Settings::get(self::SMTP_HOST),$config);
-			Zend_Mail::setDefaultTransport($transport);
+            require_once Pimple::instance()->getRessource('lib/Zend/Mail.php');
+            if (Settings::get(self::SMTP_HOST,false)) {
+                require_once Pimple::instance()->getRessource('lib/Zend/Mail/Transport/Smtp.php');
+                $config = array(
+                    'auth'=>'login',
+                    'username'=>Settings::get(self::SMTP_USER,''),
+                    'password'=>Settings::get(self::SMTP_PASS,''),
+                    'port'=>Settings::get(self::SMTP_PORT,25)
+                );
+
+                if (Settings::get(self::SMTP_SSL,false))
+                    $config['ssl'] = Settings::get(self::SMTP_SSL);
+
+                $transport = new Zend_Mail_Transport_Smtp(Settings::get(self::SMTP_HOST),$config);
+                Zend_Mail::setDefaultTransport($transport);
+            }
 			self::$init = true;
 		}
 	}

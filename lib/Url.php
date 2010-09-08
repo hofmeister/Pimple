@@ -319,6 +319,14 @@ class Url {
             $p = 'http';
         return "$p://$host".$url;
     }
+    public static function basePath() {
+        $host = $_SERVER['HTTP_HOST'];
+        if ($_SERVER['HTTPS'])
+            $p = 'https';
+        else
+            $p = 'http';
+        return "$p://$host".Dir::normalize(BASEURL);
+    }
     public static function redirect($controller,$action,$parms = null) {
         $url = self::makeLink($controller, $action, $parms);
         self::gotoUrl($url);

@@ -1,6 +1,5 @@
 <?php
 require_once 'Interrupt.php';
-require_once 'Validate.php';
 
 class Controller {
     protected $name;
