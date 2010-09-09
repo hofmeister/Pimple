@@ -114,8 +114,11 @@ class BasicTagLib extends TagLib {
         return sprintf('<style type="text/css">%s</style>',$css);
 
 	}
-	protected function tagJavascript($attrs) {
-		return sprintf('<script src="%s"></script>',Dir::normalize(BASEURL).$attrs->path);
+	protected function tagJavascript($attrs,$body) {
+        if ($body)
+            return sprintf('<script type="text/javascript">%s</script>',$body);
+        else
+            return sprintf('<script type="text/javascript" src="%s"></script>',Dir::normalize(BASEURL).$attrs->path);
 	}
     protected function tagSitename($attrs) {
         return Pimple::instance()->getSiteName();

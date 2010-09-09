@@ -176,7 +176,11 @@ class FormTagLib extends TagLib {
         else if ($attrs->name && Validate::isFieldValid($attrs->name))
             $classes[] = 'valid';
 
-        $output = '<div class="line form-item '.implode(' ',$classes).'">';
+        $output = '<div class="line form-item '.implode(' ',$classes).'"';
+        if ($attrs->cStyle) {
+            $output .= sprintf(' style="%s" ',$attrs->cStyle);
+        }
+        $output .= '>';
         $label = trim($label);
         if (!$label)
             $label = '&nbsp;';

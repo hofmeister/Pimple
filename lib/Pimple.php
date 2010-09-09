@@ -59,9 +59,11 @@ class Pimple {
             $this->action = 'index';
         try {
             if (!String::isAlphaNum($this->controller)) {
+                header("HTTP/1.0 404 Not Found");
                 throw new Exception(T('Invalid controller: %s',$this->controller));
             }
             if (!String::isAlphaNum($this->action)) {
+                header("HTTP/1.1 404 Not Found");
                 throw new Exception(T('Invalid action: %s',$this->action));
             }
 
@@ -71,18 +73,22 @@ class Pimple {
             $viewFile = Dir::normalize(BASEDIR).'view/'.$this->controller.'/'.$this->action.'.php';
             if (!class_exists($ctrlClass)) {
                 $ctrlFile = Dir::normalize(BASEDIR).'controller/'.$ctrlClass.'.php';
-                if (!File::exists($ctrlFile))
+                if (!File::exists($ctrlFile)) {
+                    header("HTTP/1.1 404 Not Found");
                     throw new Exception(T('Controller not found: %s',$ctrlFile));
+                }
                 require_once $ctrlFile;
             }
 
             if (!class_exists($ctrlClass)) {
+                header("HTTP/1.1 404 Not Found");
                 throw new Exception(T('Controller not found: %s',$ctrlClass));
             }
 
             $ctrl = new $ctrlClass();
             $this->controllerInstance = $ctrl;
             if (!method_exists($ctrl,$this->action)) {
+                header("HTTP/1.1 404 Not Found");
                 throw new Exception(T('Action not found: %s::%s',$ctrlClass,$this->action));
             }
             $action = $this->action;
@@ -101,20 +107,35 @@ class Pimple {
             }
             if (!$data)
                 $data = $ctrl->getData();
+
             if ($view) {
-                
                 $this->body = $view->render($data);
             } else {
-                throw new Exception(T('View not found: %s',$viewFile));
+                if (!Request::isAjax()) {
+                    header("HTTP/1.1 500 View not Found");
+                    throw new Exception(T('View not found: %s',$viewFile));
+                }
             }
+
         } catch(Exception $e ) {
-            $this->body = nl2br(htmlentities($e->__toString()));
+            header("HTTP/1.1 500 Internal error");
+            if (Request::isAjax()) {
+                $this->body = json_encode(array('msg'=>$e->getMessage(),'trace'=>$e->getTraceAsString()));
+            } else {
+                $this->body = nl2br(htmlentities($e->__toString()));
+            }
         }
         $this->view = new View($appViewFile);
 
     }
     public function render() {
-        echo $this->view->render(array('body'=>$this->body));
+        if (Request::isAjax()) {
+            echo $this->body;
+        } else {
+            echo $this->view->render(array('body'=>$this->body));
+        }
+
+        
     }
     public static function getPath() {
         $uri = $_SERVER['REQUEST_URI'];

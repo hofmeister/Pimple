@@ -36,6 +36,9 @@ class Request {
 		}
 		return self::$get;
 	}
+    public static function isAjax() {
+        return array_key_exists('__ajax',$_REQUEST) || (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest');
+    }
 }
 class Request_Parms {
     public function __construct($array) {

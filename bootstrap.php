@@ -55,6 +55,7 @@ require_once 'lib/taglib/CoreTagLib.php';
 require_once 'lib/taglib/BasicTagLib.php';
 require_once 'lib/taglib/FormTagLib.php';
 require_once 'lib/taglib/WidgetTagLib.php';
+require_once 'lib/taglib/JavascriptTagLib.php';
 require_once 'lib/Pimple.php';
 
 IncludePath::instance()->addPath(Pimple::instance()->getRessource('lib/'));
@@ -66,4 +67,5 @@ Pimple::instance()->registerTagLib('c',new CoreTagLib());
 Pimple::instance()->registerTagLib('p',new BasicTagLib());
 Pimple::instance()->registerTagLib('f',new FormTagLib());
 Pimple::instance()->registerTagLib('w',new WidgetTagLib());
+Pimple::instance()->registerTagLib('js',new JavascriptTagLib());
 
