@@ -41,10 +41,18 @@ class Request {
     }
 }
 class Request_Parms {
+    private $_data = array();
+
     public function __construct($array) {
         foreach($array as $key=>$value) {
-            $this->$key = $value;
+            $this->_data[$key] = stripslashes($value);
         }
+    }
+    public function  __get($name) {
+        return $this->_data[$name];
+    }
+    public function  __set($name, $value) {
+        $this->_data[$name] = $value;
     }
     public function get() {
         $args = func_get_args();

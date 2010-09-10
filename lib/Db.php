@@ -57,7 +57,7 @@ class DB {
 	public static function fetchVal($sql) {
 		$args = func_get_args();
 		array_shift($args);
-		$r = self::_query($sql, $args);
+        $r = self::_query(self::ensureOneRow($sql), $args);
 		$row = mysql_fetch_row($r);
 		return $row[0];
 	}
@@ -65,10 +65,22 @@ class DB {
 	public static function fetchOne($sql) {
 		$args = func_get_args();
 		array_shift($args);
-		$r = self::_query($sql, $args);
+        $r = self::_query(self::ensureOneRow($sql), $args);
 		$row = mysql_fetch_object($r);
 		return $row;
 	}
+    public static function exists($sql) {
+		$args = func_get_args();
+		array_shift($args);
+		$r = self::_query(self::ensureOneRow($sql), $args);
+		return mysql_num_rows($r) > 0;
+	}
+    private function ensureOneRow($sql) {
+        if (!preg_match('/[^A-Z]LIMIT[^A-Z]/i', $sql)) {
+            $sql .= ' LIMIT 1';
+        }
+        return $sql;
+    }
 
 	/**
 	 * Fetch a single-dimension array of single values
