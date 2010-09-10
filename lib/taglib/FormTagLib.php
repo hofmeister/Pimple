@@ -138,8 +138,8 @@ class FormTagLib extends TagLib {
         $label = $attrs->label;
         $help = $attrs->help;
         $validators = Pimple::instance()->getControllerInstance()->getFieldValidation($attrs->name);
-
-        if (count($validators) > 0) {
+        $hasValidators = ($attrs->readonly != 'true' && !$attrs->disabled && count($validators) > 0);
+        if ($hasValidators) {
             if (String::EndsWith($attrs->name,'[]')) {
                 $i = Util::count($attrs->name);
                 $fieldName = str_replace('[]',"[$i]",$attrs->name);
@@ -167,7 +167,7 @@ class FormTagLib extends TagLib {
                     $label .= sprintf('<span class="required" title="%s">*</span>',$info);
             }
         }
-        $hasInstructions = ($attrs->help || count($validators) > 0 || count($errors) > 0);
+        $hasInstructions = ($attrs->help || $hasValidators || count($errors) > 0);
         if (!$hasInstructions && !$attrs->instructions) {
             $classes[] = 'no-instructions';
         }
