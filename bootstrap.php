@@ -9,6 +9,7 @@ if (!is_dir(BASEDIR))
 
 //Various functions
 require_once 'lib/functions.php';
+require_once 'lib/interfaces/wrappers.php';
 require_once 'lib/Settings.php';
 require_once 'lib/IncludePath.php';
 
@@ -58,7 +59,7 @@ require_once 'lib/taglib/WidgetTagLib.php';
 require_once 'lib/taglib/JavascriptTagLib.php';
 require_once 'lib/Pimple.php';
 
-IncludePath::instance()->addPath(Pimple::instance()->getRessource('lib/'));
+IncludePath::instance()->addPath(Pimple::instance()->getRessource('lib/'),1);
 
 define('CACHEDIR',Dir::normalize(BASEDIR).'cache');
 Dir::ensure(CACHEDIR);

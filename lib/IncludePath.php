@@ -24,10 +24,16 @@ class IncludePath {
     }
 
    
-	public function addPath($path) {
+	public function addPath($path,$index = null) {
 		$path = rtrim($path,'\\/');
-		if (!in_array($path,$this->paths))
-			array_push($this->paths,$path);
+		if (!in_array($path,$this->paths)) {
+            if ($index === null) {
+                array_push($this->paths,$path);
+            } else {
+                ArrayUtil::insert($this->paths,$path,$index);
+            }
+        }
+			
 		$this->setIncludePath();
 	}
 	public function setIncludePath() {

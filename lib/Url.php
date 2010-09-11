@@ -301,17 +301,25 @@ class Url {
         $parts = explode('/',$temp['path']);
         return Router::getAbsoluteRoot($parts[0], $parts[1]).$Url;
     }
-    public static function makeLink($controller,$action,$parms = null) {
-        $url = Dir::concat(BASEURL,String::UrlEncode($controller));
-        if ($action)
-            $url .= String::UrlEncode($action).'/';
-		if ($parms) {
+    public static function makeLink($controller = null,$action = null,$parms = null) {
+        $url = Dir::normalize(BASEURL);
+        if (!$controller && $action)
+            $controller = Pimple::instance()->getController();
+
+        if ($controller) {
+            $url .= String::UrlEncode($controller) .'/';
+            if ($action) {
+                $url .= String::UrlEncode($action).'/';
+            }
+        }
+        if ($parms) {
 			if (is_object($parms))
 				$parms = get_object_vars($parms);
 			if (count($parms) > 0) {
 				$url .= '?'.self::Array2GetParms($parms);
 			}
 		}
+		
         $host = $_SERVER['HTTP_HOST'];
         if ($_SERVER['HTTPS'])
             $p = 'https';
@@ -327,11 +335,21 @@ class Url {
             $p = 'http';
         return "$p://$host".Dir::normalize(BASEURL);
     }
-    public static function redirect($controller,$action,$parms = null) {
+    public static function current() {
+        $host = $_SERVER['HTTP_HOST'];
+        if ($_SERVER['HTTPS'])
+            $p = 'https';
+        else
+            $p = 'http';
+        return "$p://$host".$_SERVER['REQUEST_URI'];
+    }
+    public static function redirect($controller = null,$action = null,$parms = null) {
         $url = self::makeLink($controller, $action, $parms);
+
         self::gotoUrl($url);
     }
     public static function gotoUrl($url) {
+        if ($url == self::current()) return;//dont redirect to itself
         Pimple::instance()->save();
         header(sprintf('Location: %s',$url));
     }

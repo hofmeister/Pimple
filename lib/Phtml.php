@@ -57,11 +57,12 @@ class Phtml {
                         $this->onTagEnd();
                     }
                     break;
+                case ':':
+                    if ($this->isWithin(self::ATTR)) {break;}
                 case ' ':
                 case "\t":
                 case "\n":
                 case "\r":
-                case ':':
                 case '/':
                 case '=':
                     if ($this->isWithin(self::DOCTYPE)) break;
@@ -122,7 +123,7 @@ class Phtml {
     protected function getCurrent($alphanum = false) {
         $result = $this->current;
         if ($alphanum)
-            $result = preg_replace ('/[^A-Z0-9_]/i','', $result);
+            $result = preg_replace ('/[^A-Z0-9_\-]/i','', $result);
         $this->current = '';
         return $result;
     }
@@ -158,7 +159,7 @@ class Phtml {
                 break;
             case self::ATTR:
                 if (!$this->attrName) {
-                    $current = $this->getCurrent(true);
+                    $current = preg_replace ('/[^A-Z0-9_\-:]/i','',$this->getCurrent());
                     if (!$current) return;
                     $this->attrName = $current;
                     $this->debug("ATTR FOUND: $this->attrName");

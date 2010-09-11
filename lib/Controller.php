@@ -17,7 +17,10 @@ class Controller {
     }
 
     protected function redirect($controller = null,$action = null,$parms = array()) {
-		Url::redirect($controller, $action, $parms);
+        $url = Url::makeLink($controller, $action, $parms);
+		Url::gotoUrl($url);
+        echo T("Redirecting to %s",$url);
+        throw new Interrupt(); //Not yet submitted...
 	}
     protected function setFields($fields) {
         $this->validation = $fields;
@@ -71,7 +74,29 @@ class Controller {
     public function getFieldValidation($field) {
         $validators = $this->validation[$field];
         if ($validators)
-            return explode(',',$validators);
+            return explode(',',preg_replace('/[\)\}]/',']',preg_replace('/[\(\{]/','[',$validators)));
         return null;
+    }
+    public function get($id) {
+        $id = get_class($this).'_'.$id;
+        return SessionHandler::get($id);
+    }
+    public function set($id,$value) {
+        $id = get_class($this).'_'.$id;
+        SessionHandler::set($id,$value);
+    }
+    public function clear($id) {
+        $id = get_class($this).'_'.$id;
+        SessionHandler::set($id,null);
+    }
+    protected function asJson($value) {
+        header('Content-type: application/json');
+        echo json_encode($value);
+        Pimple::instance()->end();
+    }
+    protected function asText($value) {
+        header('Content-type: text/plain');
+        echo $value;
+        Pimple::instance()->end();
     }
 }

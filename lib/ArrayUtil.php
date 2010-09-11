@@ -23,6 +23,17 @@ class ArrayUtil {
 		}
 		return $this;
 	}
+    public static function insert(&$array,$value,$index) {
+        $slice1 = array_values(array_slice($array,0,$index));
+        $slice2 = array_values(array_slice($array,$index));
+        if (!is_array($value)) {
+            $value = array($value);
+        } else {
+            $value = array_values($value);
+        }
+        $array = array_merge($slice1,$value,$slice2);
+        return $array;
+    }
 	public static function doRecursive(&$array,$method,$byReference = false) {
 		if (!is_array($array)) return;
 		foreach ($array as &$value) {

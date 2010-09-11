@@ -89,7 +89,98 @@ class WidgetTagLib extends TagLib {
         return sprintf('<div class="panel %s"><h2>%s</h2>%s</div>',$attrs->class,$attrs->title,$body);
     }
     protected function tagWizard($attrs,$body) {
-        return sprintf('<div class="panel wizard %s"><h2>%s<strong>'.T('Step %s of %s',$attrs->step,$attrs->total).'</strong></h2>%s</div>',$attrs->class,$attrs->title,$body);
+        $current = Pimple::instance()->getAction();
+        $w = Wizard::get($attrs->id);
+        $cs = $w->getStep($current);
+        $title = '<ul class="horizontal divided">';
+        $before = true;
+        foreach($w->getSteps() as $s) {
+            if ($s->getId() == $current) {
+                $title .= sprintf('<li class="active">%s</li>',$s->getTitle());
+                $before = false;
+            } else {
+                $add = '';
+                if ($before) {
+                    $add = ' class="done"';
+                }
+                if ($cs->canJumpTo($s->getId()))
+                    $title .= sprintf('<li%s><a href="%s">%s</a></li>',$add,Url::makeLink(Pimple::instance()->getController(),$s->getId()),$s->getTitle());
+                else
+                    $title .= sprintf('<li%s>%s</li>',$add,$s->getTitle());
+            }
+            
+        }
+        $title .= '</ul>';
+        
+        return sprintf('<div class="panel wizard %s"><h2>%s<strong>'.T('Step %s of %s',$cs->getStep(),$w->getNumSteps()).'</strong></h2>%s</div>',$attrs->class,$title,$body);
     }
 
+}
+class Wizard {
+    private static $_registry = array();
+    /**
+     *
+     * @param string $id
+     * @return Wizard
+     */
+    public static function get($id) {
+        if (!self::$_registry[$id]) {
+            self::$_registry[$id] = new self($id);
+        }
+        return self::$_registry[$id];
+    }
+    private $id;
+    private $steps = array();
+    function __construct($id) {
+        $this->id = $id;
+    }
+    /**
+     *
+     * @param WizardStep $step
+     * @return Wizard
+     */
+    public function addStep($step) {
+        $this->steps[$step->getId()] = $step;
+        $step->setStep(count($this->steps));
+        return $this;
+    }
+    public function getNumSteps() {
+        return count($this->steps);
+    }
+    public function getStep($id) {
+        return $this->steps[$id];
+    }
+    public function getSteps() {
+        return $this->steps;
+    }
+}
+class WizardStep {
+    private $id;
+    private $title;
+    private $step = 0;
+    private $jumpTo = array();
+    function __construct($id, $title,$jumpTo = array()) {
+        $this->id = $id;
+        $this->title = $title;
+        $this->jumpTo = $jumpTo;
+    }
+    public function getId() {
+        return $this->id;
+    }
+
+    public function getTitle() {
+        return $this->title;
+    }
+    public function setStep($step) {
+        $this->step = $step;
+    }
+    public function getStep() {
+        return $this->step;
+    }
+    public function canJumpTo($step) {
+        return in_array($step,$this->jumpTo);
+    }
+    public function setJumpTo() {
+        $this->jumpTo = func_get_args();
+    }
 }

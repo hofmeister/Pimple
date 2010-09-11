@@ -91,6 +91,7 @@ class FormTagLib extends TagLib {
             }
             $attrs->value = Request::post($attrs->name,$attrs->value);
         }
+        
 
         $behaviours = explode(' ',$attrs->behaviour);
         foreach($behaviours as $i=>$behaviour) {
@@ -101,6 +102,8 @@ class FormTagLib extends TagLib {
         $inputElm = '';
         $checker = $attrs->checker;
         $container = $attrs->container;
+        unset($attrs->container);
+        
         if ($checker) {
             $inputElm .= '<div class="form-checker pw-checker"><input type="checkbox" class="form-checkbox" checked="true" />';
         }
@@ -108,6 +111,7 @@ class FormTagLib extends TagLib {
 
         $inputElm .= $attrs->before;
         $attrs->id = $this->tagId($attrs);
+        if (!$attrs->id) unset($attrs->id);
         $attrs->type = $type;
         $attrs->value = htmlentities($attrs->value,ENT_QUOTES,'UTF-8');
         $attrs->class = trim("form-".$attrs->type.' '.trim($attrs->class.' '.$behaviour));
@@ -119,6 +123,12 @@ class FormTagLib extends TagLib {
         unset($elmAttr->behaviour);
         unset($elmAttr->help);
         unset($elmAttr->label);
+
+        $elmAttr = ArrayUtil::fromObject($elmAttr);
+        if ($attrs->options) {
+            $elmAttr['p:options'] = (is_string($attrs->options)) ? $attrs->options : json_encode($attrs->options);
+            unset($elmAttr['options']);
+        }
 
         $inputElm .= new HtmlElement('input',$elmAttr,false);
 

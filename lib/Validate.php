@@ -13,7 +13,18 @@ class Validate {
     private static $validators = array();
     private static $errors = array();
     public static function getValidator($identifier) {
-        list($id,$args) = explode('[',rtrim($identifier,']'));
+        $args = '';
+        if (stristr($identifier,'['))
+            list($id,$args) = explode('[',rtrim($identifier,']'));
+        else if (stristr($identifier,'('))
+            list($id,$args) = explode('(',rtrim($identifier,')'));
+        else if (stristr($identifier,'{'))
+            list($id,$args) = explode('{',rtrim($identifier,'}'));
+        else {
+            $id = $identifier;
+        }
+
+
         if (self::$validators[$id]) {
             self::$validators[$id]->setArgs(explode(',',$args));
             return self::$validators[$id];

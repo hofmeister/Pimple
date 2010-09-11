@@ -40,7 +40,7 @@ class Request {
         return array_key_exists('__ajax',$_REQUEST) || (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest');
     }
 }
-class Request_Parms {
+class Request_Parms implements POPOWrapper {
     private $_data = array();
 
     public function __construct($array) {
@@ -66,8 +66,12 @@ class Request_Parms {
         return $result;
     }
 	public function clear() {
-		foreach($this as $key=>$value) {
-			unset($this->$key);
-		}
+		$this->_data = array();
 	}
+    public function toPOPO() {
+        return ArrayUtil::toObject($this->_data);
+    }
+    public function toArray() {
+        return $this->_data;
+    }
 }

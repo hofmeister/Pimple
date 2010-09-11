@@ -76,17 +76,19 @@ class BasicTagLib extends TagLib {
 	}
 
 	protected function tagLink($attrs,$body,$view) {
+        $link = $this->url($attrs,$body,$view);
+        if (!$body)
+            $body = $link;
+		return sprintf('<a href="%s">%s</a>',$link,$body);
+	}
+    protected function tagUrl($attrs,$body,$view) {
         $controller = $attrs->controller;
         $action = $attrs->action;
         $id = $attrs->id;
         unset($attrs->controller);
         unset($attrs->action);
-        unset($attrs->id);
-        $link = Url::makeLink($controller,$action,$attrs);
-        if (!$body)
-            $body = $link;
-		return sprintf('<a href="%s">%s</a>',$link,$body);
-	}
+        return Url::makeLink($controller,$action,$attrs);
+    }
     protected function tagMessages($attrs) {
         $msgs = MessageHandler::instance()->getMessages();
         MessageHandler::instance()->clear();
