@@ -12,3 +12,10 @@ function T($format) {
     array_shift($args);
     return vsprintf(gettext($format),$args);
 }
+if (!function_exists('gettext')) {
+    //Dummmy method
+    //@TODO: Remove this...
+    function gettext($string) {
+        return $string;
+    }
+}

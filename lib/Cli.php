@@ -1,10 +1,5 @@
 <?php
-/**
- * @author New Dawn Technologies
- * @version 1.0
- * @license BSD
- * @package Basic
- */
+require_once 'Browser.php';
 class Cli {
 	protected static $instance;
 	protected $parmCharPrefix 	= '-';

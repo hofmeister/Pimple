@@ -30,6 +30,7 @@ require_once 'lib/File.php';
 require_once 'lib/Dir.php';
 
 //Utils
+require_once 'lib/Cli.php';
 require_once 'lib/Util.php';
 require_once 'lib/String.php';
 require_once 'lib/ArrayUtil.php';
@@ -50,14 +51,19 @@ require_once 'lib/handlers/MessageHandler.php';
 require_once 'lib/handlers/SessionHandler.php';
 require_once 'lib/handlers/AccessHandler.php';
 
+
+
 //Main class
+require_once 'lib/Pimple.php';
+
 require_once 'lib/TagLib.php';
 require_once 'lib/taglib/CoreTagLib.php';
 require_once 'lib/taglib/BasicTagLib.php';
 require_once 'lib/taglib/FormTagLib.php';
 require_once 'lib/taglib/WidgetTagLib.php';
 require_once 'lib/taglib/JavascriptTagLib.php';
-require_once 'lib/Pimple.php';
+require_once 'lib/taglib/UserTagLib.php';
+
 
 IncludePath::instance()->addPath(Pimple::instance()->getRessource('lib/'),1);
 
