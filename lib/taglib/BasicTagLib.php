@@ -76,10 +76,18 @@ class BasicTagLib extends TagLib {
 	}
 
 	protected function tagLink($attrs,$body,$view) {
-        $link = $this->url($attrs,$body,$view);
+        $lAttrs = clone $attrs;
+        unset($lAttrs->class);
+        $link = $this->url($lAttrs,$body,$view);
         if (!$body)
             $body = $link;
-		return sprintf('<a href="%s">%s</a>',$link,$body);
+        unset($attrs->controller);
+        unset($attrs->action);
+        unset($attrs->parms);
+        $attrs->href = $link;
+        $a = new HtmlElement('a', $attrs);
+        $a->addChild(new HtmlText($body));
+		return $a;
 	}
     protected function tagUrl($attrs,$body,$view) {
         $controller = $attrs->controller;
