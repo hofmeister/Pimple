@@ -7,14 +7,19 @@ class FormTagLib extends TagLib {
     }
 	protected function tagSubmit($attrs,$body,$view) {
         $attrs->container = 'false';
+        $attrs->class .= ' button';
 		return $this->inputElement('submit',$attrs,$body,$view);
     }
 	protected function tagButton($attrs,$body,$view) {
         $attrs->container = 'false';
+        $attrs->class .= ' button';
 		return $this->inputElement('button',$attrs,$body,$view);
     }
 	protected function tagPassword($attrs,$body,$view) {
 		return $this->inputElement('password',$attrs,$body,$view);
+    }
+	protected function tagFile($attrs,$body,$view) {
+		return $this->inputElement('file',$attrs,$body,$view);
     }
 	protected function tagCheckbox($attrs,$body,$view) {
 		return $this->inputElement('checkbox',$attrs,$body,$view);
@@ -48,10 +53,26 @@ class FormTagLib extends TagLib {
 		return $this->formElementContainer($selectElm,$attrs);
 	}
 	protected function tagForm($attrs,$body,$view) {
+        if ($attrs->binary) {
+            $attrs->enctype = 'multipart/form-data';
+        } else {
+            $attrs->enctype = 'application/x-www-form-urlencoded ';
+        }
+        if (!$attrs->controller) {
+            $attrs->controller = Pimple::instance()->getController();
+        }
+        if (!$attrs->action) {
+            $attrs->action = Pimple::instance()->getAction();
+        }
+        if ($attrs->action && $attrs->controller) {
+            $attrs->url = Url::makeLink($attrs->controller,$attrs->action,$attrs->parms);
+        }
+        unset($attrs->binary);
         $this->formData = $view->data;
-        return sprintf('<form method="%s" action="%s" >',
+        return sprintf('<form method="%s" action="%s" enctype="%s">',
 						$attrs->method ? $attrs->method : 'post',
-						$attrs->action).
+						$attrs->url,
+                        $attrs->enctype).
 				$body.
 				'</form>';
 	}
@@ -177,6 +198,10 @@ class FormTagLib extends TagLib {
                     $label .= sprintf('<span class="required" title="%s">*</span>',$info);
             }
         }
+        if ($attrs->cClass) {
+            $classes[] = $attrs->cClass;
+            unset($attrs->cClass);
+        }
         $hasInstructions = ($attrs->help || $hasValidators || count($errors) > 0);
         if (!$hasInstructions && !$attrs->instructions) {
             $classes[] = 'no-instructions';
@@ -194,10 +219,13 @@ class FormTagLib extends TagLib {
         $label = trim($label);
         if (!$label)
             $label = '&nbsp;';
-        if ($attrs->id)
-            $output .= sprintf('<label for="%s">%s</label>',$attrs->id,$label);
-        else
-            $output .= sprintf('<label>%s</label>',$attrs->id,$label);
+        if (!$attrs->nolabel) {
+            if ($attrs->id)
+                $output .= sprintf('<label for="%s">%s</label>',$attrs->id,$label);
+            else
+                $output .= sprintf('<label>%s</label>',$attrs->id,$label);
+        }
+        unset($attrs->nolabel);
 
         $output .= '<div class="element">'.$formElement.'</div>';
         if ($hasInstructions) {

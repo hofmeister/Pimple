@@ -2,6 +2,7 @@
 require_once 'Interrupt.php';
 
 class Controller {
+    protected $skipView = false;
     protected $name;
     protected $validation = array();
     protected $data;
@@ -15,8 +16,17 @@ class Controller {
     public function setData($data) {
         $this->data = $data;
     }
+    public function getSkipView() {
+        return $this->skipView;
+    }
+
+    public function setSkipView($skipView) {
+        $this->skipView = $skipView;
+    }
+
 
     protected function redirect($controller = null,$action = null,$parms = array()) {
+        $this->setSkipView(true);
         $url = Url::makeLink($controller, $action, $parms);
 		Url::gotoUrl($url);
         echo T("Redirecting to %s",$url);
@@ -90,11 +100,13 @@ class Controller {
         SessionHandler::set($id,null);
     }
     protected function asJson($value) {
+        $this->setSkipView(true);
         header('Content-type: application/json');
         echo json_encode($value);
         Pimple::instance()->end();
     }
     protected function asText($value) {
+        $this->setSkipView(true);
         header('Content-type: text/plain');
         echo $value;
         Pimple::instance()->end();

@@ -36,7 +36,6 @@ class Pimple {
         $this->getPath();
         list($this->controller,$this->action) = explode('/',trim($this->getPath(),'/'));
         $this->parms = $_GET;
-        $this->execute();
     }
     public function hasParm($name) {
         return array_key_exists($name,$this->parms);
@@ -108,12 +107,14 @@ class Pimple {
             if (!$data)
                 $data = $ctrl->getData();
 
-            if ($view) {
-                $this->body = $view->render($data);
-            } else {
-                if (!Request::isAjax()) {
-                    header("HTTP/1.1 500 View not Found");
-                    throw new Exception(T('View not found: %s',$viewFile));
+            if (!$ctrl->getSkipView()) {
+                if ($view) {
+                    $this->body = $view->render($data);
+                } else {
+                    if (!Request::isAjax()) {
+                        header("HTTP/1.1 500 View not Found");
+                        throw new Exception(T('View not found: %s',$viewFile));
+                    }
                 }
             }
 

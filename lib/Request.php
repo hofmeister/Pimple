@@ -2,6 +2,7 @@
 class Request {
 	private static $post;
 	private static $get;
+	private static $file;
     /**
      * Get POST parms
      *
@@ -18,6 +19,23 @@ class Request {
 			self::$post = new Request_Parms($_POST);
 		}
 		return self::$post;
+	}
+
+    /**
+     * Get F parms
+     *
+     * @param string $key
+     * @param mixed $default
+     * @return Request_Parms
+     */
+	public static function file($key = null,$default = null) {
+        if ($key) {
+            return self::file()->$key ? self::file()->$key : $default;
+        }
+		if (!self::$file) {
+            self::$file = new Request_Multipart($_FILES);
+		}
+		return self::$file;
 	}
 
     /**
@@ -40,12 +58,13 @@ class Request {
         return array_key_exists('__ajax',$_REQUEST) || (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest');
     }
 }
+
 class Request_Parms implements POPOWrapper {
     private $_data = array();
 
     public function __construct($array) {
         foreach($array as $key=>$value) {
-            $this->_data[$key] = stripslashes($value);
+            $this->__set($key,is_string($value) ? stripslashes($value) : $value);
         }
     }
     public function  __get($name) {
@@ -73,5 +92,57 @@ class Request_Parms implements POPOWrapper {
     }
     public function toArray() {
         return $this->_data;
+    }
+}
+
+class Request_Multipart extends Request_Parms {
+    
+    public function __set($name,$value) {
+        $msg = '';
+        switch($value['error']) {
+            case UPLOAD_ERR_CANT_WRITE:
+                $msg = T('We are experiencing internal errors (%s). Please try again',1);
+                break;
+            case UPLOAD_ERR_EXTENSION:
+                $msg = T('Extension is not allowed');
+                break;
+            case UPLOAD_ERR_FORM_SIZE:
+                $msg = T('File size was to big (%s)',1);
+                break;
+            case UPLOAD_ERR_INI_SIZE:
+                $msg = T('File size was to big (%s)',2);
+                break;
+            case UPLOAD_ERR_NO_FILE:
+                $msg = T('Please select a file to upload');
+                break;
+            case UPLOAD_ERR_NO_TMP_DIR:
+                $msg = T('We are experiencing internal errors (%s). Please try again',2);
+                break;
+            case UPLOAD_ERR_PARTIAL:
+                $msg = T('File upload failed - please try again');
+                break;
+            case UPLOAD_ERR_OK:
+            default:
+                //Do nothing
+                break;
+                
+        }
+        if ($msg) {
+            MessageHandler::instance()->flash($msg,true);
+        }
+
+        parent::__set($name, $value);
+    }
+    public function read($name) {
+        $data = $this->__get($name);
+        if ($data['tmp_name']) {
+            return file_get_contents($data['tmp_name']);
+        }
+    }
+    public function moveto($name,$dest) {
+        $data = $this->__get($name);
+        if ($data['tmp_name']) {
+            move_uploaded_file($data['tmp_name'],$dest);
+        }
     }
 }
