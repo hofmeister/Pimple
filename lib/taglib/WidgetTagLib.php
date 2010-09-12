@@ -86,7 +86,11 @@ class WidgetTagLib extends TagLib {
 		return '';
 	}
     protected function tagPanel($attrs,$body) {
-        return sprintf('<div class="panel %s"><h2>%s</h2>%s</div>',$attrs->class,$attrs->title,$body);
+        $add = '';
+        if ($attrs->id) {
+            $add .= sprintf(' id="%s"',$attrs->id);
+        }
+        return sprintf('<div class="panel %s"%s><h2>%s</h2>%s</div>',$attrs->class,$add,$attrs->title,$body);
     }
     protected function tagWizard($attrs,$body) {
         $current = Pimple::instance()->getAction();
