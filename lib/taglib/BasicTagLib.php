@@ -76,7 +76,11 @@ class BasicTagLib extends TagLib {
 	}
 
 	protected function tagLink($attrs,$body,$view) {
-        $lAttrs = clone $attrs;
+        if ($attrs) {
+            $lAttrs = clone $attrs;
+        } else {
+            $lAttrs = new stdClass();
+        }
         unset($lAttrs->class);
         $link = $this->url($lAttrs,$body,$view);
         if (!$body)

@@ -19,10 +19,10 @@ class TagLib {
         if (!$view) {
             $view = View::current();
         }
+        $attrObj = new stdClass();
         if ($attrs) {
             if (is_array($attrs) || is_object($attrs)) {
                 //var_dump($args[0]);
-                $attrObj = new stdClass();
                 foreach($attrs as $key=>$value) {
                     $attrObj->$key = $value;
                 }
