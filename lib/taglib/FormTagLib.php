@@ -144,6 +144,10 @@ class FormTagLib extends TagLib {
         unset($elmAttr->behaviour);
         unset($elmAttr->help);
         unset($elmAttr->label);
+        unset($elmAttr->cClass);
+        unset($elmAttr->cclass);
+        unset($elmAttr->nolabel);
+        unset($elmAttr->noinstructions);
 
         $elmAttr = ArrayUtil::fromObject($elmAttr);
         if ($attrs->options) {
@@ -200,9 +204,11 @@ class FormTagLib extends TagLib {
         }
         if ($attrs->cClass) {
             $classes[] = $attrs->cClass;
-            unset($attrs->cClass);
+            
         }
-        $hasInstructions = ($attrs->help || $hasValidators || count($errors) > 0);
+        unset($attrs->cClass);
+        $hasInstructions = ($attrs->help || $hasValidators || count($errors) > 0) && !$attrs->noinstructions;
+        unset($attrs->noinstructions);
         if (!$hasInstructions && !$attrs->instructions) {
             $classes[] = 'no-instructions';
         }
