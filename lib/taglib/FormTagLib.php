@@ -27,8 +27,12 @@ class FormTagLib extends TagLib {
 	protected function tagRadio($attrs,$body,$view) {
 		return $this->inputElement('radio',$attrs,$body,$view);
     }
+    protected function tagHtmlArea($attrs,$body,$view) {
+        return $this->tagTextArea($attrs, $body, $view);
+    }
     protected function tagTextArea($attrs,$body,$view) {
-        $body = Request::post($attrs->name,$body);
+        if ($attrs->name)
+            $body = Request::post($attrs->name,$body);
         unset($attrs->checker);
         unset($attrs->behaviour);
         unset($attrs->help);

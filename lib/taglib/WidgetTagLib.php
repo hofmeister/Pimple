@@ -26,6 +26,8 @@ class WidgetTagLib extends TagLib {
 	const EVT_EDIT		= 'edit';
 	const EVT_CREATE	= 'create';
 
+    protected $tabPanels = array();
+
 	public function __construct() {
 		parent::__construct(false);
 	}
@@ -117,6 +119,29 @@ class WidgetTagLib extends TagLib {
         $title .= '</ul>';
         
         return sprintf('<div class="panel wizard %s"><h2>%s<strong>'.T('Step %s of %s',$cs->getStep(),$w->getNumSteps()).'</strong></h2>%s</div>',$attrs->class,$title,$body);
+    }
+    
+    protected function tagTabPanel($attrs,$body) {
+        $id = $this->uid();
+        $title = $attrs->title ? $attrs->title : t('Unnamed tab');
+        unset($attrs->title);
+        if (count($this->tabPanels) == 0) {
+            $attrs->class .= ' active';
+        }
+        $this->tabPanels[$id] = $title;
+        return sprintf('<div class="pw-tabpanel %s" id="%s">%s</div>',$attrs->class,$id,$body);
+    }
+    protected function tagTabPage($attrs,$body) {
+        $tabs = '<ul class="line horizontal pw-tabs">';
+        $first = true;
+        foreach($this->tabPanels as $id=>$title) {
+            $class = ($first) ? 'active' : '';
+            $first = false;
+            $tabs .= sprintf('<li><a class="%s" href="#%s">%s</a></li>',$class,$id,$title);
+        }
+        $tabs .= '</ul>';
+        $this->tabPanels = array();
+        return sprintf('<div class="pw-tabpage %s">%s%s</div>',$attrs->class,$tabs,$body);
     }
 
 }

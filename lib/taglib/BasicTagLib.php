@@ -1,15 +1,10 @@
 <?php
 
 class BasicTagLib extends TagLib {
-	private static $uidCount = 0;
+	
     private static $globalVars = array();
     private $lastIfOutcome = true;
-	protected function uid() {
-		$uid = 'pimple-core-uid-'.(self::$uidCount);
-		self::$uidCount++;
-		return $uid;
-	}
-	protected function tagUid($attrs,$body,$view) {
+    protected function tagUid($attrs,$body,$view) {
 		return $this->uid();
 	}
     protected function tagVar($attrs,$body,$view) {

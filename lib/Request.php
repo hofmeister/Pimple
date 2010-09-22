@@ -12,7 +12,7 @@ class Request {
      */
 	public static function post($key = null,$default = null) {
         if ($key) {
-            return self::post()->$key ? self::post()->$key : $default;
+            return isset(self::post()->$key) ? self::post()->$key : $default;
         }
         if (count($_POST) == 0) return false;
 		if (!self::$post) {
@@ -72,6 +72,9 @@ class Request_Parms implements POPOWrapper {
     }
     public function  __set($name, $value) {
         $this->_data[$name] = $value;
+    }
+    public function  __isset($name) {
+        return array_key_exists($name,$this->_data);
     }
     public function get() {
         $args = func_get_args();

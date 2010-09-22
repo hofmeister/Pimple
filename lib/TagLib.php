@@ -1,5 +1,6 @@
 <?php
 class TagLib {
+    private static $uidCount = 0;
     private $preprocess = false;
     function __construct($preprocess = false) {
         $this->preprocess = $preprocess;
@@ -7,6 +8,12 @@ class TagLib {
     public function isPreprocess() {
         return $this->preprocess;
     }
+
+	protected function uid() {
+		$uid = 'guid-'.(self::$uidCount);
+		self::$uidCount++;
+		return $uid;
+	}
 
 
     public function __call($name,$args) {
