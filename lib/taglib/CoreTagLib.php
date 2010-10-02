@@ -8,25 +8,28 @@ class CoreTagLib extends TagLib {
         self::$uid++;
         return self::$uid;
     }
-    protected function tagIf($attrs,$body,$view) {
-        return sprintf('<? if (%s) {?>%s<? } ?>',$attrs->test,$body);
+    protected function tagIf($attrs,$view) {
+        return sprintf('<? if (%s) {?>%s<? } ?>',$attrs->test,$this->body());
     }
-    protected function tagElse($attrs,$body,$view) {
-        return sprintf('<? else {?>%s<?} ?>',$body);
+    protected function tagElseIf($attrs,$view) {
+        return sprintf('<? } elseif (%s) {?>%s ',$attrs->test,$this->body());
     }
-    protected function tagEach($attrs,$body,$view) {
+    protected function tagElse($attrs,$view) {
+        return sprintf('<? } else {?>%s',$this->body());
+    }
+    protected function tagEach($attrs,$view) {
         if (!$attrs->as)
             $attrs->as = '$it';
-        return sprintf('<? foreach(%s as %s){?>%s<?} ?>',$attrs->in,$attrs->as,$body);
+        return sprintf('<? foreach(%s as %s){?>%s<?} ?>',$attrs->in,$attrs->as,$this->body());
     }
-    protected function tagWhile($attrs,$body,$view) {
-        return sprintf('<? while(%s){?>%s<?} ?>',$attrs->test,$body);
+    protected function tagWhile($attrs,$view) {
+        return sprintf('<? while(%s){?>%s<?} ?>',$attrs->test,$this->body());
     }
 
-    protected function tagSwitch($attrs,$body,$view) {
-        return sprintf('<? switch(%s){?>%s<?} ?>',$attrs->value,$body);
+    protected function tagSwitch($attrs,$view) {
+        return sprintf('<? switch(%s){?>%s<?} ?>',$attrs->value,$this->body());
     }
-    protected function tagCase($attrs,$body,$view) {
-        return sprintf('<? case "%s":?>%s<?break;?>',$attrs->value,$body);
+    protected function tagCase($attrs,$view) {
+        return sprintf('<? case "%s":?>%s<?break;?>',$attrs->value,$this->body());
     }
 }

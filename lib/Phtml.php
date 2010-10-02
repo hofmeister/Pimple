@@ -231,11 +231,19 @@ class Phtml {
     }
 }
 class PhtmlNode extends HtmlElement {
+    private static $closureCount = 0;
+    private static $append = '';
     private $ns;
     private $container = false;
+    
+    public static function getNextClosure() {
+        self::$closureCount++;
+        return "closure".self::$closureCount;
+    }
     public function getNs() {
         return $this->ns;
     }
+
     
     public function isContainer() {
         return $this->container;
@@ -289,8 +297,7 @@ class PhtmlNode extends HtmlElement {
 
         if ($this->getNs()) {
             $method = true;
-            
-            $str = '<?=$'.$this->getNs().'->'.$this->getTag().'(';
+            $str = '<?=$'.$this->getNs().'->callTag("'.$this->getTag().'",';
         } else {
             $str .= $this->getTag();
         }
@@ -315,6 +322,7 @@ class PhtmlNode extends HtmlElement {
             $str .= 'array(),';
         }
         if ($this->isContainer()) {
+
             if (!$method)
                 $str .= '>';
             else
@@ -329,10 +337,33 @@ class PhtmlNode extends HtmlElement {
                 $taglibs = Pimple::instance()->getTagLibs();
                 if ($taglibs[$this->getNs()] && $taglibs[$this->getNs()]->isPreprocess()) {
                     $tag = $this->getTag();
-                    $str = $taglibs[$this->ns]->$tag($this->getAttrs(),$body,null);
+                    $str = $taglibs[$this->ns]->callTag($tag,$this->getAttrs(),$body);
                 } else {
-                    $str .= 'ob_get_clean(),$this);?>';
-                    $str = sprintf("\n<?ob_start();//%s start\n?>",$this->getTag()).chr(10).$body.chr(10).$str;
+                    
+                        
+                    if (preg_match('/<\?/',$body) && preg_match('/\$[A-Z]+\-\>[A-Z]+\(/is',$body)) {
+                        //Body contains tags...
+                        $closureName = self::getNextClosure();
+                        $str .= sprintf('new %s($view),$view);?>',$closureName);
+                        self::$append .= chr(10).sprintf('<?
+                                        //%1$s closure start
+                                        class %2$s extends PhtmlClosure {
+                                        public function closure() {
+                                        $view = $this->view;
+                                        $data = $this->view->data;
+                                        if (is_array($this->view->data)) {
+                                            extract($this->view->data);
+                                        }
+                                        $libs = $this->view->taglibs;
+                                        extract($libs);
+                                        ?>%3$s<?
+                                        }}
+                                        //%1$s closure end
+                                        ?>'.chr(10),$this->getTag(),$closureName,$body);
+                    } else {
+                        $str .= sprintf('ob_get_clean(),$view);?>',$closureName);
+                        $str = '<? ob_start();?>'."\n$body\n".$str;
+                    }
                 }
                 
             } else
@@ -343,15 +374,21 @@ class PhtmlNode extends HtmlElement {
                     $tag = $this->getTag();
                     $str = $taglibs[$this->getNs()]->$tag($this->getAttrs(),null,null);
                 } else {
-                    $str .= 'null,$this);?>';
+                    $str .= 'null,$view);?>';
                 }
             } else {
                 $str .= '/>';
             }
         }
+        if ($this->getParent() == null || $this->getParent()->getTag() == 'phtml') {
+            $str .= self::$append;
+            self::$append = '';
+        }
+
         $str = $this->processEvals($str);
+
         if ($filename) {
-            file_put_contents($filename, $str);
+            file_put_contents($filename,$str);
         }
         return $str;
     }
@@ -370,5 +407,24 @@ class PhtmlNode extends HtmlElement {
 class PhtmlNodeText extends HtmlText {
     public function toPHP() {
         return $this->__toString();
+    }
+}
+class PhtmlClosure {
+    protected $view;
+    public function __construct($view) {
+        $this->view = $view;
+    }
+    public function closure() {
+        ?><?
+    }
+
+    public function __toString() {
+        try {
+            ob_start();
+            $this->closure();
+            return ob_get_clean();
+        } catch(Exception $e) {
+            return $e->__toString();
+        }
     }
 }

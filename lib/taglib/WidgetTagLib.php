@@ -32,7 +32,7 @@ class WidgetTagLib extends TagLib {
 		parent::__construct(false);
 	}
 
-	protected function tagList($attrs, $body, $view) {
+	protected function tagList($attrs, $view) {
 		if (!$attrs->elm)
 			$attrs->elm = 'div';
 		if (!$attrs->class)
@@ -43,11 +43,11 @@ class WidgetTagLib extends TagLib {
 
 		unset($elmAttr['elm']);
 		$elm = new HtmlElement($attrs->elm, $elmAttr);
-        $elm->addChild(new HtmlText($body));
+        $elm->addChild(new HtmlText($this->body()));
         return $elm;
 	}
 
-	protected function tagButton($attrs,$body, $view) {
+	protected function tagButton($attrs,$view) {
 		if (!$attrs->elm)
 			$attrs->elm = 'a';
 		if (!$attrs->class)
@@ -61,7 +61,7 @@ class WidgetTagLib extends TagLib {
 		unset($elmAttr['elm']);
         unset($elmAttr['event']);
 		$elm = new HtmlElement($attrs->elm, $elmAttr);
-        $elm->addChild(new HtmlText(trim($body)));
+        $elm->addChild(new HtmlText(trim($this->body())));
         return $elm;
 	}
 	private function evt2css($type) {
@@ -87,14 +87,14 @@ class WidgetTagLib extends TagLib {
 		}
 		return '';
 	}
-    protected function tagPanel($attrs,$body) {
+    protected function tagPanel($attrs) {
         $add = '';
         if ($attrs->id) {
             $add .= sprintf(' id="%s"',$attrs->id);
         }
-        return sprintf('<div class="panel %s"%s><h2>%s</h2>%s</div>',$attrs->class,$add,$attrs->title,$body);
+        return sprintf('<div class="panel %s"%s><h2>%s</h2>%s</div>',$attrs->class,$add,$attrs->title,$this->body());
     }
-    protected function tagWizard($attrs,$body) {
+    protected function tagWizard($attrs) {
         $current = Pimple::instance()->getAction();
         $w = Wizard::get($attrs->id);
         $cs = $w->getStep($current);
@@ -118,10 +118,11 @@ class WidgetTagLib extends TagLib {
         }
         $title .= '</ul>';
         
-        return sprintf('<div class="panel wizard %s"><h2>%s<strong>'.T('Step %s of %s',$cs->getStep(),$w->getNumSteps()).'</strong></h2>%s</div>',$attrs->class,$title,$body);
+        return sprintf('<div class="panel wizard %s"><h2>%s<strong>'.T('Step %s of %s',$cs->getStep(),$w->getNumSteps()).'</strong></h2>%s</div>',$attrs->class,$title,$this->body());
     }
     
-    protected function tagTabPanel($attrs,$body) {
+    protected function tagTabPanel($attrs) {
+        
         $id = $this->uid();
         $title = $attrs->title ? $attrs->title : t('Unnamed tab');
         unset($attrs->title);
@@ -129,9 +130,10 @@ class WidgetTagLib extends TagLib {
             $attrs->class .= ' active';
         }
         $this->tabPanels[$id] = $title;
-        return sprintf('<div class="pw-tabpanel %s" id="%s">%s</div>',$attrs->class,$id,$body);
+        return sprintf('<div class="pw-tabpanel %s" id="%s">%s</div>',$attrs->class,$id,$this->body());
     }
-    protected function tagTabPage($attrs,$body) {
+    protected function tagTabPage($attrs) {
+        $body= $this->body();
         $tabs = '<ul class="line horizontal pw-tabs">';
         $first = true;
         foreach($this->tabPanels as $id=>$title) {

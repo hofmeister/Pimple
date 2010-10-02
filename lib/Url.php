@@ -353,4 +353,8 @@ class Url {
         Pimple::instance()->save();
         header(sprintf('Location: %s',$url));
     }
+    public static function refresh() {
+        Pimple::instance()->save();
+        header(sprintf('Location: %s',self::current()));
+    }
 }

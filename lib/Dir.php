@@ -22,4 +22,34 @@ class Dir {
     public static function exist($dir) {
         return is_dir($dir);
     }
+    public static function emptyDir($dir) {
+        if (is_dir($dir)) {
+            $objects = scandir($dir);
+            foreach ($objects as $object) {
+                if ($object != "." && $object != "..") {
+                    if (filetype($dir."/".$object) == "dir")
+                        self::remove($dir."/".$object,true);
+                    else
+                        unlink($dir."/".$object);
+                }
+            }
+        }
+    }
+    public static function remove($dir,$recursive = false) {
+        if (is_dir($dir)) {
+            if ($recursive) {
+                $objects = scandir($dir);
+                foreach ($objects as $object) {
+                    if ($object != "." && $object != "..") {
+                        if (filetype($dir."/".$object) == "dir")
+                            self::remove($dir."/".$object,$recursive);
+                        else
+                            unlink($dir."/".$object);
+                    }
+                }
+                reset($objects);
+            }
+            rmdir($dir);
+        }
+    }
 }

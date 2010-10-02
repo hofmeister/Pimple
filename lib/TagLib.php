@@ -2,6 +2,7 @@
 class TagLib {
     private static $uidCount = 0;
     private $preprocess = false;
+    private $bodies = array();
     function __construct($preprocess = false) {
         $this->preprocess = $preprocess;
     }
@@ -17,12 +18,15 @@ class TagLib {
 
 
     public function __call($name,$args) {
+        return $this->callTag($name,$args[0],$args[1],$args[2]);
+    }
+    public function callTag($name,$attrs,$body = null,$view = null) {
         $method = 'tag'.ucfirst($name);
         if (!method_exists($this,$method)) {
             throw new Exception(T('Unknown tag: %s::%s',get_class($this),$name),E_ERROR);
         }
-        $attrs = $args[0];
-        $view = $args[2];
+        array_push($this->bodies,$body);
+        
         if (!$view) {
             $view = View::current();
         }
@@ -39,7 +43,19 @@ class TagLib {
             }
         }
 
-        return $this->$method($attrObj,$args[1],$view);
+        $result = $this->$method($attrObj,$view);
+        array_pop($this->bodies);
+        return $result;
+    }
+    protected function body($body = null) {
+        if ($body) {
+            $this->bodies[count($this->bodies)-1] = $body;
+        }
+        $body = $this->bodies[count($this->bodies)-1];
+        if (is_object($body)) {
+            return $body->__toString();
+        }
+        return $body;
     }
     private function evalAttr($value,$view) {
         

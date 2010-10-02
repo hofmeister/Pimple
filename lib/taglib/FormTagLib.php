@@ -2,46 +2,46 @@
 
 class FormTagLib extends TagLib {
     private $formData;
-    protected function tagText($attrs,$body,$view) {
-		return $this->inputElement('text',$attrs,$body,$view);
+    protected function tagText($attrs,$view) {
+		return $this->inputElement('text',$attrs,$view);
     }
-	protected function tagSubmit($attrs,$body,$view) {
+	protected function tagSubmit($attrs,$view) {
         $attrs->container = 'false';
         $attrs->class .= ' button';
-		return $this->inputElement('submit',$attrs,$body,$view);
+		return $this->inputElement('submit',$attrs,$view);
     }
-	protected function tagButton($attrs,$body,$view) {
+	protected function tagButton($attrs,$view) {
         $attrs->container = 'false';
         $attrs->class .= ' button';
-		return $this->inputElement('button',$attrs,$body,$view);
+		return $this->inputElement('button',$attrs,$view);
     }
-	protected function tagPassword($attrs,$body,$view) {
-		return $this->inputElement('password',$attrs,$body,$view);
+	protected function tagPassword($attrs,$view) {
+		return $this->inputElement('password',$attrs,$view);
     }
-	protected function tagFile($attrs,$body,$view) {
-		return $this->inputElement('file',$attrs,$body,$view);
+	protected function tagFile($attrs,$view) {
+		return $this->inputElement('file',$attrs,$view);
     }
-	protected function tagCheckbox($attrs,$body,$view) {
-		return $this->inputElement('checkbox',$attrs,$body,$view);
+	protected function tagCheckbox($attrs,$view) {
+		return $this->inputElement('checkbox',$attrs,$view);
     }
-	protected function tagRadio($attrs,$body,$view) {
-		return $this->inputElement('radio',$attrs,$body,$view);
+	protected function tagRadio($attrs,$view) {
+		return $this->inputElement('radio',$attrs,$view);
     }
-    protected function tagHtmlArea($attrs,$body,$view) {
-        return $this->tagTextArea($attrs, $body, $view);
+    protected function tagHtmlArea($attrs,$view) {
+        return $this->tagTextArea($attrs,  $view);
     }
-    protected function tagTextArea($attrs,$body,$view) {
+    protected function tagTextArea($attrs,$view) {
         if ($attrs->name)
-            $body = Request::post($attrs->name,$body);
+            $this->body(Request::post($attrs->name,$this->body()));
         unset($attrs->checker);
         unset($attrs->behaviour);
         unset($attrs->help);
         unset($attrs->label);
         $elm = new HtmlElement('textarea',$attrs,true);
-        $elm->addChild(new HtmlText(htmlentities($body,ENT_QUOTES,'UTF-8')));
+        $elm->addChild(new HtmlText(htmlentities(ENT_QUOTES,'UTF-8')));
 		return $this->formElementContainer($elm,$attrs);
 	}
-    protected function tagSelect($attrs,$body,$view) {
+    protected function tagSelect($attrs,$view) {
 
         $keyVal = json_decode(str_replace('\'','"',stripslashes($attrs->options)));
         $options = "";
@@ -56,7 +56,7 @@ class FormTagLib extends TagLib {
 					$attrs->name,$attrs->class,$options);
 		return $this->formElementContainer($selectElm,$attrs);
 	}
-	protected function tagForm($attrs,$body,$view) {
+	protected function tagForm($attrs,$view) {
         if ($attrs->binary) {
             $attrs->enctype = 'multipart/form-data';
         } else {
@@ -72,17 +72,22 @@ class FormTagLib extends TagLib {
             $attrs->url = Url::makeLink($attrs->controller,$attrs->action,$attrs->parms);
         }
         unset($attrs->binary);
-        $this->formData = $view->data;
+        if ($attrs->data)
+            $this->formData = $attrs->data;
+        else
+            $this->formData = $view->data;
+        
+        
         return sprintf('<form method="%s" action="%s" enctype="%s">',
 						$attrs->method ? $attrs->method : 'post',
 						$attrs->url,
                         $attrs->enctype).
-				$body.
+				$this->body().
 				'</form>';
 	}
-    protected function tagButtonGroup($attrs,$body,$view) {
+    protected function tagButtonGroup($attrs,$view) {
 		return '<div class="horizontal line buttongroup '.$attrs->class.'">'.chr(10).
-                $body.chr(10).
+                $this->body().chr(10).
             '</div>';
 	}
 	protected function tagId($attrs) {
@@ -100,14 +105,15 @@ class FormTagLib extends TagLib {
                     ,$attrs->name,$attrs->id);
         return $this->formElementContainer($inputElm,$attrs);
     }
-    protected function tagCostum($attrs,$body) {
-        return $this->formElementContainer($body,$attrs);
+    protected function tagCostum($attrs) {
+        return $this->formElementContainer($attrs);
     }
 
-	private function inputElement($type,$attrs,$body,$view) {
+	private function inputElement($type,$attrs,$view) {
 
         if ($attrs->name) {
             if (!$attrs->value && $this->formData) {
+                
                 $name = $attrs->name;
                 if (is_array($this->formData))
                     $attrs->value = $this->formData[$name];
@@ -116,6 +122,7 @@ class FormTagLib extends TagLib {
             }
             $attrs->value = Request::post($attrs->name,$attrs->value);
         }
+        
         
 
         $behaviours = explode(' ',$attrs->behaviour);
@@ -161,7 +168,7 @@ class FormTagLib extends TagLib {
 
         $inputElm .= new HtmlElement('input',$elmAttr,false);
 
-        $inputElm .= $body.$attrs->after;
+        $inputElm .= $this->body().$attrs->after;
         if ($checker) {
             $inputElm .= '<div class="clear"></div></div>';
         }

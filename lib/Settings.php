@@ -6,7 +6,7 @@ class Settings {
         self::$settings[$name] = $value;
     }
     public static function get($name,$default = null) {
-        if (self::$settings[$name])
+        if (isset(self::$settings[$name]))
 			return self::$settings[$name];
 		else if ($default !== null)
 			return $default;

@@ -52,6 +52,11 @@ class Pimple {
         return $this->action;
     }
     public function execute() {
+        if (isset($_GET['__clearcache'])) {
+            //Clear cache
+            Dir::emptyDir(CACHEDIR,true);
+        }
+        
         if (!$this->controller)
             $this->controller = 'index';
         if (!$this->action)
@@ -66,10 +71,11 @@ class Pimple {
                 throw new Exception(T('Invalid action: %s',$this->action));
             }
 
+            
 
             $ctrlClass = ucfirst($this->controller).'Controller';
-            $appViewFile = Dir::normalize(BASEDIR).'view/application.php';
-            $viewFile = Dir::normalize(BASEDIR).'view/'.$this->controller.'/'.$this->action.'.php';
+            $appViewFile = 'application';
+            $viewFile = '/'.$this->controller.'/'.$this->action;
             if (!class_exists($ctrlClass)) {
                 $ctrlFile = Dir::normalize(BASEDIR).'controller/'.$ctrlClass.'.php';
                 if (!File::exists($ctrlFile)) {
@@ -91,8 +97,12 @@ class Pimple {
                 throw new Exception(T('Action not found: %s::%s',$ctrlClass,$this->action));
             }
             $action = $this->action;
-            if (is_file($viewFile)) {
+
+            
+            try {
                 $view = new View($viewFile);
+            } catch(Exception $e) {
+                //Ignore for now
             }
             try {
                 $data = $ctrl->$action();
@@ -104,12 +114,17 @@ class Pimple {
             } catch(ErrorException $e) {
                 MessageHandler::instance()->addError($e->getMessage());
             }
+            
+            
             if (!$data)
                 $data = $ctrl->getData();
+            
 
+            
             if (!$ctrl->getSkipView()) {
                 if ($view) {
                     $this->body = $view->render($data);
+                    
                 } else {
                     if (!Request::isAjax()) {
                         header("HTTP/1.1 500 View not Found");
@@ -134,6 +149,7 @@ class Pimple {
             echo $this->body;
         } else {
             echo $this->view->render(array('body'=>$this->body));
+
         }
 
         

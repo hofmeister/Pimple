@@ -32,6 +32,11 @@ class Controller {
         echo T("Redirecting to %s",$url);
         throw new Interrupt(); //Not yet submitted...
 	}
+    protected function refresh() {
+        $this->setSkipView(true);
+        Url::refresh();
+        throw new Interrupt(); //Not yet submitted...
+	}
     protected function setFields($fields) {
         $this->validation = $fields;
     }

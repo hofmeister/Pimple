@@ -4,10 +4,10 @@ class BasicTagLib extends TagLib {
 	
     private static $globalVars = array();
     private $lastIfOutcome = true;
-    protected function tagUid($attrs,$body,$view) {
+    protected function tagUid($attrs,$view) {
 		return $this->uid();
 	}
-    protected function tagVar($attrs,$body,$view) {
+    protected function tagVar($attrs,$view) {
         $key = $attrs->name;
         if (!$key) return null;
         
@@ -17,8 +17,8 @@ class BasicTagLib extends TagLib {
             return DataUtil::get(self::$globalVars,$key);
         }
     }
-    protected function tagSet($attrs,$body,$view) {
-        $value = ($attrs->value) ? $attrs->value : $body ;
+    protected function tagSet($attrs,$view) {
+        $value = ($attrs->value) ? $attrs->value : $this->body() ;
         if ($attrs->global == 'true') {
             DataUtil::set(self::$globalVars,$attrs->name,$value);
         } else {
@@ -26,9 +26,8 @@ class BasicTagLib extends TagLib {
             
         }
     }
-    protected function tagInclude($attrs,$body,$view) {
-        $file = Dir::concat(BASEDIR,'view').$attrs->file;
-        $include = new View($file);
+    protected function tagInclude($attrs,$view) {
+        $include = new View($attrs->file);
         $result = $include->render($view->data);
         
         $view->data = DataUtil::merge($view->data,$include->data);
@@ -36,59 +35,63 @@ class BasicTagLib extends TagLib {
         return $result;
     }
 
-    protected function tagConstant($attrs,$body,$view) {
+    protected function tagConstant($attrs,$view) {
         $key = $attrs->name;
         if (!$key) return null;
         return constant($key);
     }
-	protected function tagButtonGroup($attrs,$body,$view) {
+    protected function tagRender($attrs,$view) {
+        $innerView = new View($attrs->template);
+        
+        $attrs->body = $this->body();
+        unset($attrs->template);
+        return $innerView->render($attrs);
+        
+    }
+	protected function tagButtonGroup($attrs,$view) {
 		return '<div class="horizontal line right buttongroup '.$attrs->class.'">'.chr(10).
-                $body.chr(10).
+                $this->body().chr(10).
             '</div>';
 	}
-    protected function tagTabPage($attrs,$body,$view) {
+    protected function tagTabPage($attrs,$view) {
         return '<div class="tabpage" id="'.$this->uid().'">'.chr(10).
-                $body.chr(10).
+                $this->body().chr(10).
             '</div>';
     }
-    protected function tagPage($attrs,$body,$view) {
+    protected function tagPage($attrs,$view) {
         return '<div class="page" id="'.$this->uid().'">'.chr(10).
-				$body.chr(10).
+				$this->body().chr(10).
 			'</div>';
     }
     protected function tagImg($attrs) {
         $attrs->src = Url::basePath().$attrs->src;
         return new HtmlElement('img',ArrayUtil::fromObject($attrs),false);
     }
-    protected function tagBody($attrs,$body,$view) {
-        
+    protected function tagBody($attrs,$view) {
         $attrs = new stdClass();
         $attrs->name = 'body';
-        return $this->tagVar($attrs,$body,$view);
+        return $this->var($attrs,$this->body(),$view);
     }
-	protected function tagMenu($attrs,$body,$view) {
-		
-	}
 
-	protected function tagLink($attrs,$body,$view) {
+	protected function tagLink($attrs,$view) {
         if ($attrs) {
             $lAttrs = clone $attrs;
         } else {
             $lAttrs = new stdClass();
         }
         unset($lAttrs->class);
-        $link = $this->url($lAttrs,$body,$view);
-        if (!$body)
-            $body = $link;
+        $link = $this->url($lAttrs,$this->body(),$view);
+        if (!$this->body())
+            $this->body($link);
         unset($attrs->controller);
         unset($attrs->action);
         unset($attrs->parms);
         $attrs->href = $link;
         $a = new HtmlElement('a', $attrs);
-        $a->addChild(new HtmlText($body));
+        $a->addChild(new HtmlText($this->body()));
 		return $a;
 	}
-    protected function tagUrl($attrs,$body,$view) {
+    protected function tagUrl($attrs,$view) {
         $controller = $attrs->controller;
         $action = $attrs->action;
         $id = $attrs->id;
@@ -123,17 +126,17 @@ class BasicTagLib extends TagLib {
         return sprintf('<style type="text/css">%s</style>',$css);
 
 	}
-	protected function tagJavascript($attrs,$body) {
-        if ($body)
-            return sprintf('<script type="text/javascript">%s</script>',$body);
+	protected function tagJavascript($attrs) {
+        if ($this->body())
+            return sprintf('<script type="text/javascript">%s</script>',$this->body());
         else
             return sprintf('<script type="text/javascript" src="%s"></script>',Dir::normalize(BASEURL).$attrs->path);
 	}
     protected function tagSitename($attrs) {
         return Pimple::instance()->getSiteName();
     }
-    protected function tagLoggedin($attrs,$body) {
+    protected function tagLoggedin($attrs) {
         if (SessionHandler::isLoggedIn() == ($attrs->not != 'true'))
-            return $body;
+            return $this->body();
     }
 }
