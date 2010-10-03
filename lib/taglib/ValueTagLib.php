@@ -16,4 +16,13 @@ class ValueTagLib extends TagLib {
             $attrs->format = 'Y-m-d H:i:s';
         return $this->tagDate($attrs);
 	}
+    protected function tagInt($attrs) {
+        $int = intval($this->body());
+        return number_format($int,0);
+    }
+    protected function tagNumber($attrs) {
+        if (!$attrs->decimals) $attrs->decimals = 2;
+        $number = doubleval($this->body());
+        return number_format($number,$attrs->decimals);
+    }
 }
