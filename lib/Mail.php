@@ -34,8 +34,8 @@ class Mail {
 	}
 
     public static function preview($view,$data) {
-        $containerViewFile = Dir::normalize(BASEDIR).'view/mail.php';
-        $mailViewFile = Dir::normalize(BASEDIR)."view/mail/$view.php";
+        $containerViewFile = 'mail';
+        $mailViewFile = "mail/$view";
         $mailContainer = new View($containerViewFile);
         $mailView = new View($mailViewFile);
         return $mailContainer->render(array('body'=>$mailView->render($data),'subject'=>$subject,'name'=>$name,'email'=>$email));
