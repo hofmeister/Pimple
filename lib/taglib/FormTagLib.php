@@ -38,7 +38,7 @@ class FormTagLib extends TagLib {
         unset($attrs->help);
         unset($attrs->label);
         $elm = new HtmlElement('textarea',$attrs,true);
-        $elm->addChild(new HtmlText(htmlentities(ENT_QUOTES,'UTF-8')));
+        $elm->addChild(new HtmlText(htmlentities($this->body(),ENT_QUOTES,'UTF-8')));
 		return $this->formElementContainer($elm,$attrs);
 	}
     protected function tagSelect($attrs,$view) {
@@ -106,7 +106,7 @@ class FormTagLib extends TagLib {
         return $this->formElementContainer($inputElm,$attrs);
     }
     protected function tagCostum($attrs) {
-        return $this->formElementContainer($attrs);
+        return $this->formElementContainer($this->body(),$attrs);
     }
 
 	private function inputElement($type,$attrs,$view) {

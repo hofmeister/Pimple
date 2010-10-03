@@ -291,13 +291,14 @@ class String {
     public static function normalize($string) {
         //Replace odd white spaces with normal white space...
         $str = str_replace(chr(194).chr(160),chr(32),$string);
+        $str = str_replace("\t","    ",$str);
         if (strstr($str,chr(13))) {
             if (strstr($str,chr(10)))
                 $str = str_replace (chr(13),'',$str);
             else
                 $str = str_replace (chr(13),chr(10),$str);
         }
-        $str = str_replace(chr(10),chr(13).chr(10).'<br/>',$str);
+        $str = str_replace(chr(10),'<br/>',$str);
         return $str;
     }
     public static function alphanum($string) {
