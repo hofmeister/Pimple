@@ -13,11 +13,7 @@ class Model {
 	public function __construct($name,$columns = array(),$primKey = null,$data = null) {
 		$this->name = $name;
 		$this->data = new stdClass();
-		foreach ($columns as $colName) {
-			if (!isset($this->data->$colName)) {
-				$this->data->$colName = null;
-			}
-		}
+		$this->columns = $columns;
         $this->setPrimKey($primKey);
 		if ($data)
 			$this->setData($data);
@@ -59,9 +55,8 @@ class Model {
 
 	public function __call($name, $arguments) {
 		$colName = $name;
-		$data = get_object_vars($this->data);
-		
-		if (array_key_exists($colName, $data)) {
+
+		if (in_array($colName,$this->columns)) {
 			if (count($arguments) > 0) {
 				$this->data->$colName = current($arguments);
 				return $this;
@@ -122,6 +117,21 @@ class Model {
 	public function insert() {
         $this->serialize();
 		$sql = sprintf('INSERT INTO `%s` SET ',$this->name);
+		$sqlFields = array();
+		$primKey = $this->getPrimKey();
+		foreach($this->data as $colName=>$value) {
+            if ($colName == $primKey && $this->primIsAI) continue;
+			$sqlFields[] = sprintf('`%s` = %s',ucfirst($colName),DB::value($value));
+		}
+		$sql .= ' '.implode(',',$sqlFields);
+		$result =  DB::q($sql);
+        if ($result && $primKey && $this->primIsAI) {
+            $this->$primKey(DB::lastId());
+        }
+	}
+	public function replace() {
+        $this->serialize();
+		$sql = sprintf('REPLACE INTO `%s` SET ',$this->name);
 		$sqlFields = array();
 		$primKey = $this->getPrimKey();
 		foreach($this->data as $colName=>$value) {
