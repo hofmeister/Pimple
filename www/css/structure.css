@@ -1,0 +1,56 @@
+/* tools */
+ul.horizontal li,
+	ol.horizontal li,
+    .horizontal .form-item,
+    .horizontal input,
+    .horizontal button {
+	float:left;
+}
+ul.horizontal.right li,
+	ol.horizontal.right li,
+    .horizontal.right .form-item,
+    .horizontal.right input,
+    .horizontal.right button {
+	float:right;
+}
+
+.centered {
+	margin:0 auto;
+}
+.clear {
+    clear:both;
+    *zoom:0;
+}
+.left {
+    float:left;
+}
+.right {
+    float:right;
+}
+.pimple-messages {
+    position:absolute;
+    width:100%;
+    bottom:0px;
+    left:0px;
+}
+.button {
+    display: block;
+    margin:0;
+    font-size:12px;
+}
+
+
+.horizontal.divided li:first-child
+    ,ul.divided li {
+    border-left:none;
+    /* IE5 -> IE7 hax*/
+    *border-left: expression(this.previousSibling == null ? "none" : "inherit");
+}
+.horizontal.divided li {
+    border-left:1px solid #CCC;
+}
+
+/* fix for file fields */
+.form-file {
+    height:auto !important;
+}
