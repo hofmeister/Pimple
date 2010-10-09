@@ -1,5 +1,7 @@
 <?php
 class Pimple {
+	const URL = 'PIMPLE_URL';
+	
     private static $instance;
     /**
      *
@@ -36,6 +38,8 @@ class Pimple {
         $this->getPath();
         list($this->controller,$this->action) = explode('/',trim($this->getPath(),'/'));
         $this->parms = $_GET;
+		if (!Settings::get(self::URL))
+			Settings::set(self::URL,'http://pimple.kweative.dk/');
     }
     public function hasParm($name) {
         return array_key_exists($name,$this->parms);
