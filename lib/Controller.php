@@ -104,10 +104,21 @@ class Controller {
         $id = get_class($this).'_'.$id;
         SessionHandler::set($id,null);
     }
-    protected function asJson($value) {
+	protected function setStatus($code,$text) {
+		header(sprintf('HTTP/1.1 %s %s',$code,$text),true);
+	}
+	protected function asJson($value) {
         $this->setSkipView(true);
         header('Content-type: application/json');
         echo json_encode($value);
+        Pimple::instance()->end();
+    }
+	protected function asXml($value,$rootName = 'response') {
+        $this->setSkipView(true);
+        
+		$xml = Xml::toXml($value,$rootName);
+		header('Content-type: text/xml');
+        echo $xml;
         Pimple::instance()->end();
     }
     protected function asText($value) {

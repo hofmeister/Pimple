@@ -44,6 +44,7 @@ class SessionHandler {
 	}
 
 	public function init() {
+		if (!$this->session) return;
 		//var_dump($_COOKIE);
         $this->SID = $_COOKIE[$this->sessionKey];
 		if (!$this->SID) {
@@ -53,7 +54,8 @@ class SessionHandler {
 		setcookie($this->sessionKey, $this->SID,$this->getExpires(),COOKIEURL);
 	}
     public function save() {
-        $this->getSession()->commit();
+		if ($this->session)
+			$this->getSession()->commit();
     }
 
 	/**

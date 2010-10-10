@@ -73,7 +73,7 @@ $.fn.selectRange = function(start, end) {
 };
 
 $(function() {
-    if (YAHOO) {
+    if (window.YAHOO != undefined) {
         if (YAHOO.widget && YAHOO.widget.Chart)
             YAHOO.widget.Chart.SWFURL = "http://yui.yahooapis.com/2.8.1/build/charts/assets/charts.swf";
     }

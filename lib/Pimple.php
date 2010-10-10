@@ -24,7 +24,9 @@ class Pimple {
     }
     public static function end($msg = null) {
         self::save();
-        echo $msg;
+		if ($msg) {
+			echo $msg;
+		}
         exit();
     }
 
@@ -38,7 +40,7 @@ class Pimple {
         $this->getPath();
         list($this->controller,$this->action) = explode('/',trim($this->getPath(),'/'));
         $this->parms = $_GET;
-		if (!Settings::get(self::URL))
+		if (!Settings::get(self::URL,false))
 			Settings::set(self::URL,'http://pimple.kweative.dk/');
     }
     public function hasParm($name) {
@@ -67,11 +69,11 @@ class Pimple {
             $this->action = 'index';
         try {
             if (!String::isAlphaNum($this->controller)) {
-                header("HTTP/1.0 404 Not Found");
+                header("HTTP/1.0 404 Invalid url");
                 throw new Exception(T('Invalid controller: %s',$this->controller));
             }
             if (!String::isAlphaNum($this->action)) {
-                header("HTTP/1.1 404 Not Found");
+                header("HTTP/1.1 404 Invalid url");
                 throw new Exception(T('Invalid action: %s',$this->action));
             }
 
@@ -83,31 +85,32 @@ class Pimple {
             if (!class_exists($ctrlClass)) {
                 $ctrlFile = Dir::normalize(BASEDIR).'controller/'.$ctrlClass.'.php';
                 if (!File::exists($ctrlFile)) {
-                    header("HTTP/1.1 404 Not Found");
+                    header("HTTP/1.1 404 Controller not found");
                     throw new Exception(T('Controller not found: %s',$ctrlFile));
                 }
                 require_once $ctrlFile;
             }
 
             if (!class_exists($ctrlClass)) {
-                header("HTTP/1.1 404 Not Found");
+                header("HTTP/1.1 404 Controller not Found");
                 throw new Exception(T('Controller not found: %s',$ctrlClass));
             }
 
             $ctrl = new $ctrlClass();
             $this->controllerInstance = $ctrl;
             if (!method_exists($ctrl,$this->action)) {
-                header("HTTP/1.1 404 Not Found");
+                header("HTTP/1.1 404 Action not Found");
                 throw new Exception(T('Action not found: %s::%s',$ctrlClass,$this->action));
             }
             $action = $this->action;
 
-            
-            try {
-                $view = new View($viewFile);
-            } catch(Exception $e) {
-                //Ignore for now
-            }
+            if (!$ctrl->getSkipView()) {
+				try {
+					$view = new View($viewFile);
+				} catch(Exception $e) {
+					//Ignore for now
+				}
+			}
             try {
                 $data = $ctrl->$action();
                 
@@ -122,8 +125,6 @@ class Pimple {
             
             if (!$data)
                 $data = $ctrl->getData();
-            
-
             
             if (!$ctrl->getSkipView()) {
                 if ($view) {
@@ -149,7 +150,7 @@ class Pimple {
 
     }
     public function render() {
-        if (Request::isAjax()) {
+        if (Request::isAjax() || $this->controllerInstance->getSkipView()) {
             echo $this->body;
         } else {
             echo $this->view->render(array('body'=>$this->body));

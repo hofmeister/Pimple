@@ -6,6 +6,6 @@ class CaptchaValidate extends AbstractValidate {
         return strtolower($value) == strtolower(SessionHandler::get('CAPTCHA'));
     }
     public function getError() {
-        return T('Security code is incorrect');
+        return T('Security code is incorrect (%s)',SessionHandler::get('CAPTCHA'));
     }
 }

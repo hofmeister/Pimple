@@ -1,5 +1,5 @@
 <?php
-class PimpleController {
+class PimpleController extends Controller {
 
     public function captcha() {
         $width = Request::get('w',210);
@@ -38,7 +38,7 @@ class PimpleController {
         header('Content-Type: image/jpeg');
         imagejpeg($image);
         imagedestroy($image);
-        SessionHandler::instance()->set('CAPTCHA',$code);
+        SessionHandler::set('CAPTCHA',$code);
         Pimple::end();
     }
     public function mailpreview() {

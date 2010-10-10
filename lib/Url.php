@@ -351,7 +351,7 @@ class Url {
     public static function gotoUrl($url) {
         if ($url == self::current()) return;//dont redirect to itself
         Pimple::instance()->save();
-        header(sprintf('Location: %s',$url));
+		header(sprintf('Location: %s',$url));
     }
     public static function refresh() {
         Pimple::instance()->save();

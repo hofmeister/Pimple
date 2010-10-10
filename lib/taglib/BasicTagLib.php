@@ -113,16 +113,20 @@ class BasicTagLib extends TagLib {
         return $output.'</div>';
     }
 	protected function tagStylesheet($attrs) {
-        $baseurl = Dir::normalize(BASEURL);
-        $url = $baseurl.$attrs->path;
+		if ($attrs->local == 'false') {
+			$base = Settings::get(Pimple::URL);
+		} else {
+			$base = Url::basePath();
+		}
+        
+        $url = $base.$attrs->path;
         if ($attrs->inline != 'true')
             return sprintf('<link href="%s" rel="stylesheet" type="text/css" />',$url);
 
         $path = Dir::normalize(BASEDIR).$attrs->path;
-        $dir = Dir::normalize(dirname($path));
         $css = file_get_contents($path);
-        $host = $_SERVER['HTTP_HOST'];
-        $css = str_replace('url(../',"url(http://$host$baseurl",$css);
+        
+        $css = str_replace('url(../',"url($base",$css);
         return sprintf('<style type="text/css">%s</style>',$css);
 
 	}

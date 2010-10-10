@@ -1,7 +1,6 @@
 <?php
 
 class Model {
-
 	private $data;
 	private $columns = array();
 	private $noAutoUpdate = array();

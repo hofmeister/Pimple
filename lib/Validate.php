@@ -8,6 +8,8 @@ require_once 'validate/Min.php';
 require_once 'validate/NotEmpty.php';
 require_once 'validate/Captcha.php';
 require_once 'validate/Optional.php';
+require_once 'validate/Integer.php';
+require_once 'validate/Number.php';
 
 class Validate {
     private static $validators = array();
@@ -59,3 +61,12 @@ Validate::registerValidator('min',new MinValidate());
 Validate::registerValidator('max',new MaxValidate());
 Validate::registerValidator('equal',new EqualsValidate());
 Validate::registerValidator('captcha',new CaptchaValidate());
+$int =new IntegerValidate();
+Validate::registerValidator('int',$int);
+Validate::registerValidator('integer',$int);
+$number = new NumberValidate();
+Validate::registerValidator('number',$number);
+Validate::registerValidator('numeric',$number);
+Validate::registerValidator('num',$number);
+Validate::registerValidator('float',$number);
+Validate::registerValidator('double',$number);

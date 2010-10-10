@@ -10,6 +10,9 @@ RegExp.escape = function(str)
 var Caret = {
     cc:'\u2009',
     restore:function() {
+
+
+
         switch(true) {
             case $.browser.msie:
                 var range = document.body.createTextRange();
@@ -32,7 +35,9 @@ var Caret = {
            default:
                 var result = window.find(this.cc);
                 if(result) {
-                    window.getSelection().getRangeAt(0).deleteContents();
+					try {
+						window.getSelection().getRangeAt(0).deleteContents();
+					} catch(e){}
                 }
                 break;
 
@@ -48,7 +53,9 @@ var Caret = {
                 window.getSelection().getRangeAt(0).insertNode(span);
                 break;
             default:
-                window.getSelection().getRangeAt(0).insertNode(document.createTextNode(this.cc));
+				try {
+					window.getSelection().getRangeAt(0).insertNode(document.createTextNode(this.cc));
+				} catch(e) {}
         }
     },
     insertText:function(text) {
