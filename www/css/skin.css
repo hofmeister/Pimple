@@ -73,9 +73,9 @@ h3 {
 	color:white;
     
     display:block;
-    -moz-border-radius:5px; /* FF1+ */
-    -webkit-border-radius:5px; /* Saf3-4 */
-    border-radius:5px; /* Opera 10.5, IE 9, Saf5, Chrome */
+    -moz-border-radius:5px;
+    -webkit-border-radius:5px;
+    border-radius:5px;
     border:1px solid;
     border-color: #333;
 }
@@ -109,6 +109,23 @@ h3 {
 }
 .user-menu a {
     font-size:14px;
+}
+/* sub menu */
+.sub-menu {
+    border-bottom:1px solid #333;
+}
+.sub-menu a,
+    .sub-menu a.main {
+    background-color: transparent;
+    -moz-border-radius:5px 5px 0 0;
+    -webkit-border-radius:5px 5px 0 0;
+    border-radius:5px 5px 0 0;
+    border:0;
+    color:#333;
+}
+.sub-menu a.active,.sub-menu a:hover, .sub-menu a.main:hover {
+    background-color: #333;
+    color:white;
 }
 /*numbered list */
 .numbered li {
