@@ -1,5 +1,0 @@
-<web-app xmlns="http://caucho.com/ns/resin">
-   <servlet-mapping url-pattern="*.php"
-                    servlet-class="com.caucho.quercus.servlet.QuercusServlet">
-   </servlet-mapping>
-</web-app>
