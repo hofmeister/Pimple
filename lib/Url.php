@@ -313,11 +313,16 @@ class Url {
             }
         }
         if ($parms) {
-			if (is_object($parms))
-				$parms = get_object_vars($parms);
-			if (count($parms) > 0) {
-				$url .= '?'.self::Array2GetParms($parms);
+			if (is_string($parms)) {
+				$url .= '?'.ltrim($parms,'?');
+			} else {
+				if (is_object($parms))
+					$parms = get_object_vars($parms);
+				if (count($parms) > 0) {
+					$url .= '?'.self::Array2GetParms($parms);
+				}
 			}
+			
 		}
 		
         $host = $_SERVER['HTTP_HOST'];

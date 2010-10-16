@@ -62,15 +62,20 @@ class FormTagLib extends TagLib {
         } else {
             $attrs->enctype = 'application/x-www-form-urlencoded ';
         }
-        if (!$attrs->controller) {
-            $attrs->controller = Pimple::instance()->getController();
-        }
-        if (!$attrs->action) {
-            $attrs->action = Pimple::instance()->getAction();
-        }
-        if ($attrs->action && $attrs->controller) {
-            $attrs->url = Url::makeLink($attrs->controller,$attrs->action,$attrs->parms);
-        }
+		if (!$attrs->controller && !$attrs->action && !$attrs->parms) {
+			$attrs->url = Url::makeLink($attrs->controller,$attrs->action,$_SERVER['QUERY_STRING']);
+		} else {
+			if (!$attrs->controller) {
+				$attrs->controller = Pimple::instance()->getController();
+				if (!$attrs->action) {
+					$attrs->action = Pimple::instance()->getAction();
+				}
+			}
+			if ($attrs->action && $attrs->controller) {
+				$attrs->url = Url::makeLink($attrs->controller,$attrs->action,$attrs->parms);
+			}
+		}
+        
         unset($attrs->binary);
         if ($attrs->data)
             $this->formData = $attrs->data;
