@@ -35,6 +35,7 @@ class DB {
 		$compiled = vsprintf($sql, self::processArgs($args));
 		if (self::$debug)
 			echo nl2br("\nRUNNING:\n$compiled");
+        //echo "$compiled\n<br/>";
 		$r = mysql_query($compiled);
 		if (!$r)
 			throw new Exception("SQL:$compiled\nERR:" . mysql_error(), 3);

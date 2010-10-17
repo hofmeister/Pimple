@@ -1,9 +1,9 @@
 jQuery.fn.wysiwyg = function(opts) {
+    
     this.each(function() {
         /* vars */
         var dom = $(this);
         var fid = dom.attr('id');
-        dom.html(HTML.clean(dom.html()));
         
         CKEDITOR.replace(fid, {
             toolbar : [

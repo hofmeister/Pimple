@@ -202,4 +202,13 @@ class Pimple {
         require_once $this->getRessource('lib/'.$path);
 
     }
+    /**
+     * Convenience method for executing all normally needed methods
+     */
+    public function run() {
+        $this->init();
+        $this->execute();
+        $this->render();
+        $this->save();
+    }
 }

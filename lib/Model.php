@@ -79,6 +79,7 @@ class Model {
             }
             $this->update($keyName);
 		}
+        $this->refresh();
 	}
     public function checkKey($keyName) {
         if (!$keyName) {
@@ -113,6 +114,9 @@ class Model {
 			$this->setData($data);
 		return $this;
 	}
+    public function refresh() {
+        return $this->load($this->getPrimValue());
+    }
 	public function insert() {
         $this->serialize();
 		$sql = sprintf('INSERT INTO `%s` SET ',$this->name);

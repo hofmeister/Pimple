@@ -1,6 +1,9 @@
 <?php
 
 class Date {
+    const DATE_FORMAT = 'DATE_DATE_FORMAT';
+    const DATETIME_FORMAT = 'DATE_DATETIME_FORMAT';
+    const TIME_FORMAT = 'DATE_TIME_FORMAT';
 	
 	public static function getFirstDateOfWeek($week,$year = NULL) {
 		if (!$year) $year = date('Y');
@@ -39,3 +42,7 @@ class Date {
         return $this->toString();
     }
 }
+
+Settings::set(Date::DATE_FORMAT,'Y-m-d');
+Settings::set(Date::DATETIME_FORMAT,'Y-m-d H:i:s');
+Settings::set(Date::TIME_FORMAT,'H:i:s');

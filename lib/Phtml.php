@@ -238,7 +238,7 @@ class PhtmlNode extends HtmlElement {
     
     public static function getNextClosure() {
         self::$closureCount++;
-        return "closure".md5(self::$closureCount + time());
+        return "closure".md5(self::$closureCount + microtime(true));
     }
     public function getNs() {
         return $this->ns;

@@ -74,8 +74,8 @@ $.fn.selectRange = function(start, end) {
 
 $(function() {
     if (window.YAHOO != undefined) {
-        if (YAHOO.widget && YAHOO.widget.Chart)
-            YAHOO.widget.Chart.SWFURL = "http://yui.yahooapis.com/2.8.1/build/charts/assets/charts.swf";
+        if (YAHOO.widget && YAHOO.widget.Chart && Pimple.settings.pimplePath)
+            YAHOO.widget.Chart.SWFURL = Pimple.settings.pimplePath + "js/plugins/yui/charts/assets/charts.swf";
     }
     Pimple.bind();
     setTimeout(function() {

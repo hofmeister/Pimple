@@ -30,6 +30,7 @@ require_once 'lib/File.php';
 require_once 'lib/Dir.php';
 
 //Utils
+require_once 'lib/Date.php';
 require_once 'lib/Cli.php';
 require_once 'lib/Util.php';
 require_once 'lib/String.php';
