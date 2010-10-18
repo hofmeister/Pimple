@@ -187,16 +187,20 @@ h3 {
 
 input,select,textarea,.button,a.button,.form-element {
     display:block;
-    font-size:18px;
+    font-size:12px;
+    line-height:18px;
     border:0px;
-    padding:8px;
+    padding:3px;
     color:#666;
     width:230px;
     border:1px solid #CCC;
     -moz-border-radius:5px; /* FF1+ */
     -webkit-border-radius:5px; /* Saf3-4 */
-    border-radius:5px;
+    border-radius:3px;
     behavior: url(plugins/pie.htc);
+}
+.form-item input,.form-item select,.form-element {
+    height:20px;
 }
 
 input.form-checkbox,
@@ -273,6 +277,7 @@ label span.required {
     width:140px;
     text-align: right;
     margin-right:5px;
+    line-height: 25px;
 }
 .form-item .element,
     .form-item .instructions {
@@ -290,7 +295,7 @@ label span.required {
     width:250px;
     background-color: #CCC;
     line-height:18px;
-    padding:10px;
+    padding:4px;
     padding-left:10px;
     font-size:12px;
     visibility: hidden;
@@ -299,6 +304,7 @@ label span.required {
     border-radius:0 5px 5px 0;
     behavior: url(plugins/pie.htc);
     border-left:0;
+    color:#444;
 }
 .form-item .instructions div {
     color:inherit;
@@ -352,6 +358,9 @@ input.no-checker {
     font-size:10px;
     clear:both;
     color:#999;
+}
+.form-item.no-label .description {
+    margin-left:0;
 }
 .buttongroup {
     padding-left:145px;

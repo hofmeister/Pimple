@@ -3,7 +3,7 @@ jQuery.fn.instructions = function() {
         var dom = $(this);
 
         dom.find('.element').each(function() {
-            var padding = 22;
+            var padding = 10;
             var instr = dom.find('.instructions');
             //Check to make sure instruction col is equal or bigger than input col
             //console.log("FIRST:"+(parseInt($(this).height()) + parseInt($(this).css('padding-top')) + parseInt($(this).css('padding-bottom')) + parseInt($(this).css('margin-top')) + parseInt($(this).css('margin-bottom'))));

@@ -150,7 +150,7 @@ class Pimple {
 
     }
     public function render() {
-        if (Request::isAjax() || $this->controllerInstance->getSkipView()) {
+        if (Request::isAjax() || ($this->controllerInstance && $this->controllerInstance->getSkipView())) {
             echo $this->body;
         } else {
             echo $this->view->render(array('body'=>$this->body));

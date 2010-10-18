@@ -73,7 +73,6 @@ class FormTagLib extends TagLib {
 		} else if ($attrs->action && $attrs->controller) {
                 $attrs->url = Url::makeLink($attrs->controller,$attrs->action,$attrs->parms);
 		}
-        
         unset($attrs->binary);
         if ($attrs->data)
             $this->formData = $attrs->data;
@@ -225,6 +224,9 @@ class FormTagLib extends TagLib {
         unset($attrs->noinstructions);
         if (!$hasInstructions && !$attrs->instructions) {
             $classes[] = 'no-instructions';
+        }
+        if ($attrs->nolabel) {
+            $classes[] = 'no-label';
         }
         if ((count($errors) > 0))
             $classes[] = 'error';
