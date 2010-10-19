@@ -288,7 +288,7 @@ class String {
 
 		return $pattern;
 	}
-    public static function normalize($string) {
+    public static function normalize($string,$html = true) {
         //Replace odd white spaces with normal white space...
         $str = str_replace(chr(194).chr(160),chr(32),$string);
         $str = str_replace("\t","    ",$str);
@@ -298,8 +298,16 @@ class String {
             else
                 $str = str_replace (chr(13),chr(10),$str);
         }
-        $str = str_replace(chr(10),'<br/>',$str);
+        if ($html)
+            $str = str_replace(chr(10),'<br/>',$str);
         return $str;
+    }
+    public static function trim($str,$chars = null) {
+        $str = self::normalize($str,false);
+        if ($chars) {
+            return trim($str,$chars);
+        }
+        return trim($str);
     }
     public static function alphanum($string) {
         return preg_replace('/[^A-Za-z0-9_]/','',$string);
