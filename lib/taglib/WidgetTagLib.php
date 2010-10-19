@@ -64,7 +64,23 @@ class WidgetTagLib extends TagLib {
         $elm->addChild(new HtmlText(trim($this->body())));
         return $elm;
 	}
-	private function evt2css($type) {
+    /**
+     *
+     * @param stdClass $attrs
+     * @param View $view 
+     */
+    protected function tagMenuButton($attrs,$view) {
+        if ($attrs->section) {
+            
+            $ctrl = Pimple::instance()->getControllerInstance();
+            if ($ctrl && $ctrl->getSection() == $attrs->section) {
+                $attrs->class = trim($attrs->class.' active');
+            }
+            unset($attrs->section);
+        }
+        return $view->taglibs['p']->link($attrs,$this->body(),$view);
+    }
+    private function evt2css($type) {
 		switch (strtolower($type)) {
 			case self::EVT_REMOVE:
 				return self::CSS_EVT_RMV;

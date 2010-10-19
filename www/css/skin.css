@@ -28,6 +28,12 @@ strong  {
 em {
     font-style: italic;
 }
+.rounded {
+    -moz-border-radius:5px;
+    -webkit-border-radius:5px;
+    border-radius:5px;
+    behavior: url(plugins/pie.htc);
+}
 
 .header {
     background-color: #CCC;
@@ -125,6 +131,10 @@ h3 {
     border:0;
     color:#333;
 }
+.sub-menu a.main {
+    background-color: #00794E;
+    color:white;
+}
 .sub-menu a.active,.sub-menu a:hover, .sub-menu a.main:hover {
     background-color: #333;
     color:white;
@@ -199,6 +209,7 @@ input,select,textarea,.button,a.button,.form-element {
     border-radius:3px;
     behavior: url(plugins/pie.htc);
 }
+
 .form-item input,.form-item select,.form-element {
     height:20px;
 }
@@ -269,7 +280,7 @@ label span.required {
     margin-left:3px;
     cursor:help;
 }
-.form-item label {
+.form-item label,.label {
 	display:block;
     float:left;
 	color:#666;
@@ -278,6 +289,16 @@ label span.required {
     text-align: right;
     margin-right:5px;
     line-height: 25px;
+}
+.label.top {
+    width:auto;
+    text-transform: uppercase;
+    font-weight:bold;
+    text-align: left;
+    margin-top:10px;
+    font-size:12px;
+    line-height:12px;
+    margin-left:5px;
 }
 .form-item .element,
     .form-item .instructions {
@@ -384,12 +405,14 @@ input.no-checker {
     margin:0px;
     margin-top:5px;
     /*skin*/
-    border:1px solid #036;
+    border:1px solid #333;
     background-color:#00794E;
     color:#fff;
     font-size:14px;
 }
-
+.button.full {
+    float:none;
+}
 .button.icononly {
     -moz-border-radius:0; /* FF1+ */
     -webkit-border-radius:0; /* Saf3-4 */
@@ -511,7 +534,7 @@ img.captcha {
 
 .wizard h2 strong {
     float:right;
-    font-size:14px;
+    font-size:12px;
     color:#666;
 }
 .wizard h2 ul {
@@ -525,19 +548,19 @@ img.captcha {
 }
 
 .wizard h2 li {
-    padding:5px 10px;;
+    padding:2px 10px;
     border-left:1px solid #CCC;
-    font-size: 14px;
+    font-size: 12px;
+    font-weight: normal;
     color:#666;
 }
 
 .wizard h2 li.active {
-    font-size: 16px;
-    color:#fff;
-    background-color:#004E79;
+    background-color:#efefef;
+    font-weight:bold;
 }
 .wizard h2 li.done {
-    background-color: #cec;
+    background-color: #ddd;
 }
 /* tabpage */
 .pw-tabpage {

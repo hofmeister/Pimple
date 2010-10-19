@@ -6,13 +6,20 @@ class Controller {
     protected $name;
     protected $validation = array();
     protected $data;
+    protected $currentSection = '';
     public function __construct() {
         $this->name = get_class($this);
     }
     public function getData() {
         return $this->data;
     }
+    public function getSection() {
+        return $this->section;
+    }
 
+    public function setSection($section) {
+        $this->section = $section;
+    }
     public function setData($data) {
         $this->data = $data;
     }
