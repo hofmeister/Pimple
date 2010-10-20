@@ -1,6 +1,8 @@
 /**
  * @author Stephane Roucheray
  * @extends jquery
+ *
+ * Changed quite a lot sinze Stephane made something fairly odd... /Henrik Hofmeister
  */
 
 jQuery.fn.iframeResize = function(options){
@@ -11,41 +13,34 @@ jQuery.fn.iframeResize = function(options){
 	}, options);
 	var filler = 30;
 
-	var resizeIframe = function(event){
-		var body = jQuery(this);
-        event.data.frame.css("width",  settings.width  == "fill" ? "100%" : parseInt(settings.height));
-		event.data.frame.css("height", settings.height == "auto" ? body.outerHeight(true) + filler : parseInt(settings.height));
-	}
-    
-
 	this.each(function() {
         var frame = $(this);
-        frame.css('overflow','hidden');
         var body = frame.contents().find("body");
+        frame.css('overflow','hidden');
 
-        var immediateResize = function(){
-            var e = jQuery.Event();
-            e.data = {};
-            e.data.frame = frame;
-            resizeIframe.call(body, e);
-        }
-		//frame.css("overflow", "hidden");
-
-        frame.bind("load", {
-            frame: frame
-        }, resizeIframe);
+        var resize = function() {
+            frame.css("width",  settings.width  == "fill" ? "100%" : parseInt(settings.height));
+            var autoheight = 0;
+            try {
+                autoheight = body.height() + filler;
+            } catch(e) {
+                //Probably due to permession denied
+                autoheight = frame.parent().height() + filler;
+            }
+            frame.css("height", settings.height == "auto" ? autoheight : parseInt(settings.height));
+           
+        };
+        frame.bind("load",resize);
 
 		if (settings.autoUpdate) {
 			if ($.browser.msie) {
 				frame.attr("scrolling", "auto");
-				setInterval(immediateResize, 1000);
+				setInterval(resize, 1000);
 			}
 			else {
-				body.bind("DOMSubtreeModified", {
-					frame: frame
-				}, resizeIframe);
+				body.bind("DOMSubtreeModified",resize);
 			}
 		}
-		immediateResize();
+        resize();
     });
 };
