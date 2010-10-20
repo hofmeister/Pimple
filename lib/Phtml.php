@@ -15,6 +15,10 @@ class Phtml {
     private $lastChar,$nextChar,$char,$attrName;
     private $debug = false;
     private $stringStartChar = '';
+    private $charCount = 0;
+    private $lineCount = 0;
+    private $phtmlRaw = '';
+    private $debugTrace = '';
 
     /**
      *
@@ -22,16 +26,28 @@ class Phtml {
      * @return PhtmlNode
      */
     public function read($string) {
+        $string = String::normalize($string,false);
         $this->withinStack = array(self::NOTHING);
         $this->current = '';
+        $this->debugTrace = '';
         $this->node = new PhtmlNode();
         $this->node->setContainer(true);
         $this->node->setTag('phtml');
+        $this->phtmlRaw = $string;
+        $this->lineCount = 1;
+        $ignoredAscii = array(10,13,ord("\t"),ord(" "));
         
         for($i = 0; $i < mb_strlen($string);$i++) {
             $chr = mb_substr($string,$i,1);
+            $this->charCount++;
             $this->nextChar = mb_substr($string,$i+1,1);
             $this->char = $chr;
+
+            if ($this->char == "\n") {
+                $this->lineCount++;
+                $this->charCount = 0;
+            }
+            
             switch($chr) {
                 case '<':
                     if ($this->nextChar == '/') {
@@ -70,7 +86,7 @@ class Phtml {
                     break;
                 case '"':
                 case '\'':
-                    if ($this->isWithin(self::DOCTYPE)) break;
+                    if (!$this->isWithin(self::TAG,true)) break;
                     if ($this->isWithin(self::STRING))
                         $this->onStringEnd();
                     else
@@ -81,7 +97,11 @@ class Phtml {
                     
                     break;
             }
-            $this->debug("CHR:$this->char - ".$this->within());
+            $ascii = ord($this->char);
+            if (in_array($ascii,$ignoredAscii))
+                $this->debug("CHR:chr($ascii)");
+            else
+                $this->debug("CHR:$this->char");
             $this->addChar($this->char);
             $this->lastChar = $this->char;
         }
@@ -182,8 +202,12 @@ class Phtml {
     protected function within() {
         return $this->withinStack[count($this->withinStack)-1];
     }
-    protected function isWithin($within) {
-        return $this->within() == $within;
+    protected function isWithin($within,$deep = false) {
+        if ($deep) {
+            return in_array($within,$this->withinStack);
+        } else {
+            return $this->within() == $within;
+        }
     }
 
     protected function onTagStart() {
@@ -220,11 +244,15 @@ class Phtml {
         $this->node = $parent;
     }
     protected function getNode() {
+        if (!$this->node) throw new PhtmlException($this->phtmlRaw,$this->char,$this->lineCount,$this->charCount,$this->debugTrace);
         return $this->node;
     }
     protected function debug($msg) {
+        $msg = "[".implode(',',$this->withinStack)."] ".$msg;
         if ($this->debug)
             echo "\n$msg";
+        else
+            $this->debugTrace .= "\n$msg";
     }
     public function setDebug($debug) {
         $this->debug = $debug;
@@ -426,5 +454,32 @@ class PhtmlClosure {
         } catch(Exception $e) {
             return $e->__toString();
         }
+    }
+}
+class PhtmlException extends Exception {
+    private $phtml,$chr,$lineNum,$chrNum,$debugTrace;
+    public function __construct($phtml,$chr,$lineNum,$chrNum,$debugTrace) {
+        $this->phtml = $phtml;
+        $this->char = $char;
+        $this->lineNum = $lineNum;
+        $this->chrNum = $chrNum;
+        $this->debugTrace = $debugTrace;
+        parent::__construct(sprintf('Failed parsing PHTML at line %s:%s - CHR: %s',$lineNum,$chrNum,$chr),E_ERROR);
+    }
+    public function __toString() {
+        $lines = explode("\n",$this->phtml);
+        $i = 1;
+        foreach($lines as &$line) {
+            $spaces = str_repeat(' ',3-strlen("$i"));
+            $line = "<strong>$spaces$i:</strong> ".htmlentities($line,ENT_QUOTES,'UTF-8');
+            $i++;
+        }
+        $phtml = implode("\n",$lines);
+        return sprintf('<div><strong>%s</strong><pre>%s</pre></div>',
+                    $this->getMessage(),
+                    $phtml.chr(10).chr(10).$this->getTraceAsString().
+                    chr(10).chr(10).'###### DEBUG TRACE ######'.
+                    $this->debugTrace
+                    );
     }
 }

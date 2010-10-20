@@ -143,7 +143,15 @@ class Pimple {
             if (Request::isAjax()) {
                 $this->body = json_encode(array('msg'=>$e->getMessage(),'trace'=>$e->getTraceAsString()));
             } else {
-                $this->body = nl2br(htmlentities($e->__toString()));
+                if (defined('DEBUG') && DEBUG) {
+                    $body = $e->__toString();
+                    if (!stristr($body,'<')) {
+                        $body = '<pre>'.$body.'</pre>';
+                    }
+                    $this->body = $body;
+                } else {
+                    Url::redirect('error','internal');
+                }
             }
         }
         $this->view = new View($appViewFile);
