@@ -25,7 +25,7 @@ jQuery.fn.iframeResize = function(options){
             try {
                 autoheight = body.height() + filler;
                 frame.css("height", settings.height == "auto" ? autoheight : parseInt(settings.height));
-                console.log(autoHeight);
+                console.log(autoheight);
             } catch(e) {
                 console.log(e);
                 frame.css('overflow','auto');
