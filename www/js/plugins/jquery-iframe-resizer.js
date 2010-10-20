@@ -27,17 +27,20 @@ jQuery.fn.iframeResize = function(options){
                 frame.css("height", settings.height == "auto" ? autoheight : parseInt(settings.height));
                 console.log(autoHeight);
             } catch(e) {
+                console.log(e);
                 frame.css('overflow','auto');
                 frame.css('height','600px');
                 clearInterval(interval);
             }
-            
-           
         };
         frame.bind("load",resize);
 
 		if (settings.autoUpdate) {
             frame.bind("load",function() {
+                if (interval) {
+                    clearInterval(interval);
+                    interval = null;
+                }
                 if ($.browser.msie) {
                     frame.attr("scrolling", "auto");
                 }
