@@ -20,12 +20,14 @@ jQuery.fn.iframeResize = function(options){
         frame.css('overflow','hidden');
 
         var resize = function() {
+            body = frame.contents().find("body");
             frame.css("width",  settings.width  == "fill" ? "100%" : parseInt(settings.height));
             var autoheight = 0;
             try {
                 autoheight = body.height() + filler;
                 frame.css("height", settings.height == "auto" ? autoheight : parseInt(settings.height));
-                console.log(autoheight);
+                console.log(body);
+                console.log(body.height());
             } catch(e) {
                 console.log(e);
                 frame.css('overflow','auto');
