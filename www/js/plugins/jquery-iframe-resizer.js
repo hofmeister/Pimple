@@ -16,22 +16,34 @@ jQuery.fn.iframeResize = function(options){
 	this.each(function() {
         var frame = $(this);
         var body = frame.contents().find("body");
+        var interval = null;
         frame.css('overflow','hidden');
 
         var resize = function() {
             frame.css("width",  settings.width  == "fill" ? "100%" : parseInt(settings.height));
             var autoheight = 0;
-            autoheight = body.height() + filler;
-            frame.css("height", settings.height == "auto" ? autoheight : parseInt(settings.height));
+            try {
+                autoheight = body.height() + filler;
+                frame.css("height", settings.height == "auto" ? autoheight : parseInt(settings.height));
+                console.log(autoHeight);
+            } catch(e) {
+                frame.css('overflow','auto');
+                frame.css('height','600px');
+                clearInterval(interval);
+            }
+            
            
         };
         frame.bind("load",resize);
 
 		if (settings.autoUpdate) {
-			if ($.browser.msie) {
-				frame.attr("scrolling", "auto");
-			}
-            setInterval(resize, 1000);
+            frame.bind("load",function() {
+                if ($.browser.msie) {
+                    frame.attr("scrolling", "auto");
+                }
+                interval = setInterval(resize, 1000);
+            });
+			
 		}
         resize();
     });
