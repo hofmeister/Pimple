@@ -21,12 +21,7 @@ jQuery.fn.iframeResize = function(options){
         var resize = function() {
             frame.css("width",  settings.width  == "fill" ? "100%" : parseInt(settings.height));
             var autoheight = 0;
-            try {
-                autoheight = body.height() + filler;
-            } catch(e) {
-                //Probably due to permession denied
-                autoheight = frame.parent().height() + filler;
-            }
+            autoheight = body.height() + filler;
             frame.css("height", settings.height == "auto" ? autoheight : parseInt(settings.height));
            
         };
