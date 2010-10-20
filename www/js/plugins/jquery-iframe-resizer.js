@@ -9,7 +9,9 @@ jQuery.fn.iframeResize = function(options){
 	var settings = jQuery.extend({
 		width: "fill",
 		height: "auto",
-		autoUpdate : true
+		autoUpdate : true,
+        container:null,
+        loader:null
 	}, options);
 	var filler = 30;
 
@@ -17,21 +19,23 @@ jQuery.fn.iframeResize = function(options){
         var frame = $(this);
         var body = frame.contents().find("body");
         var interval = null;
+
         frame.css('overflow','hidden');
+        if (settings.container) {
+            $(settings.container).css('position','absolute');
+            $(settings.container).css('left','-9999px');
+        }
 
         var resize = function() {
-            body = frame.contents().find("body");
             frame.css("width",  settings.width  == "fill" ? "100%" : parseInt(settings.height));
             var autoheight = 0;
             try {
+                body = frame.contents().find("body");
                 autoheight = body.height() + filler;
                 frame.css("height", settings.height == "auto" ? autoheight : parseInt(settings.height));
-                console.log(body);
-                console.log(body.height());
             } catch(e) {
-                console.log(e);
                 frame.css('overflow','auto');
-                frame.css('height','600px');
+                frame.css('height','400px');
                 clearInterval(interval);
             }
         };
@@ -39,6 +43,12 @@ jQuery.fn.iframeResize = function(options){
 
 		if (settings.autoUpdate) {
             frame.bind("load",function() {
+                if (settings.loader) {
+                    $(settings.loader).hide();
+                }
+                if (settings.container) {
+                    $(settings.container).css('position','static');
+                }
                 if (interval) {
                     clearInterval(interval);
                     interval = null;
