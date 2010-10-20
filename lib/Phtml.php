@@ -8,6 +8,7 @@ class Phtml {
     const TAGEND = 'TAGEND';
     const DOCTYPE = 'DOCTYPE';
     const ATTR = 'ATTR';
+    const SCRIPT = 'SCRIPT';
 
     private $withinStack = array();
     private $current = '';
@@ -19,6 +20,7 @@ class Phtml {
     private $lineCount = 0;
     private $phtmlRaw = '';
     private $debugTrace = '';
+    private $ignoreNextChar = false;
 
     /**
      *
@@ -40,6 +42,7 @@ class Phtml {
         for($i = 0; $i < mb_strlen($string);$i++) {
             $chr = mb_substr($string,$i,1);
             $this->charCount++;
+            $this->prevChar = null;
             $this->nextChar = mb_substr($string,$i+1,1);
             $this->char = $chr;
 
@@ -50,6 +53,10 @@ class Phtml {
             
             switch($chr) {
                 case '<':
+                    if ($this->nextChar == '?') {
+                        $this->pushWithin(self::SCRIPT);
+                        break;
+                    }
                     if ($this->nextChar == '/') {
                         $this->pushWithin(self::TAGEND);
                         $this->getNode()->setContainer(true);
@@ -62,15 +69,19 @@ class Phtml {
                         
                     break;
                 case '>':
-                    if ($this->isWithin(self::TAGEND)) {
+                    if ($this->lastChar == '?' && $this->isWithin(self::SCRIPT)) {
+                        $this->popWithin();
+                    } elseif ($this->isWithin(self::TAGEND)) {
                         $this->popWithin();
                         $this->clearCurrent();
+                        $this->ignoreNextChar = true;//Used because the tag is marked ended before the char is added
                     } elseif ($this->isWithin(self::DOCTYPE)) {
                         $this->popWithin();
                         $this->onWordEnd();
-                    } else {
+                    } elseif(!$this->isWithin(self::SCRIPT)) {
                         $this->onWordEnd();
                         $this->onTagEnd();
+                        $this->ignoreNextChar = true;//Used because the tag is marked ended before the char is added
                     }
                     break;
                 case ':':
@@ -105,7 +116,7 @@ class Phtml {
             $this->addChar($this->char);
             $this->lastChar = $this->char;
         }
-        $text = substr($this->getCurrent(),1);
+        $text = $this->getCurrent();
         if ($text)
             $this->getNode()->addChild(new PhtmlNodeText($text));
 
@@ -125,7 +136,9 @@ class Phtml {
         $this->attrName = '';
     }
     protected function addChar($chr) {
-        $this->current .= $chr;
+        if (!$this->ignoreNextChar)
+            $this->current .= $chr;
+        $this->ignoreNextChar = false;
     }
     protected function onStringStart() {
         if ($this->stringStartChar && $this->stringStartChar != $this->char) return;
@@ -215,8 +228,6 @@ class Phtml {
         
         $node = new PhtmlNode();
         $text = $this->getCurrent();
-        if (!strstr($text,'!DOCTYPE'))
-            $text = substr($text,1);
         $this->pushWithin(self::TAG);
         if ($text)
             $this->getNode()->addChild(new PhtmlNodeText($text));
@@ -237,7 +248,7 @@ class Phtml {
     }
     protected function onNodeEnd() {
         $parent = $this->getNode()->getParent();
-        $text = substr($this->getCurrent(),1);
+        $text = $this->getCurrent();
         if ($text)
             $this->getNode()->addChild(new PhtmlNodeText($text));
         $this->debug("ENDING NODE: ".$this->getNode()->getTag());
@@ -367,30 +378,14 @@ class PhtmlNode extends HtmlElement {
                     $tag = $this->getTag();
                     $str = $taglibs[$this->ns]->callTag($tag,$this->getAttrs(),$body);
                 } else {
-                    
-                        
-                    if (preg_match('/<\?/',$body) && preg_match('/\$[A-Z]+\-\>[A-Z]+\(/is',$body)) {
+                    if (preg_match('/\%\{/',$body) || (preg_match('/<\?/',$body) && preg_match('/\$[A-Z]+\-\>[A-Z]+\(/is',$body))) {
                         //Body contains tags...
-                        $closureName = self::getNextClosure();
-                        $str .= sprintf('new %s($view),$view);?>',$closureName);
-                        self::$append .= chr(10).sprintf('<?
-                                        //%1$s closure start
-                                        class %2$s extends PhtmlClosure {
-                                        public function closure() {
-                                        $view = $this->view;
-                                        $data = $this->view->data;
-                                        if (is_array($this->view->data)) {
-                                            extract($this->view->data);
-                                        }
-                                        $libs = $this->view->taglibs;
-                                        extract($libs);
-                                        ?>%3$s<?
-                                        }}
-                                        //%1$s closure end
-                                        ?>'.chr(10),$this->getTag(),$closureName,$body);
+                        $closure = sprintf('function() use (&$view,&$data) {extract($view->taglibs);ob_start();?>%s<? return ob_get_clean();}',$body);;
+                        $str .= sprintf('%s,$view);?>',$closure);
+                        
                     } else {
-                        $str .= sprintf('ob_get_clean(),$view);?>',$closureName);
-                        $str = '<? ob_start();?>'."\n$body\n".$str;
+                        $str .= '"'.addslashes($body).'",$view);?>';
+                        
                     }
                 }
                 
