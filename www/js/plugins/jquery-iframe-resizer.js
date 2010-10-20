@@ -30,11 +30,8 @@ jQuery.fn.iframeResize = function(options){
 		if (settings.autoUpdate) {
 			if ($.browser.msie) {
 				frame.attr("scrolling", "auto");
-				setInterval(resize, 1000);
 			}
-			else {
-				body.bind("DOMSubtreeModified",resize);
-			}
+            setInterval(resize, 1000);
 		}
         resize();
     });
