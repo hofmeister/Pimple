@@ -73,7 +73,7 @@ class WidgetTagLib extends TagLib {
         if ($attrs->section) {
             
             $ctrl = Pimple::instance()->getControllerInstance();
-            if ($ctrl && $ctrl->getSection() == $attrs->section) {
+            if ($ctrl && $ctrl->isSection($attrs->section)) {
                 $attrs->class = trim($attrs->class.' active');
             }
             unset($attrs->section);

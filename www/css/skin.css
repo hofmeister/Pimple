@@ -86,7 +86,7 @@ h3 {
     border:1px solid;
     border-color: #333;
 }
-.menu a:hover {
+.menu a:hover,.menu a.active {
 	color:#333;
 	background-color: white;
 	text-decoration: none;

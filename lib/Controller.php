@@ -6,19 +6,19 @@ class Controller {
     protected $name;
     protected $validation = array();
     protected $data;
-    protected $currentSection = '';
+    protected $section = array();
     public function __construct() {
         $this->name = get_class($this);
     }
     public function getData() {
         return $this->data;
     }
-    public function getSection() {
-        return $this->section;
+    public function isSection($section) {
+        return in_array($section,$this->section);
     }
 
     public function setSection($section) {
-        $this->section = $section;
+        array_push($this->section, $section);
     }
     public function setData($data) {
         $this->data = $data;
