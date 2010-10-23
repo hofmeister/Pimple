@@ -41,7 +41,8 @@ class Model {
 	public function setData($data) {
         if (is_array($data) || is_object($data)) {
             foreach($data as $key=>$value) {
-				$this->$key($value);
+                if (in_array($key,$this->columns))
+                    $this->$key($value);
             }
         }
         if ($this->primKey) {

@@ -43,9 +43,7 @@ class View {
         $cache = Settings::get(View::CACHE,true);
         if (!$cache || !is_file($cachename)) {
 
-            ob_start();
-            $this->_include($this->getTemplateFile());
-            $phtml = ob_get_clean();
+            $phtml = file_get_contents($this->getTemplateFile());
             $parser = new Phtml();
             $parsed = $parser->read($phtml);
 
@@ -60,8 +58,8 @@ class View {
         $cachename = $this->getCacheName();
         if ($data instanceof Model)
             $data = $data->toArray();
-        $this->data = DataUtil::merge($this->data,$data);
         
+        $this->data = DataUtil::merge($this->data,$data);
         $this->parseTemplate();
 		ob_start();
 		try {
@@ -74,10 +72,11 @@ class View {
 		//unlink($cachename);
         $result = ob_get_clean();
         self::removeCurrent();
-		return stripslashes($result);
+		return $result;
     }
     protected function _include($file) {
         $data = $this->data;
+        
         if (is_array($this->data)) {
             extract($this->data);
         }
@@ -85,17 +84,6 @@ class View {
         $view = $this;
         include $file;
     }
-    protected function _eval($expr) {
-        $data = $this->data;
-        if (is_array($this->data)) {
-            extract($this->data);
-        }
-        extract($this->taglibs);
-        $view = $this;
-        
-        return eval("return ".stripslashes($expr));
-    }
-
     protected function _var($varname) {
         if (is_array($this->data))
             return $this->data[$varname];
@@ -106,21 +94,5 @@ class View {
         if (!$this->taglibs[$ns])
             throw new Exception(T('Unknown tag lib: %s',$ns));
         return $this->taglibs[$ns];
-    }
-    private function attr($string) {
-        $attrs = new stdClass();
-        ob_start();
-        eval('?>'.$string);
-        $string = stripslashes(ob_get_clean());
-        
-		preg_match_all('/(\w+)=("|\')([^\2]*?)\2/is',$string,$matches);
-        
-        
-		foreach($matches[1] as $i=>$name) {
-			$value = $matches[3][$i];
-			$attrs->$name = $value;
-		}
-        //var_dump($attrs);
-        return $attrs;
     }
 }

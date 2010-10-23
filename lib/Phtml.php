@@ -9,6 +9,7 @@ class Phtml {
     const DOCTYPE = 'DOCTYPE';
     const ATTR = 'ATTR';
     const SCRIPT = 'SCRIPT';
+    const P_EVAL= 'P_EVAL';
 
     private $withinStack = array();
     private $current = '';
@@ -21,6 +22,7 @@ class Phtml {
     private $phtmlRaw = '';
     private $debugTrace = '';
     private $ignoreNextChar = false;
+    private $ignoreTags = false;
 
     /**
      *
@@ -55,53 +57,73 @@ class Phtml {
                 case '<':
                     if ($this->nextChar == '?') {
                         $this->pushWithin(self::SCRIPT);
+                        $this->ignoreTags = true;
                         break;
                     }
-                    if ($this->nextChar == '/') {
-                        $this->pushWithin(self::TAGEND);
-                        $this->getNode()->setContainer(true);
-                        $this->onNodeEnd();
-                    } elseif ($this->nextChar == '!') {
-                        $this->pushWithin(self::DOCTYPE);
-                    } else {
-                        $this->onTagStart();
+                    if (!$this->ignoreTags) {
+                        if ($this->nextChar == '/') {
+                            $this->pushWithin(self::TAGEND);
+                            $this->getNode()->setContainer(true);
+                            $this->onNodeEnd();
+                        } elseif ($this->nextChar == '!') {
+                            $this->pushWithin(self::DOCTYPE);
+                        } else {
+                            $this->onTagStart();
+                        }
                     }
-                        
                     break;
                 case '>':
                     if ($this->lastChar == '?' && $this->isWithin(self::SCRIPT)) {
                         $this->popWithin();
-                    } elseif ($this->isWithin(self::TAGEND)) {
-                        $this->popWithin();
-                        $this->clearCurrent();
-                        $this->ignoreNextChar = true;//Used because the tag is marked ended before the char is added
-                    } elseif ($this->isWithin(self::DOCTYPE)) {
-                        $this->popWithin();
-                        $this->onWordEnd();
-                    } elseif(!$this->isWithin(self::SCRIPT)) {
-                        $this->onWordEnd();
-                        $this->onTagEnd();
-                        $this->ignoreNextChar = true;//Used because the tag is marked ended before the char is added
+                        $this->ignoreTags = false;
+                    } elseif(!$this->ignoreTags) {
+                        if ($this->isWithin(self::TAGEND)) {
+                            $this->popWithin();
+                            $this->clearCurrent();
+                            $this->ignoreNextChar = true;//Used because the tag is marked ended before the char is added
+                        } elseif ($this->isWithin(self::DOCTYPE)) {
+                            $this->popWithin();
+                            $this->onWordEnd();
+                        } elseif(!$this->isWithin(self::SCRIPT)) {
+                            $this->onWordEnd();
+                            $this->onTagEnd();
+                            $this->ignoreNextChar = true;//Used because the tag is marked ended before the char is added
+                        }
                     }
                     break;
                 case ':':
                     if ($this->isWithin(self::ATTR)) {break;}
+                case '%':
+                    if ($this->nextChar == '{') {
+                        $this->pushWithin(self::P_EVAL);
+                        $this->ignoreTags = true;
+                        break;
+                    }
+                case '}':
+                    if ($this->isWithin(self::P_EVAL)) {
+                        $this->popWithin();
+                        $this->ignoreTags = false;
+                        break;
+                    }
                 case ' ':
                 case "\t":
                 case "\n":
                 case "\r":
                 case '/':
                 case '=':
-                    if ($this->isWithin(self::DOCTYPE)) break;
+                    if ($this->ignoreTags) break;
                     $this->onWordEnd();
                     break;
                 case '"':
                 case '\'':
                     if (!$this->isWithin(self::TAG,true)) break;
-                    if ($this->isWithin(self::STRING))
+                    if ($this->isWithin(self::STRING)) {
                         $this->onStringEnd();
-                    else
+                        $this->ignoreTags = false;
+                    } else {
                         $this->onStringStart();
+                        $this->ignoreTags = true;
+                    }
                     break;
                 default:
                     $this->onWordStart();
@@ -197,8 +219,9 @@ class Phtml {
                     $this->attrName = $current;
                     $this->debug("ATTR FOUND: $this->attrName");
                 } else {
-                    $this->debug("ATTR VAL FOUND FOR: $this->attrName");
-                    $this->getNode()->setAttribute($this->attrName,trim($this->getCurrent(),"\"'"));
+                    $val = trim($this->getCurrent(),"\"'");
+                    $this->debug("ATTR VAL FOUND FOR: $this->attrName ($val)");
+                    $this->getNode()->setAttribute($this->attrName,$val);
                     $this->attrName = '';
                     $this->popWithin();
                 }
@@ -380,8 +403,29 @@ class PhtmlNode extends HtmlElement {
                 } else {
                     if (preg_match('/\%\{/',$body) || (preg_match('/<\?/',$body) && preg_match('/\$[A-Z]+\-\>[A-Z]+\(/is',$body))) {
                         //Body contains tags...
-                        $closure = sprintf('function() use (&$view,&$data) {extract($view->taglibs);ob_start();?>%s<? return ob_get_clean();}',$body);;
-                        $str .= sprintf('%s,$view);?>',$closure);
+                        if (version_compare(PHP_VERSION, '5.3.0', '>=')) {
+                            //If in PHP 5.3 or higher - use closures
+                            $closure = sprintf('function() use (&$view,&$data) {extract($view->taglibs);ob_start();?>%s<? return ob_get_clean();}',$body);;
+                            $str .= sprintf('%s,$view);?>',$closure);
+                        } else {
+                            $closureName = self::getNextClosure();
+                            $str .= sprintf('new %s($view),$view);?>',$closureName);
+                            self::$append .= chr(10).sprintf('<?
+                                            //%1$s closure start
+                                            class %2$s extends PhtmlClosure {
+                                            public function closure() {
+                                            $view = $this->view;
+                                            $data = $this->view->data;
+                                            if (is_array($this->view->data)) {
+                                                extract($this->view->data);
+                                            }
+                                            $libs = $this->view->taglibs;
+                                            extract($libs);
+                                            ?>%3$s<?
+                                            }}
+                                            //%1$s closure end
+                                            ?>'.chr(10),$this->getTag(),$closureName,$body);
+                        }
                         
                     } else {
                         $str .= '"'.addslashes($body).'",$view);?>';

@@ -24,7 +24,7 @@ class DB {
 
 	public static function value($arg) {
 		if (is_string($arg))
-			return '"' . mysql_real_escape_string(trim($arg)) . '"';
+			return '"' . mysql_real_escape_string($arg) . '"';
 		else if ($arg === null)
 			return 'NULL';
 		else
