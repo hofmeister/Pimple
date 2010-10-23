@@ -36,6 +36,7 @@ require_once 'lib/Util.php';
 require_once 'lib/String.php';
 require_once 'lib/ArrayUtil.php';
 require_once 'lib/DataUtil.php';
+require_once 'lib/Thread.php';
 
 //MVC
 require_once 'lib/Request.php';

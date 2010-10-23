@@ -19,7 +19,9 @@ class JavascriptTagLib extends TagLib {
         return sprintf('<script type="text/javascript">%s</script>',"\n".sprintf('%s = %s',$attrs->as,json_encode($attrs->value))."\n")."\n";
     }
     protected function tagJson($attrs) {
-        return json_encode($attrs->value);
+        require_once Pimple::instance()->getRessource('lib/Zend/Json.php');
+        $result = Zend_Json::encode($attrs->value);
+        return $result;
     }
 
 }
