@@ -94,6 +94,7 @@ class Phtml {
                 case ':':
                     if ($this->isWithin(self::ATTR)) {break;}
                 case '%':
+                    if ($this->ignoreTags) break;
                     if ($this->nextChar == '{') {
                         $this->pushWithin(self::P_EVAL);
                         $this->ignoreTags = true;
@@ -428,7 +429,8 @@ class PhtmlNode extends HtmlElement {
                         }
                         
                     } else {
-                        $str .= '"'.addslashes($body).'",$view);?>';
+                        $str .= sprintf('ob_get_clean(),$view);?>',$closureName);
+                        $str = '<? ob_start();?>'."\n$body\n".$str;
                         
                     }
                 }
@@ -463,8 +465,12 @@ class PhtmlNode extends HtmlElement {
         return preg_replace('/%\{([^\}]*)\}/i','<?=$1?>',$phtml);
     }
     private function processAttrValue($val) {
-        $val = preg_replace('/%\{([^\}]*)\}/i','".$1."','"'.$val.'"');
-        $val = preg_replace('/(""\.|\."")/i','',$val);
+        if (preg_match('/<\?\=(.*)\?>/i',$val)) {
+            $val = preg_replace('/<\?\=(.*)\?>/i','$1',$val);
+        } else {
+            $val = preg_replace('/%\{([^\}]*)\}/i','".$1."','"'.$val.'"');
+            $val = preg_replace('/(""\.|\."")/i','',$val);
+        }
         //$val = trim($val,'".');
 
         return $val;
