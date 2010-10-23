@@ -16,6 +16,7 @@ ul.horizontal.right li,
 
 .centered {
 	margin:0 auto;
+    text-align:center;
 }
 .clear {
     clear:both;
@@ -38,6 +39,10 @@ ul.horizontal.right li,
     margin:0;
     font-size:12px;
 }
+.rpad {padding-right:10px;}
+.lpad {padding-left:10px;}
+.tpad {padding-top:10px;}
+.bpad {padding-bottom:10px;}
 
 
 .horizontal.divided li:first-child
