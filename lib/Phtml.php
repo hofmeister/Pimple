@@ -58,6 +58,7 @@ class Phtml {
                     if ($this->nextChar == '?') {
                         $this->pushWithin(self::SCRIPT);
                         $this->ignoreTags = true;
+                        $this->debug('START IGNORING TAGS (1)');
                         break;
                     }
                     if (!$this->ignoreTags) {
@@ -76,17 +77,20 @@ class Phtml {
                     if ($this->lastChar == '?' && $this->isWithin(self::SCRIPT)) {
                         $this->popWithin();
                         $this->ignoreTags = false;
+                        $this->debug('STOP IGNORING TAGS (1)');
                     } elseif(!$this->ignoreTags) {
                         if ($this->isWithin(self::TAGEND)) {
                             $this->popWithin();
                             $this->clearCurrent();
+                            $this->debug('IGNORING NEXT CHR (1): '.$this->char);
                             $this->ignoreNextChar = true;//Used because the tag is marked ended before the char is added
                         } elseif ($this->isWithin(self::DOCTYPE)) {
                             $this->popWithin();
                             $this->onWordEnd();
-                        } elseif(!$this->isWithin(self::SCRIPT)) {
+                        } else {
                             $this->onWordEnd();
                             $this->onTagEnd();
+                            $this->debug('IGNORING NEXT CHR (2): '.$this->char);
                             $this->ignoreNextChar = true;//Used because the tag is marked ended before the char is added
                         }
                     }
@@ -97,12 +101,14 @@ class Phtml {
                     if ($this->ignoreTags) break;
                     if ($this->nextChar == '{') {
                         $this->pushWithin(self::P_EVAL);
+                        $this->debug('START IGNORING TAGS (2)');
                         $this->ignoreTags = true;
                         break;
                     }
                 case '}':
                     if ($this->isWithin(self::P_EVAL)) {
                         $this->popWithin();
+                        $this->debug('STOP IGNORING TAGS (2)');
                         $this->ignoreTags = false;
                         break;
                     }
@@ -120,10 +126,8 @@ class Phtml {
                     if (!$this->isWithin(self::TAG,true)) break;
                     if ($this->isWithin(self::STRING)) {
                         $this->onStringEnd();
-                        $this->ignoreTags = false;
                     } else {
                         $this->onStringStart();
-                        $this->ignoreTags = true;
                     }
                     break;
                 default:
@@ -167,6 +171,8 @@ class Phtml {
         if ($this->stringStartChar && $this->stringStartChar != $this->char) return;
         $this->stringStartChar = $this->char;
         $this->debug("STRING START");
+        $this->debug('START IGNORING TAGS (3)');
+        $this->ignoreTags = true;
         $this->pushWithin(self::STRING);
         $this->current = substr($this->current,1);
     }
@@ -174,6 +180,8 @@ class Phtml {
         if ($this->stringStartChar != $this->char || $this->lastChar == '\\') return;
         $this->stringStartChar = '';
         $this->debug("STRING END");
+        $this->debug('STOP IGNORING TAGS (3)');
+        $this->ignoreTags = false;
         $this->popWithin();
     }
     protected function getCurrent($alphanum = false) {
