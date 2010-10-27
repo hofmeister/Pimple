@@ -35,7 +35,7 @@ class ValueTagLib extends TagLib {
         return number_format($int,0);
     }
     protected function tagNumber($attrs) {
-        if (!$attrs->decimals) $attrs->decimals = 2;
+        if (!isset($attrs->decimals)) $attrs->decimals = 2;
         $number = doubleval($this->body());
         return number_format($number,$attrs->decimals);
     }

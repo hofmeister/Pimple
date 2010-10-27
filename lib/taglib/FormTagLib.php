@@ -250,6 +250,7 @@ class FormTagLib extends TagLib {
         unset($attrs->nolabel);
 
         $output .= '<div class="element">'.$formElement.'</div>';
+        $renderedInstructions = false;
         if ($hasInstructions) {
             $output .= sprintf('<div class="instructions">
                                     <div class="help">%s</div>
@@ -261,13 +262,19 @@ class FormTagLib extends TagLib {
                             T('Field is valid'),
                             current($errors),
                             implode(chr(10),$errorMessages));
+            $renderedInstructions = true;
         } else if ($attrs->instructions) {
             $output .= sprintf('<div class="instructions">
                                     %s
                                 </div>',$attrs->instructions);
+            $renderedInstructions = true;
         }
-        if ($attrs->description) {
-            $output .= '<div class="description">'.$attrs->description.'</div>';
+        if (!$renderedInstructions && (count($errors) > 0)) {
+            $output .= '<div class="description error">'.current($errors).'</div>';
+        } else {
+            if ($attrs->description) {
+                $output .= '<div class="description">'.$attrs->description.'</div>';
+            }
         }
         $output .= '</div>';
         return $output;

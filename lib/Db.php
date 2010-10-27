@@ -3,10 +3,11 @@
 class DB {
 
 	private static $debug = false;
-
+    private static $lastResult = null;
+    private static $link = null;
 	public static function connect($host, $user, $pass, $dbName) {
-		mysql_connect($host, $user, $pass) or die(mysql_error());
-		mysql_select_db($dbName) or die(mysql_error());
+		self::$link = mysqli_connect($host, $user, $pass) or die(mysqli_error());
+		mysqli_select_db(self::$link,$dbName) or die(mysqli_error(self::$link));
         self::q('SET NAMES utf8');
 	}
 
@@ -24,7 +25,7 @@ class DB {
 
 	public static function value($arg) {
 		if (is_string($arg))
-			return '"' . mysql_real_escape_string($arg) . '"';
+			return '"' . mysqli_real_escape_string(self::$link,$arg) . '"';
 		else if ($arg === null)
 			return 'NULL';
 		else
@@ -36,11 +37,26 @@ class DB {
 		if (self::$debug)
 			echo nl2br("\nRUNNING:\n$compiled");
         //echo "$compiled\n<br/>";
-		$r = mysql_query($compiled);
-		if (!$r)
-			throw new Exception("SQL:$compiled\nERR:" . mysql_error(), 3);
+        self::freeResult();
+		$r = mysqli_query(self::$link,$compiled);
+        self::$lastResult = $r;
+        if (!$r)
+			throw new Exception("SQL:$compiled\nERR:" . mysqli_error(self::$link), 3);
 		return $r;
 	}
+    public static function freeResult() {
+        if (self::$lastResult && !is_bool(self::$lastResult)) {
+            mysqli_free_result(self::$lastResult);
+            while (mysqli_more_results(self::$link)) {
+                self::$lastResult = mysqli_use_result(self::$link);
+                if (self::$lastResult)
+                    mysqli_free_result(self::$lastResult);
+                else
+                    break;
+            }
+            self::$lastResult = null;
+        }
+    }
 
 	public static function compile($sql) {
 		$args = func_get_args();
@@ -59,7 +75,8 @@ class DB {
 		$args = func_get_args();
 		array_shift($args);
         $r = self::_query(self::ensureOneRow($sql), $args);
-		$row = mysql_fetch_row($r);
+		$row = mysqli_fetch_row(self::$link,$r);
+        self::freeResult();
 		return $row[0];
 	}
 
@@ -67,14 +84,17 @@ class DB {
 		$args = func_get_args();
 		array_shift($args);
         $r = self::_query(self::ensureOneRow($sql), $args);
-		$row = mysql_fetch_object($r);
+		$row = mysqli_fetch_object($r);
+        self::freeResult();
 		return $row;
 	}
     public static function exists($sql) {
 		$args = func_get_args();
 		array_shift($args);
 		$r = self::_query(self::ensureOneRow($sql), $args);
-		return mysql_num_rows($r) > 0;
+		$result = mysqli_num_rows($r) > 0;
+        self::freeResult();
+        return $result;
 	}
     private function ensureOneRow($sql) {
         if (!preg_match('/[^A-Z]LIMIT[^A-Z]/i', $sql)) {
@@ -95,9 +115,10 @@ class DB {
 
 		$r = self::_query($sql, $args);
 		$result = array();
-		while ($row = mysql_fetch_row($r)) {
+		while ($row = mysqli_fetch_row($r)) {
 			$result[] = $row[0];
 		}
+        self::freeResult();
 		return $result;
 	}
 
@@ -107,9 +128,12 @@ class DB {
 
 		$r = self::_query($sql, $args);
 		$result = array();
-		while ($row = mysql_fetch_object($r)) {
-			$result[] = $row;
-		}
+        do {
+            while ($row = mysqli_fetch_object($r)) {
+                $result[] = $row;
+            }
+        } while(mysqli_next_result(self::$link));
+        self::freeResult();
 		return $result;
 	}
 
@@ -120,17 +144,17 @@ class DB {
 			$word = trim($word);
 			if (strlen($word) < 3)
 				continue;
-			$query .= ' +' . preg_replace('/([\.\-\/])/i', '\\\$1', mysql_real_escape_string($word));
+			$query .= ' +' . preg_replace('/([\.\-\/])/i', '\\\$1', mysqli_real_escape_string(self::$link,$word));
 		}
 		return new DbVal('\'' . trim($query) . '*\'');
 	}
 
 	public static function lastId() {
-		return mysql_insert_id();
+		return mysqli_insert_id(self::$link);
 	}
 
 	public static function rowCount($result) {
-		return mysql_num_rows($result);
+		return mysqli_num_rows($result);
 	}
 
 }

@@ -392,6 +392,9 @@ input.no-checker {
 .form-item.no-label .description {
     margin-left:0;
 }
+.form-item .description.error {
+    color:#990000;
+}
 .buttongroup {
     padding-left:145px;
     margin-top:5px;
@@ -660,6 +663,9 @@ table.data .section {
 .data.list td {
     padding-left:10px;
     border-bottom:1px solid #ccc;
+}
+.data.list td em {
+    font-size:10px;
 }
 /* icons */
 .icon16x16 {

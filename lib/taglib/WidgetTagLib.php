@@ -27,6 +27,7 @@ class WidgetTagLib extends TagLib {
 	const EVT_CREATE	= 'create';
 
     protected $tabPanels = array();
+    protected $elements = array();
 
 	public function __construct() {
 		parent::__construct(false);
@@ -161,7 +162,6 @@ class WidgetTagLib extends TagLib {
         $this->tabPanels = array();
         return sprintf('<div class="pw-tabpage %s">%s%s</div>',$attrs->class,$tabs,$body);
     }
-
 }
 class Wizard {
     private static $_registry = array();
