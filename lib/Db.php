@@ -75,7 +75,7 @@ class DB {
 		$args = func_get_args();
 		array_shift($args);
         $r = self::_query(self::ensureOneRow($sql), $args);
-		$row = mysqli_fetch_row(self::$link,$r);
+		$row = mysqli_fetch_row($r);
         self::freeResult();
 		return $row[0];
 	}
