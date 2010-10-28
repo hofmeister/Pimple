@@ -13,6 +13,8 @@ class Cli {
 	protected $cursorPosStore = array();
 	protected $progressCount = 0;
 	protected $currentProgress = 0;
+    protected $currentPid = null;
+    protected $daemon = false;
     /**
      *
      * @var Basic_View_Form
@@ -384,23 +386,50 @@ class Cli {
                 fputs($fp,$pid,strlen($pid));
                 fclose($fp);
                 $this->displayLine('Daemon started');
-                System::stop();
+                Pimple::end();
             } else {
                 $this->killPid($pid);
                 $this->displayErrorAndExit(sprintf('Could not create pidfile: %s',$pidFile));
             }
         }
+        $this->currentPid = $pidFile;
+        $this->daemon = true;
         return true;
     }
-    public function stopDaemon($pidFile) {
+    public function isDaemonRunning() {
+        if (file_exists($this->currentPid)) {
+            return true;
+        }
+        return false;
+    }
+    public function stopDaemon($pidFile,$force = false) {
        $pid = @file_get_contents($pidFile);
        if (!$pid)
             Cli::getInstance()->displayErrorAndExit('Pid file empty or not found!');
-       $this->killPid($pid);
        unlink($pidFile);
-       $this->displayLine('Daemon stopped');
+       if ($force) {
+            $this->killPid($pid);
+            $this->displayLine('Daemon stopped forcefully');
+       } else {
+            $i = 0;
+            while(true) {
+                if ($i > 60) {
+                    $this->displayLine('Daemon could not be stopped gracefully');
+                    $this->killPid($pid);
+                    $this->displayLine('Daemon stopped forcefully');
+                    break;
+                }
+                if (!$this->isPidAlive($pid)) {
+                    $this->displayLine('Daemon stopped gracefully');
+                    break;
+                }
+                $i++;
+                sleep(1);
+            }
+       }
        return true;
     }
+
     public function killPid($pid) {
        posix_kill($pid,9);
        pcntl_waitpid ($pid,$temp = 0, WNOHANG);
@@ -452,6 +481,23 @@ class Cli {
 		}
 		return self::$instance;
 	}
+    public static function sleep($seconds) {
+        $ms = $seconds * 1000;
+        $halfsecs = $ms / 500;
+        for($i = 0; $i < $halfsecs;$i++) {
+            usleep(500);
+            if (self::getInstance()->isDaemon() && !self::getInstance()->isDaemonRunning()) {
+                throw new Interrupt('Daemon was killed');
+            }
+        }
+    }
+    public static function usleep($ms) {
+        usleep(500);
+        if (self::getInstance()->isDaemon() && !self::getInstance()->isDaemonRunning()) {
+            throw new Interrupt('Daemon was killed');
+        }
+        
+    }
 }
 
 

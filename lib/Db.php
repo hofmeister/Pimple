@@ -136,6 +136,28 @@ class DB {
         self::freeResult();
 		return $result;
 	}
+    public static function call($method) {
+		$args = func_get_args();
+		array_shift($args);
+        $args = self::processArgs($args);
+        $sql = "CALL $method(".implode(',',$args).");";
+
+        self::freeResult();
+        $result = array();
+		if (mysqli_real_query(self::$link,$sql)) {
+            do {
+                $r = mysqli_use_result(self::$link);
+                if ($r && !is_bool($r)) {
+                    while ($row = mysqli_fetch_object($r)) {
+                        $result[] = $row;
+                    }
+                    mysqli_free_result($r);
+                }
+            } while(mysqli_next_result(self::$link));
+        }
+
+		return $result;
+	}
 
 	public static function prepareQuery($query) {
 		$words = explode(' ', $query);
