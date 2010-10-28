@@ -70,6 +70,9 @@ class Model {
 	public function  __get($name) {
 		return $this->$name();
 	}
+    public function  __isset($name) {
+        return in_array($name,$this->columns);
+    }
 
 	public function commit($keyName = null) {
 		if ($this->new) {
@@ -170,6 +173,12 @@ class Model {
             $array[$key] = $val;
         }
         return $array;
+    }
+    /**
+     * To plain old php object
+     */
+    public function toPOPO() {
+        return $this->data;
     }
 
 }

@@ -667,6 +667,9 @@ table.data .section {
 .data.list td em {
     font-size:10px;
 }
+.data tr.active td {
+    background-color: #efefef;
+}
 /* icons */
 .icon16x16 {
     display:block;

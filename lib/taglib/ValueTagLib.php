@@ -18,6 +18,17 @@ class ValueTagLib extends TagLib {
         }
         return date($attrs->format,$attrs->value);
 	}
+    protected function tagShort($attrs) {
+        $max = intval($attrs->max);
+        $string = trim($this->body());
+        $orig = $string;
+        if (strlen($string) > $max) {
+            $string = substr($string,0,$max-3).'...';
+        }
+        $span = new HtmlElement('span',array('title'=>$orig));
+        $span->addChild(new HtmlText($string));
+        return $span;
+	}
     protected function tagTime($attrs) {
         if (!$attrs->format)
             $attrs->format = Settings::get(Date::TIME_FORMAT,'H:i:s');

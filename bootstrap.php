@@ -33,6 +33,7 @@ require_once 'lib/Dir.php';
 require_once 'lib/Date.php';
 require_once 'lib/Cli.php';
 require_once 'lib/Util.php';
+require_once 'lib/Math.php';
 require_once 'lib/String.php';
 require_once 'lib/ArrayUtil.php';
 require_once 'lib/DataUtil.php';
