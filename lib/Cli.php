@@ -402,6 +402,10 @@ class Cli {
         }
         return false;
     }
+    public function isDaemon() {
+        return $this->daemon;
+    }
+
     public function stopDaemon($pidFile,$force = false) {
        $pid = @file_get_contents($pidFile);
        if (!$pid)
