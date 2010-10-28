@@ -304,12 +304,16 @@ class Phtml {
 class PhtmlNode extends HtmlElement {
     private static $closureCount = 0;
     private static $append = '';
+    private static $prepend = '';
     private $ns;
     private $container = false;
     
     public static function getNextClosure() {
         self::$closureCount++;
-        return "closure".md5(self::$closureCount + microtime(true));
+        $basis = self::$closureCount.microtime(true).rand(1,99999).rand(1,99999).rand(1,99999);
+        $basis2 = String::GUID();
+        //echo "\n$basis";
+        return "closure".md5($basis.md5($basis2));
     }
     public function getNs() {
         return $this->ns;
@@ -419,19 +423,21 @@ class PhtmlNode extends HtmlElement {
                         } else {
                             $closureName = self::getNextClosure();
                             $str .= sprintf('new %s($view),$view);?>',$closureName);
-                            self::$append .= chr(10).sprintf('<?
+                            self::$prepend .= chr(10).sprintf('<?
                                             //%1$s closure start
-                                            class %2$s extends PhtmlClosure {
-                                            public function closure() {
-                                            $view = $this->view;
-                                            $data = $this->view->data;
-                                            if (is_array($this->view->data)) {
-                                                extract($this->view->data);
+                                            if (!class_exists("%2$s")) {
+                                                class %2$s extends PhtmlClosure {
+                                                public function closure() {
+                                                $view = $this->view;
+                                                $data = $this->view->data;
+                                                if (is_array($this->view->data)) {
+                                                    extract($this->view->data);
+                                                }
+                                                $libs = $this->view->taglibs;
+                                                extract($libs);
+                                                ?>%3$s<?
+                                                }}
                                             }
-                                            $libs = $this->view->taglibs;
-                                            extract($libs);
-                                            ?>%3$s<?
-                                            }}
                                             //%1$s closure end
                                             ?>'.chr(10),$this->getTag(),$closureName,$body);
                         }
@@ -458,7 +464,8 @@ class PhtmlNode extends HtmlElement {
             }
         }
         if ($this->getParent() == null || $this->getParent()->getTag() == 'phtml') {
-            $str .= self::$append;
+            $str = self::$prepend.$str.self::$append;
+            self::$prepend = '';
             self::$append = '';
         }
 

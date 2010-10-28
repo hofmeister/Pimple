@@ -10,6 +10,9 @@ class DB {
 		mysqli_select_db(self::$link,$dbName) or die(mysqli_error(self::$link));
         self::q('SET NAMES utf8');
 	}
+    public static function close() {
+        mysqli_close(self::$link);
+    }
 
 	private static function processArgs($args) {
 
@@ -136,9 +139,7 @@ class DB {
         self::freeResult();
 		return $result;
 	}
-    public static function call($method) {
-		$args = func_get_args();
-		array_shift($args);
+    private static function _call($method,$args) {
         $args = self::processArgs($args);
         $sql = "CALL $method(".implode(',',$args).");";
 
@@ -157,7 +158,18 @@ class DB {
         }
 
 		return $result;
+    }
+    public static function call($method) {
+		$args = func_get_args();
+		array_shift($args);
+        return self::_call($method,$args);
 	}
+    public static function callFirst($method) {
+        $args = func_get_args();
+		array_shift($args);
+        $result = self::_call($method,$args);
+        return current($result);
+    }
 
 	public static function prepareQuery($query) {
 		$words = explode(' ', $query);
