@@ -23,6 +23,12 @@ class ArrayUtil {
 		}
 		return $this;
 	}
+    public static function append($array1,$array2) {
+        for($i = 0;$i < count($array2);$i++) {
+            array_push($array1,$array2[$i]);
+        }
+        return $array1;
+    }
     public static function insert(&$array,$value,$index) {
         $slice1 = array_values(array_slice($array,0,$index));
         $slice2 = array_values(array_slice($array,$index));

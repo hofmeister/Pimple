@@ -52,7 +52,7 @@ class Controller {
             $this->validation = $fields;
         else
             $fields = $this->validation;
-        if (!$data)
+        if ($data === null)
             $data = Request::post();
         if (!$data) throw new Interrupt(); //Not yet submitted...
 

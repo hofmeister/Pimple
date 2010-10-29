@@ -110,8 +110,15 @@ jQuery.fn.clearValidation = function() {
 jQuery.fn.validation = function() {
     this.each(function() {
         var dom = $(this);
-        dom.find('input,select,textarea').bind('change blur keyup validate',function() {
+        dom.find('input,select,textarea')
+        .bind('change blur keyup validate',function() {
             $(this).validate();
+        })
+        .bind('focus',function() {
+            $(this).closest('.form-item').addClass('focus');
+        })
+        .bind('blur',function() {
+            $(this).closest('.form-item').removeClass('focus');
         });
     });
 };

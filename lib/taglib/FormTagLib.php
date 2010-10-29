@@ -1,8 +1,19 @@
 <?php
 
 class FormTagLib extends TagLib {
-    private $formData;
+    private $formData,$formMethod;
     protected function tagText($attrs,$view) {
+		return $this->inputElement('text',$attrs,$view);
+    }
+    protected function tagDate($attrs,$view) {
+        if (!$attrs->class) $attrs->class = '';
+        if (!$attrs->format)
+            $attrs->format = Settings::get(Date::DATE_FORMAT,'Y-m-d');
+
+        $attrs->class = trim($attrs->class.' js-datepicker');
+        if ($attrs->value && !preg_match('/[^0-9]/',$attrs->value)) {
+            $attrs->value = date($attrs->format,$attrs->value);
+        }
 		return $this->inputElement('text',$attrs,$view);
     }
 	protected function tagSubmit($attrs,$view) {
@@ -43,13 +54,35 @@ class FormTagLib extends TagLib {
 	}
     protected function tagSelect($attrs,$view) {
 
+        if ($attrs->name) {
+            if (!$attrs->value && $this->formData) {
+                
+                $name = $attrs->name;
+                if (is_array($this->formData))
+                    $attrs->value = $this->formData[$name];
+                else
+                    $attrs->value = $this->formData->$name;
+            }
+            if ($this->formMethod == 'get') {
+                $attrs->value = Request::get($attrs->name,$attrs->value);
+            } else {
+                $attrs->value = Request::post($attrs->name,$attrs->value);
+            }
+        }
+        
         $keyVal = json_decode(str_replace('\'','"',stripslashes($attrs->options)));
         $options = "";
         foreach($keyVal as $key=>$val) {
-            if (is_array($keyVal)) {
-                $options .= sprintf('<option>%s</option>',$val);
+            $key = (is_array($keyVal)) ? $val : $key;
+            if ($key == $attrs->value) {
+                $checked = 'selected="true"';
             } else {
-                $options .= sprintf('<option value="%s">%s</option>',$key,$val);
+                $checked = '';
+            }
+            if (is_array($keyVal)) {
+                $options .= sprintf('<option %s>%s</option>',$checked,$val);
+            } else {
+                $options .= sprintf('<option %s value="%s">%s</option>',$checked,$key,$val);
             }
         }
         $selectElm = sprintf('<select name="%s" class="form-select %s">%s</select>',
@@ -78,10 +111,12 @@ class FormTagLib extends TagLib {
             $this->formData = $attrs->data;
         else
             $this->formData = $view->data;
+        $attrs->method = strtolower($attrs->method ? $attrs->method : 'post');
+        $this->formMethod = $attrs->method;
         
         
         return sprintf('<form method="%s" action="%s" enctype="%s">',
-						$attrs->method ? $attrs->method : 'post',
+						$attrs->method,
 						$attrs->url,
                         $attrs->enctype).
 				$this->body().
@@ -122,7 +157,11 @@ class FormTagLib extends TagLib {
                 else
                     $attrs->value = $this->formData->$name;
             }
-            $attrs->value = Request::post($attrs->name,$attrs->value);
+            if ($this->formMethod == 'get') {
+                $attrs->value = Request::get($attrs->name,$attrs->value);
+            } else {
+                $attrs->value = Request::post($attrs->name,$attrs->value);
+            }
         }
         
         
@@ -181,8 +220,17 @@ class FormTagLib extends TagLib {
 	}
     private function formElementContainer($formElement,$attrs) {
         $classes = array();
+        $elmClasses = array();
         $errorMessages = array();
         $errors = array();
+        $classes[] = 'line';
+        if ($attrs->small) {
+            $attrs->nolabel = true;
+            $attrs->noinstructions = true;
+        } else {
+            $classes[] = 'composit';
+        }
+        
         $label = $attrs->label;
         $help = $attrs->help;
         $validators = Pimple::instance()->getControllerInstance()->getFieldValidation($attrs->name);
@@ -233,7 +281,7 @@ class FormTagLib extends TagLib {
         else if ($attrs->name && Validate::isFieldValid($attrs->name))
             $classes[] = 'valid';
 
-        $output = '<div class="line form-item '.implode(' ',$classes).'"';
+        $output = '<div class="form-item '.implode(' ',$classes).'"';
         if ($attrs->cStyle) {
             $output .= sprintf(' style="%s" ',$attrs->cStyle);
         }
@@ -241,15 +289,15 @@ class FormTagLib extends TagLib {
         $label = trim($label);
         if (!$label)
             $label = '&nbsp;';
-        if (!$attrs->nolabel) {
+        if (!$attrs->nolabel || $attrs->small) {
             if ($attrs->id)
                 $output .= sprintf('<label for="%s">%s</label>',$attrs->id,$label);
             else
-                $output .= sprintf('<label>%s</label>',$attrs->id,$label);
+                $output .= sprintf('<label>%s</label>',$label);
         }
         unset($attrs->nolabel);
 
-        $output .= '<div class="element">'.$formElement.'</div>';
+        $output .= '<div class="element '.implode(' ',$elmClasses).'">'.$formElement.'</div>';
         $renderedInstructions = false;
         if ($hasInstructions) {
             $output .= sprintf('<div class="instructions">

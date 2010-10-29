@@ -28,12 +28,15 @@ class DB {
 
 	public static function value($arg) {
 		if (is_string($arg))
-			return '"' . mysqli_real_escape_string(self::$link,$arg) . '"';
+			return '"' . self::escape($arg) . '"';
 		else if ($arg === null)
 			return 'NULL';
 		else
 			return $arg;
 	}
+    public static function escape($arg) {
+        return mysqli_real_escape_string(self::$link,$arg);
+    }
 
 	private static function _query($sql, $args) {
 		$compiled = vsprintf($sql, self::processArgs($args));

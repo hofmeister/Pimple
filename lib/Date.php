@@ -4,6 +4,10 @@ class Date {
     const DATE_FORMAT = 'DATE_DATE_FORMAT';
     const DATETIME_FORMAT = 'DATE_DATETIME_FORMAT';
     const TIME_FORMAT = 'DATE_TIME_FORMAT';
+
+    const SPAN_DAY = 86400;
+    const SPAN_WEEK = 604800;
+    const SPAN_MONTH = 2592000;
 	
 	public static function getFirstDateOfWeek($week,$year = NULL) {
 		if (!$year) $year = date('Y');

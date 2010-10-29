@@ -107,12 +107,6 @@ h3 {
     background-color: white;
     color:#333;
 }
-.reset {
-    width:auto !important;
-    height:auto !important;
-    line-height: normal !important;
-    border:inherit !important;
-}
 /* user menu */
 .user-menu {
     float:right;
@@ -208,10 +202,12 @@ input,select,textarea,.button,a.button,.form-element {
     display:block;
     font-size:12px;
     line-height:18px;
-    border:0px;
-    padding:3px;
     color:#666;
-    width:230px;
+    border:0px;
+}
+.form-item .element {
+    outline: none;
+    padding:3px;
     border:1px solid #CCC;
     -moz-border-radius:5px; /* FF1+ */
     -webkit-border-radius:5px; /* Saf3-4 */
@@ -219,8 +215,27 @@ input,select,textarea,.button,a.button,.form-element {
     behavior: url(plugins/pie.htc);
 }
 
-.form-item input,.form-item select,.form-element {
+.form-item input,
+    .form-item select,
+    .form-element {
     height:20px;
+    width:100%;
+}
+ 
+.form-item.small  {
+    width:100px;
+}
+.form-item.medium {
+    width:140px;
+}
+.form-item.normal {
+    width:230px;
+}
+.form-item.large {
+    width:300px;
+}
+.form-item.xlarge {
+    width:450px;
 }
 
 input.form-checkbox,
@@ -230,36 +245,16 @@ input.form-checkbox,
 textarea,.form-element {
     font-size:12px;
 }
-input:focus,
-    textarea:focus,
-    select:focus,
-    .form-item.error input,
-    .form-item.error textarea,
-    .form-item.error select,
-    .form-item.error .form-element,
-    .form-item.valid input,
-    .form-item.valid textarea,
-    .form-item.valid select,
-    .form-item.valid .form-element {
+.form-item.focus .element,
+    .form-item.error .element,
+    .form-item.valid .element {
     -moz-border-radius:5px 0 0 5px; /* FF1+ */
     -webkit-border-radius:5px 0 0 5px; /* Saf3-4 */
     border-radius:5px 0 0 5px;
     behavior: url(plugins/pie.htc);
     border-right-color: #AAA;
 }
-.no-instructions input:focus,
-    input.form-button:focus,
-    input.form-submit:focus,
-    .no-instructions textarea:focus,
-    .no-instructions select:focus,
-    .no-instructions.error input,
-    .no-instructions.error textarea,
-    .no-instructions.error select,
-    .no-instructions.error .form-element,
-    .no-instructions.valid input,
-    .no-instructions.valid textarea,
-    .no-instructions.valid select,
-    .no-instructions.valid .form-element {
+.form-item.no-instructions .element {
     -moz-border-radius:5px; /* FF1+ */
     -webkit-border-radius:5px; /* Saf3-4 */
     border-radius:5px;
@@ -299,27 +294,12 @@ label span.required {
     margin-right:5px;
     line-height: 25px;
 }
-.label.top {
-    width:auto;
-    text-transform: uppercase;
-    font-weight:bold;
-    text-align: left;
-    margin-top:10px;
-    font-size:12px;
-    line-height:12px;
-    margin-left:5px;
-}
-.form-item .element,
-    .form-item .instructions {
+
+.form-item .instructions {
     float:left;
     display:block;
 }
 
-.form-item input,
-    .form-item select,
-    .form-item textara {
-    float:left;
-}
 .form-item .instructions {
     border:1px solid #AAA;
     width:250px;
@@ -392,6 +372,22 @@ input.no-checker {
 .form-item.no-label .description {
     margin-left:0;
 }
+.label.top,
+    .form-item.no-label label {
+    float:none;
+    width:auto;
+    text-transform: uppercase;
+    font-weight:bold;
+    text-align: left;
+    margin-top:10px;
+    font-size:12px;
+    line-height:12px;
+}
+.form-item.composit .element {
+    float:left;
+    width:230px;
+}
+
 .form-item .description.error {
     color:#990000;
 }
@@ -408,14 +404,14 @@ input.no-checker {
     -webkit-border-radius:5px; /* Saf3-4 */
     border-radius:5px;
     behavior: url(plugins/pie.htc);
-    padding:5px;
+    padding:4px;
     width:auto;
     cursor: pointer;
     text-decoration: none;
     display:block;
     float:left;
     margin:0px;
-    margin-top:5px;
+    margin-top:3px;
     /*skin*/
     border:1px solid #333;
     background-color:#00794E;
@@ -473,6 +469,12 @@ input.no-checker {
     top:0px;
     position:absolute;
 }
+
+
+.no-label-top {
+    margin-top:28px;
+}
+
 img.captcha {
     margin-left:20px;
     display:block;

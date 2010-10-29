@@ -21,6 +21,14 @@ ul.horizontal.right li,
     clear:both;
     *zoom:0;
 }
+.reset {
+    width:auto !important;
+    height:auto !important;
+    line-height: normal !important;
+    border:inherit !important;
+    float:none !important;
+    font-size: inherit !important;
+}
 .left {
     float:left;
 }
@@ -38,11 +46,15 @@ ul.horizontal.right li,
     margin:0;
     font-size:12px;
 }
-.rpad {padding-right:10px;}
-.lpad {padding-left:10px;}
-.tpad {padding-top:10px;}
-.bpad {padding-bottom:10px;}
+.rpad {padding-right:10px !important;}
+.lpad {padding-left:10px !important;}
+.tpad {padding-top:10px !important;}
+.bpad {padding-bottom:10px !important;}
 
+.rmarg {margin-right:10px !important;}
+.lmarg {margin-left:10px !important;}
+.tmarg {margin-top:10px !important;}
+.bmarg {margin-bottom:10px !important;}
 
 .horizontal.divided li:first-child
     ,ul.divided li {

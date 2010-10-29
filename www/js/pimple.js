@@ -51,7 +51,9 @@ var Pimple = {
     },
     opts: function(elm) {
         var optStr = elm.attr('p:options');
-        var opts = $.parseJSON(optStr.replace(/'/g,'"'));
+        var opts = {};
+        if (optStr)
+             opts = $.parseJSON(optStr.replace(/'/g,'"'));
         return opts;
     }
 };
@@ -85,4 +87,20 @@ $(function() {
        $('.pimple-messages').css('bottom',1);
        $('.pimple-messages').css('bottom',0);
     })
+});
+
+/* add various bindings */
+
+$p.addBinding('.js-datepicker',function() {
+    var dom = $(this);
+    dom.attr('autocomplete','off');
+    var opts = $p.opts(dom);
+    var format = Pimple.settings.dateFormat
+                    .replace(/Y/,'yyyy')
+                    .replace(/y/,'yy')
+                    .replace(/d/,'dd')
+                    .replace(/m/,'mm');
+    dom.datepicker({
+        dateFormat:format
+    });
 });
