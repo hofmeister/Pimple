@@ -36,7 +36,6 @@ em {
 }
 
 .header {
-    background-color: #CCC;
     border-bottom:1px solid #333;
 }
 h1 {
@@ -63,13 +62,59 @@ h3 {
 }
 
 
-/* page */
-.page {
-    
+.framed {
+    -moz-border-radius:5px; /* FF1+ */
+    -webkit-border-radius:5px; /* Saf3-4 */
+    border-radius:5px;
+    behavior: url(plugins/pie.htc);
+    border:1px solid #333;
+    padding:5px;
+    margin:5px;
 }
+
+
 .contents {
     padding:10px;
 }
+/* BUTTON COLORS */
+
+/* normal button color */
+
+.button,
+    a.button,
+    .menu a {
+    background-color:#bbc7de;
+	color:black;
+    border:0;
+}
+/* main button color */
+.menu a.main,
+    .sub-menu a.main,
+    .button.main {
+    background-color:#bbdec2;
+    color:#333;
+    border-color:#666;
+    font-weight: bold;
+}
+
+/* help button color */
+.menu a.help,
+    .sub-menu a.help,
+    .button.help {
+        background-color:#eced98;
+    color:#333;
+    border:0;
+    font-weight: bold;
+}
+/* hover / active state */
+.button:hover,
+    a.button:hover,
+    .menu a:hover,
+    .menu a.active {
+	color:#333;
+	background-color: #efefef;
+}
+
 /* menu */
 .menu {
     padding-left:10px;
@@ -78,54 +123,38 @@ h3 {
 .menu a {
 	padding:5px 10px;
 	margin-right:5px;
-	background-color: #004e79;
-	color:white;
-    
-    display:block;
+	display:block;
     -moz-border-radius:5px;
     -webkit-border-radius:5px;
     border-radius:5px;
     behavior: url(plugins/pie.htc);
-    border:1px solid;
-    border-color: #333;
+    
 }
 .menu a:hover,.menu a.active {
-	color:#333;
-	background-color: white;
 	text-decoration: none;
 }
 .menu li.right {
     float:right;
 }
-.menu a.main {
-    background-color:#00794E;
-    color:#eee;
-    border-color:#020;
-    font-weight: bold;
-}
-.menu a.main:hover {
-    background-color: white;
-    color:#333;
-}
+
 /* user menu */
 .user-menu {
     float:right;
-    margin-top:73px;
-    margin-right:30px;
+    margin-top:5px;
+    margin-right:5px;
 }
 .user-menu li {
     color:#666;
     padding:3px;
 }
 .user-menu a {
-    font-size:14px;
+    font-size:11px;
 }
 /* sub menu */
 .sub-menu {
     border-bottom:1px solid #333;
 }
-.sub-menu a,
-    .sub-menu a.main {
+.sub-menu a {
     background-color: transparent;
     -moz-border-radius:5px 5px 0 0;
     -webkit-border-radius:5px 5px 0 0;
@@ -134,14 +163,14 @@ h3 {
     border:0;
     color:#333;
 }
-.sub-menu a.main {
-    background-color: #00794E;
-    color:white;
-}
-.sub-menu a.active,.sub-menu a:hover, .sub-menu a.main:hover {
+.sub-menu a.active,
+    .sub-menu a:hover,
+    .sub-menu a.main:hover {
     background-color: #333;
     color:white;
 }
+
+
 /*numbered list */
 .numbered li {
     list-style: decimal;
@@ -197,8 +226,7 @@ h3 {
     margin:10px 0px;
 }
 /* form */
-
-input,select,textarea,.button,a.button,.form-element {
+input,select,textarea,.form-element {
     display:block;
     font-size:12px;
     line-height:18px;
@@ -261,15 +289,6 @@ textarea,.form-element {
     -webkit-border-radius:5px; /* Saf3-4 */
     border-radius:5px;
     behavior: url(plugins/pie.htc);
-}
-.framed {
-    -moz-border-radius:5px; /* FF1+ */
-    -webkit-border-radius:5px; /* Saf3-4 */
-    border-radius:5px;
-    behavior: url(plugins/pie.htc);
-    border:1px solid #333;
-    padding:5px;
-    margin:5px;
 }
 
 textarea,.form-element {
@@ -406,7 +425,7 @@ input.no-checker {
     -webkit-border-radius:5px; /* Saf3-4 */
     border-radius:5px;
     behavior: url(plugins/pie.htc);
-    padding:4px;
+    padding:5px 10px;
     width:auto;
     cursor: pointer;
     text-decoration: none;
@@ -414,11 +433,6 @@ input.no-checker {
     float:left;
     margin:0px;
     margin-top:3px;
-    /*skin*/
-    border:1px solid #333;
-    background-color:#00794E;
-    color:#fff;
-    font-size:14px;
 }
 .button.full {
     float:none;
@@ -435,21 +449,6 @@ input.no-checker {
     background-color: transparent !important;
 }
 
-
-.button.main {
-    background-color:#004E79;
-    color:#eee;
-    border-color:#020;
-    font-size:18px;
-    line-height:24px;
-    margin-right:10px;
-}
-
-.button:hover {
-    text-decoration: none;
-    background-color:#FFF;
-    color:#333;
-}
 .element {
     position:relative;
 }
