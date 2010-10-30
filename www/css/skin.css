@@ -204,9 +204,11 @@ input,select,textarea,.button,a.button,.form-element {
     line-height:18px;
     color:#666;
     border:0px;
+    outline: none;
+    background-color: transparent;
 }
 .form-item .element {
-    outline: none;
+    
     padding:3px;
     border:1px solid #CCC;
     -moz-border-radius:5px; /* FF1+ */
