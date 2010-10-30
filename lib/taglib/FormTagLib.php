@@ -69,17 +69,21 @@ class FormTagLib extends TagLib {
                 $attrs->value = Request::post($attrs->name,$attrs->value);
             }
         }
-        
-        $keyVal = json_decode(str_replace('\'','"',stripslashes($attrs->options)));
+        if (is_string($attrs->options)) {
+            $keyVal = json_decode(str_replace('\'','"',stripslashes($attrs->options)));
+        } else {
+            $keyVal = $attrs->options;
+        }
         $options = "";
+        $isMap = (!is_array($keyVal) || !ArrayUtil::isMap($keyVal));
         foreach($keyVal as $key=>$val) {
-            $key = (is_array($keyVal)) ? $val : $key;
+            $key = ($isMap) ? $val : $key;
             if ($key == $attrs->value) {
                 $checked = 'selected="true"';
             } else {
                 $checked = '';
             }
-            if (is_array($keyVal)) {
+            if ($isMap) {
                 $options .= sprintf('<option %s>%s</option>',$checked,$val);
             } else {
                 $options .= sprintf('<option %s value="%s">%s</option>',$checked,$key,$val);
@@ -136,11 +140,10 @@ class FormTagLib extends TagLib {
 	}
     protected function tagCaptcha($attrs) {
 
-        $inputElm = sprintf('<img src="%s" alt="Captcha" class="captcha" />
-                    <input type="text" name="%s"  class="form-captcha" id="%s" />',
-                    Url::makeLink('pimple','captcha')
+        $inputElm = sprintf('<input type="text" name="%s"  class="form-captcha" id="%s" />'
                     ,$attrs->name,$attrs->id);
-        return $this->formElementContainer($inputElm,$attrs);
+        $img = sprintf('<img src="%s" alt="Captcha" class="captcha" />',Url::makeLink('pimple','captcha'));
+        return $img.$this->formElementContainer($inputElm,$attrs);
     }
     protected function tagCostum($attrs) {
         return $this->formElementContainer($this->body(),$attrs);
