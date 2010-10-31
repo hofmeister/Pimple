@@ -44,11 +44,13 @@ class FormTagLib extends TagLib {
     protected function tagTextArea($attrs,$view) {
         if ($attrs->name)
             $this->body(Request::post($attrs->name,$this->body()));
-        unset($attrs->checker);
-        unset($attrs->behaviour);
-        unset($attrs->help);
-        unset($attrs->label);
-        $elm = new HtmlElement('textarea',$attrs,true);
+        $elmAttr = clone $attrs;
+        unset($elmAttr->checker);
+        unset($elmAttr->behaviour);
+        unset($elmAttr->composit);
+        unset($elmAttr->help);
+        unset($elmAttr->label);
+        $elm = new HtmlElement('textarea',$elmAttr,true);
         $elm->addChild(new HtmlText(htmlentities($this->body(),ENT_QUOTES,'UTF-8')));
 		return $this->formElementContainer($elm,$attrs);
 	}
@@ -75,18 +77,19 @@ class FormTagLib extends TagLib {
             $keyVal = $attrs->options;
         }
         $options = "";
-        $isMap = (!is_array($keyVal) || !ArrayUtil::isMap($keyVal));
+        
+        $isMap = (is_object($keyVal) || ArrayUtil::isMap($keyVal));
         foreach($keyVal as $key=>$val) {
-            $key = ($isMap) ? $val : $key;
+            $key = ($isMap) ? $key : $val;
             if ($key == $attrs->value) {
                 $checked = 'selected="true"';
             } else {
                 $checked = '';
             }
             if ($isMap) {
-                $options .= sprintf('<option %s>%s</option>',$checked,$val);
-            } else {
                 $options .= sprintf('<option %s value="%s">%s</option>',$checked,$key,$val);
+            } else {
+                $options .= sprintf('<option %s>%s</option>',$checked,$val);
             }
         }
         $selectElm = sprintf('<select name="%s" class="form-select %s">%s</select>',
@@ -227,7 +230,7 @@ class FormTagLib extends TagLib {
         $errorMessages = array();
         $errors = array();
         $classes[] = 'line';
-        if ($attrs->small) {
+        if ($attrs->small || $attrs->composit == 'false') { //Remove small attr...
             $attrs->nolabel = true;
             $attrs->noinstructions = true;
         } else {
@@ -292,7 +295,7 @@ class FormTagLib extends TagLib {
         $label = trim($label);
         if (!$label)
             $label = '&nbsp;';
-        if (!$attrs->nolabel || $attrs->small) {
+        if (!$attrs->nolabel || $attrs->small || ($attrs->composit == 'false')) {
             if ($attrs->id)
                 $output .= sprintf('<label for="%s">%s</label>',$attrs->id,$label);
             else

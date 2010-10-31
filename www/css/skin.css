@@ -433,6 +433,11 @@ input.no-checker {
     float:left;
     margin:0px;
     margin-top:3px;
+    font-size:12px;
+    line-height: 16px;
+}
+input.button {
+
 }
 .button.full {
     float:none;
