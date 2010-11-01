@@ -170,6 +170,11 @@ h3 {
     color:white;
 }
 
+/*numbered list */
+.dotted li {
+    list-style: disc;
+    list-style-position: inside;
+}
 
 /*numbered list */
 .numbered li {
