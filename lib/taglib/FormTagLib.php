@@ -77,6 +77,13 @@ class FormTagLib extends TagLib {
             $keyVal = $attrs->options;
         }
         $options = "";
+        if ($attrs->emptyText) {
+            if ($attrs->emptyValue) {
+                $options .= sprintf('<option value="%s">%s</option>',$attrs->emptyValue,$attrs->emptyText);
+            } else {
+                $options .= sprintf('<option>%s</option>',$attrs->emptyText);
+            }
+        }
         
         $isMap = (is_object($keyVal) || ArrayUtil::isMap($keyVal));
         foreach($keyVal as $key=>$val) {
