@@ -96,12 +96,20 @@ h3 {
     border-color:#666;
     font-weight: bold;
 }
-
+/* paging buttons */
+.paging a {
+    color:#333;
+	background-color: #efefef;
+}
+.paging a.active,
+    .paging a:hover {
+    background-color:#bbc7de;
+}
 /* help button color */
 .menu a.help,
     .sub-menu a.help,
     .button.help {
-        background-color:#eced98;
+    background-color:#eced98;
     color:#333;
     border:0;
     font-weight: bold;
@@ -120,7 +128,10 @@ h3 {
     padding-left:10px;
     margin-bottom:5px;
 }
-.menu a {
+.paging {
+    margin-top:5px;
+}
+.paging a,.menu a {
 	padding:5px 10px;
 	margin-right:5px;
 	display:block;
@@ -128,9 +139,8 @@ h3 {
     -webkit-border-radius:5px;
     border-radius:5px;
     behavior: url(plugins/pie.htc);
-    
 }
-.menu a:hover,.menu a.active {
+.paging a:hover,.paging a.active.menu a:hover,.menu a.active {
 	text-decoration: none;
 }
 .menu li.right {
@@ -672,7 +682,6 @@ table.data .section {
     color:#333;
     padding:2px 10px;
 }
-
 .data.list td {
     padding-left:10px;
     border-bottom:1px solid #ccc;
@@ -682,6 +691,9 @@ table.data .section {
 }
 .data tr.active td {
     background-color: #efefef;
+}
+.data tfoot td {
+    border-bottom:0 !important;
 }
 /* icons */
 .icon16x16 {

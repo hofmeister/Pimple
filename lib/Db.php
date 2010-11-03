@@ -80,6 +80,9 @@ class DB {
 	public static function fetchVal($sql) {
 		$args = func_get_args();
 		array_shift($args);
+        if (count($args) == 1 && is_array($args[0])) {
+            $args = $args[0];
+        }
         $r = self::_query(self::ensureOneRow($sql), $args);
 		$row = mysqli_fetch_row($r);
         self::freeResult();
@@ -89,6 +92,9 @@ class DB {
 	public static function fetchOne($sql) {
 		$args = func_get_args();
 		array_shift($args);
+        if (count($args) == 1 && is_array($args[0])) {
+            $args = $args[0];
+        }
         $r = self::_query(self::ensureOneRow($sql), $args);
 		$row = mysqli_fetch_object($r);
         self::freeResult();
@@ -137,6 +143,35 @@ class DB {
         do {
             while ($row = mysqli_fetch_object($r)) {
                 $result[] = $row;
+            }
+        } while(mysqli_next_result(self::$link));
+        self::freeResult();
+		return $result;
+	}
+    /**
+     *
+     * @param int $rowsPrPage
+     * @param string $sql
+     * @return DbPageResult
+     */
+    public static function fetchPage($sqlArr,$rowsPrPage = 30,$page = null) {
+        if ($page === null) {
+            $page = intval(Request::get('page'));
+        }
+        $offset = $page*$rowsPrPage;
+        $limit = $rowsPrPage;
+		$sql = array_shift($sqlArr);
+        $sqlCount = array_shift($sqlArr);
+        $totalRows = self::fetchVal($sqlCount,$sqlArr);
+        $sql .= " LIMIT $offset,$limit";
+        
+		$r = self::_query($sql,$sqlArr);
+        $result = new DbPageResult();
+        $result->totalPages = ceil($totalRows / $rowsPrPage);
+        $result->page = $page;
+        do {
+            while ($row = mysqli_fetch_object($r)) {
+                $result->rows[] = $row;
             }
         } while(mysqli_next_result(self::$link));
         self::freeResult();
@@ -208,4 +243,9 @@ class DbVal {
 		return $this->val;
 	}
 
+}
+class DbPageResult {
+    public $page = 0;
+    public $totalPages = 0;
+    public $rows = array();
 }
