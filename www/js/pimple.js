@@ -84,7 +84,7 @@ $(function() {
     Pimple.bind();
     setTimeout(function() {
        $('.pimple-messages').fadeOut();
-    },5000);
+    },15000);
     $('body').scroll(function() {
        $('.pimple-messages').css('bottom',1);
        $('.pimple-messages').css('bottom',0);

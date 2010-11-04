@@ -35,7 +35,7 @@ class DB {
 			return $arg;
 	}
     public static function escape($arg) {
-        return mysqli_real_escape_string(self::$link,$arg);
+        return preg_replace('/([^\%])\%([^\%])/is','$1%%$2',mysqli_real_escape_string(self::$link,$arg));
     }
 
 	private static function _query($sql, $args) {
