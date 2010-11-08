@@ -134,4 +134,28 @@ class Controller {
         echo $value;
         Pimple::instance()->end();
     }
+    protected function asCSV($array,$firstRowHeader = true,$seperator = ';') {
+        $this->setSkipView(true);
+        header('Content-type: text/csv');
+        if ($firstRowHeader) {
+            $cols = array();
+            foreach($array[0] as $colName=>$val) {
+                $cols[] = $colName;
+            }
+            echo implode($seperator,$cols).chr(10);
+        }
+        for($i = 0; $i < count($array); $i++) {
+            $vals = array();
+            foreach($array[$i] as $val) {
+                $vals[] = $val;
+            }
+            echo implode($seperator,$vals).chr(10);
+        }
+
+        echo $value;
+        Pimple::instance()->end();
+    }
+    protected function asDownload($filename) {
+        header('Content-Disposition: attachment; filename="'.$filename.'"');
+    }
 }
