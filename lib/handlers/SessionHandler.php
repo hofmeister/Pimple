@@ -76,6 +76,7 @@ class SessionHandler {
 	 * @return IUser
 	 */
 	public function getUser() {
+        if (!$this->session) return null;
 		return $this->getSession()->get('__PUSER');
 	}
 

@@ -20,7 +20,7 @@ class CoreTagLib extends TagLib {
     protected function tagEach($attrs,$view) {
         if (!$attrs->as)
             $attrs->as = '$it';
-        return sprintf('<? if (is_array(%1$s)) {foreach(%1$s as %2$s){$view->data["%3$s"] = %2$s;?>%4$s<?}} ?>',$attrs->in,$attrs->as,trim($attrs->as,'$'),$this->body());
+        return sprintf('<? if (is_array(%1$s) || is_object(%1$s)) {foreach(%1$s as %2$s){$view->data["%3$s"] = %2$s;?>%4$s<?}} ?>',$attrs->in,$attrs->as,trim($attrs->as,'$'),$this->body());
     }
     protected function tagFor($attrs,$view) {
         if (!$attrs->it)
