@@ -80,12 +80,14 @@ class BasicTagLib extends TagLib {
             $lAttrs = new stdClass();
         }
         unset($lAttrs->class);
+        unset($lAttrs->style);
         $link = $this->url($lAttrs,$this->body(),$view);
         if (!$this->body())
             $this->body($link);
         unset($attrs->controller);
         unset($attrs->action);
         unset($attrs->parms);
+        
         $attrs->href = $link;
         $a = new HtmlElement('a', $attrs);
         $a->addChild(new HtmlText($this->body()));
@@ -94,10 +96,13 @@ class BasicTagLib extends TagLib {
     protected function tagUrl($attrs,$view) {
         $controller = $attrs->controller;
         $action = $attrs->action;
+        $host = $attrs->host;
         $id = $attrs->id;
         unset($attrs->controller);
         unset($attrs->action);
-        return Url::makeLink($controller,$action,$attrs);
+        unset($attrs->host);
+
+        return Url::makeLink($controller,$action,$attrs,$host);
     }
     protected function tagMessages($attrs) {
         $msgs = MessageHandler::instance()->getMessages();

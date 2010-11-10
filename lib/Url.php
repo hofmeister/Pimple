@@ -295,14 +295,12 @@ class Url {
         $temp = parse_url($Url);
         return array_key_exists('host', $temp) && array_key_exists('scheme', $temp);
     }
-    public static function makeAbsolute($Url) {
-        if (self::isAbsolute($Url)) return $Url;
-        $temp = parse_url($Url);
-        $parts = explode('/',$temp['path']);
-        return Router::getAbsoluteRoot($parts[0], $parts[1]).$Url;
-    }
-    public static function makeLink($controller = null,$action = null,$parms = null) {
-        $url = Dir::normalize(BASEURL);
+    public static function makeLink($controller = null,$action = null,$parms = null,$host = null) {
+        if ($host)
+            $url = '/';
+        else
+            $url = Dir::normalize(BASEURL);
+        
         if (!$controller && $action)
             $controller = Pimple::instance()->getController();
 
@@ -324,13 +322,19 @@ class Url {
 			}
 			
 		}
-		
-        $host = $_SERVER['HTTP_HOST'];
-        if ($_SERVER['HTTPS'])
-            $p = 'https';
+		if (!$host)
+            $host = trim($_SERVER['HTTP_HOST'],'/');
         else
-            $p = 'http';
-        return "$p://$host".$url;
+            $host = trim($host,'/');
+        if (!String::StartsWith($host,'http')) {
+            if ($_SERVER['HTTPS'])
+                $p = 'https';
+            else
+                $p = 'http';
+            return "$p://$host".$url;
+        } else {
+            return $host.$url;
+        }
     }
     public static function basePath() {
         $host = $_SERVER['HTTP_HOST'];
@@ -348,8 +352,8 @@ class Url {
             $p = 'http';
         return "$p://$host".$_SERVER['REQUEST_URI'];
     }
-    public static function redirect($controller = null,$action = null,$parms = null) {
-        $url = self::makeLink($controller, $action, $parms);
+    public static function redirect($controller = null,$action = null,$parms = null,$host = null) {
+        $url = self::makeLink($controller, $action, $parms,$host);
 
         self::gotoUrl($url);
     }

@@ -36,6 +36,23 @@ class FormTagLib extends TagLib {
 		return $this->inputElement('checkbox',$attrs,$view);
     }
 	protected function tagRadio($attrs,$view) {
+        
+        $label = trim($attrs->label);
+        if (!$label)
+            $label = '&nbsp;';
+        
+        $attrs->simple = 'true';
+        $attrs->id = $this->tagId($attrs);
+        if ($attrs->id)
+            $attrs->after = sprintf('<label for="%s">%s</label>',$attrs->id,$label).$attrs->after;
+        else
+            $attrs->after = sprintf('<label>%s</label>',$label).$attrs->after;
+
+        unset($attrs->label);
+        if ($attrs->currentValue == $attrs->value) {
+            $attrs->checked = 'checked';
+        }
+        
 		return $this->inputElement('radio',$attrs,$view);
     }
     protected function tagHtmlArea($attrs,$view) {
@@ -213,6 +230,10 @@ class FormTagLib extends TagLib {
         unset($elmAttr->cclass);
         unset($elmAttr->nolabel);
         unset($elmAttr->noinstructions);
+        unset($elmAttr->simple);
+        unset($elmAttr->composit);
+        unset($elmAttr->small);
+        unset($elmAttr->currentValue);
 
         $elmAttr = ArrayUtil::fromObject($elmAttr);
         if ($attrs->options) {
@@ -237,6 +258,11 @@ class FormTagLib extends TagLib {
         $errorMessages = array();
         $errors = array();
         $classes[] = 'line';
+        if ($attrs->simple) {
+            $attrs->composit = 'false';
+            $classes[] = 'simple';
+        }
+
         if ($attrs->small || $attrs->composit == 'false') { //Remove small attr...
             $attrs->nolabel = true;
             $attrs->noinstructions = true;
@@ -300,15 +326,22 @@ class FormTagLib extends TagLib {
         }
         $output .= '>';
         $label = trim($label);
-        if (!$label)
+        if (!$label && !$attrs->simple)
             $label = '&nbsp;';
-        if (!$attrs->nolabel || $attrs->small || ($attrs->composit == 'false')) {
-            if ($attrs->id)
-                $output .= sprintf('<label for="%s">%s</label>',$attrs->id,$label);
-            else
-                $output .= sprintf('<label>%s</label>',$label);
+
+        if ($label) {
+            if (!$attrs->nolabel || $attrs->small || ($attrs->composit == 'false')) {
+                if ($attrs->id)
+                    $output .= sprintf('<label for="%s">%s</label>',$attrs->id,$label);
+                else
+                    $output .= sprintf('<label>%s</label>',$label);
+            }
         }
         unset($attrs->nolabel);
+        unset($attrs->simple);
+        unset($attrs->composit);
+        unset($attrs->small);
+        unset($attrs->currentValue);
 
         $output .= '<div class="element '.implode(' ',$elmClasses).'">'.$formElement.'</div>';
         $renderedInstructions = false;

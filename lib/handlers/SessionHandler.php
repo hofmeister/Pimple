@@ -1,6 +1,8 @@
 <?php
 
 class SessionHandler {
+    const COOKIE_DOMAIN = 'session_cookie_domain';
+    const COOKIE_URL = 'session_cookie_url';
 
 	private static $_instance;
 
@@ -51,7 +53,7 @@ class SessionHandler {
 			$this->SID = md5($this->sessionSecret . microtime());
 		}
         $this->getSession()->loadFromSID($this->SID);
-		setcookie($this->sessionKey, $this->SID,$this->getExpires(),COOKIEURL);
+		setcookie($this->sessionKey, $this->SID,$this->getExpires(),Settings::get(self::COOKIE_URL,'/'),Settings::get(self::COOKIE_DOMAIN,null));
 	}
     public function save() {
 		if ($this->session)

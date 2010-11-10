@@ -7,7 +7,12 @@ class Dir {
         return self::normalize(rtrim($dir1,'/ ').'/'.ltrim($dir2,'/ '));
     }
     public static function normalize($dir) {
-        return '/'.trim($dir,'/').'/';
+        $dir= trim($dir,'/');
+        if (strlen($dir) > 0)
+            return '/'.$dir.'/';
+        else {
+            return '/';
+        }
     }
     public static function ensure($dirs) {
         if (is_array($dirs)) {

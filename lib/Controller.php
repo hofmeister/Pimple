@@ -3,6 +3,8 @@ require_once 'Interrupt.php';
 
 class Controller {
     protected $skipView = false;
+    protected $skipLayout = false;
+
     protected $name;
     protected $validation = array();
     protected $data;
@@ -20,6 +22,10 @@ class Controller {
     public function setSection($section) {
         array_push($this->section, $section);
     }
+    public function getSection() {
+        return $this->section;
+    }
+
     public function setData($data) {
         $this->data = $data;
     }
@@ -30,7 +36,13 @@ class Controller {
     public function setSkipView($skipView) {
         $this->skipView = $skipView;
     }
+    public function getSkipLayout() {
+        return $this->skipLayout;
+    }
 
+    public function setSkipLayout($skipLayout) {
+        $this->skipLayout = $skipLayout;
+    }
 
     protected function redirect($controller = null,$action = null,$parms = array()) {
         $this->setSkipView(true);

@@ -7,4 +7,12 @@ class Util {
         }
         return ++self::$counters[$name];
     }
+
+    public static function first() {
+        $args = func_get_args();
+        foreach($args as $arg) {
+            if ($arg) return $arg;
+        }
+        return null;
+    }
 }

@@ -143,7 +143,7 @@ class Pimple {
             if (Request::isAjax()) {
                 $this->body = json_encode(array('msg'=>$e->getMessage(),'trace'=>$e->getTraceAsString()));
             } else {
-                if (defined('DEBUG') && DEBUG) {
+                if (Settings::get(Settings::DEBUG,false)) {
                     $body = $e->__toString();
                     if (!stristr($body,'<')) {
                         $body = '<pre>'.$body.'</pre>';
@@ -158,7 +158,9 @@ class Pimple {
 
     }
     public function render() {
-        if (Request::isAjax() || ($this->controllerInstance && $this->controllerInstance->getSkipView())) {
+        if (Request::isAjax()
+                || ($this->controllerInstance && $this->controllerInstance->getSkipView())
+                || ($this->controllerInstance && $this->controllerInstance->getSkipLayout())) {
             echo $this->body;
         } else {
             echo $this->view->render(array('body'=>$this->body));
@@ -185,6 +187,9 @@ class Pimple {
     
     public function registerTagLib($namespace,$instance) {
         $this->tagLibs[$namespace] = $instance;
+    }
+    public function getTagLib($id) {
+        return $this->tagLibs[$id];
     }
     public function getTagLibs() {
         return $this->tagLibs;

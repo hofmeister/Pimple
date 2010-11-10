@@ -29,10 +29,10 @@ em {
     font-style: italic;
 }
 .rounded {
+    border-radius:5px;
     -moz-border-radius:5px;
     -webkit-border-radius:5px;
-    border-radius:5px;
-    behavior: url(plugins/pie.htc);
+    behavior: url(plugins/PIE.htc)
 }
 
 .header {
@@ -67,9 +67,8 @@ h3 {
     -webkit-border-radius:5px; /* Saf3-4 */
     border-radius:5px;
     behavior: url(plugins/pie.htc);
-    border:1px solid #333;
+    border:1px solid #ccc;
     padding:5px;
-    margin:5px;
 }
 
 
@@ -125,8 +124,13 @@ h3 {
 
 /* menu */
 .menu {
+    margin:0px;
     padding-left:10px;
     margin-bottom:5px;
+    list-style:none outside none;
+}
+.menu li {
+    list-style:none outside none;
 }
 .paging {
     margin-top:5px;
@@ -152,10 +156,12 @@ h3 {
     float:right;
     margin-top:5px;
     margin-right:5px;
+    list-style:none outside none;
 }
 .user-menu li {
     color:#666;
     padding:3px;
+    list-style:none outside none;
 }
 .user-menu a {
     font-size:11px;
@@ -426,6 +432,27 @@ input.no-checker {
 
 .form-item .description.error {
     color:#990000;
+}
+
+.form-item.simple {
+    width:auto;
+}
+.form-item.simple input {
+    display:inline;
+    height:auto;
+    margin:0 5px;
+}
+.form-item.simple .element {
+    border:0;
+    padding:0;
+}
+.form-item.simple label {
+    display:inline;
+    float:none;
+    text-transform: none;
+    padding:0;
+    margin:0;
+    font-weight: inherit;
 }
 .buttongroup {
     padding-left:145px;
