@@ -750,7 +750,7 @@ table.data .section {
     background-image: none;
     background-color: white;
 }
-.ui-widget-header {
+.ui-widget-header,.ui-widget-header span,.ui-widget-header div {
     background-image: none;
     background-color: #004e7a;
     color:#efefef;
@@ -758,6 +758,7 @@ table.data .section {
 }
 .ui-widget-header .ui-state-hover {
     background-image: none;
-    background-color: #bbc7de;
+    background-color: transparent;
     border:0;
+    cursor: pointer;
 }

@@ -23,7 +23,7 @@ class DB {
         if (!$dbName) {
             $dbName = Settings::get(self::NAME);
         }
-		self::$link = mysqli_connect($host, $user, $pass) or die(mysqli_error());
+		self::$link = mysqli_connect($host, $user, $pass) or die('Host:'.$host);;
 		mysqli_select_db(self::$link,$dbName) or die(mysqli_error(self::$link));
         self::q('SET NAMES utf8');
 	}
