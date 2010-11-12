@@ -75,6 +75,14 @@ h3 {
 .contents {
     padding:10px;
 }
+/* article layout */
+.article p {
+    margin-bottom:15px;
+    line-height: 22px;
+}
+.article a {
+    color:#004e79;
+}
 /* BUTTON COLORS */
 
 /* normal button color */
@@ -737,3 +745,19 @@ table.data .section {
     background-image: url(../images/skin/delete.png);
 }
 
+/* jquery UI overwrites */
+.ui-widget-content {
+    background-image: none;
+    background-color: white;
+}
+.ui-widget-header {
+    background-image: none;
+    background-color: #004e7a;
+    color:#efefef;
+    border:0;
+}
+.ui-widget-header .ui-state-hover {
+    background-image: none;
+    background-color: #bbc7de;
+    border:0;
+}
