@@ -224,4 +224,11 @@ class Pimple {
         $this->render();
         $this->save();
     }
+    /**
+     * Get current environment type
+     */
+    
+    public static function getEnvironment($default = null) {
+        return ($_SERVER['PIMPLE_ENV']) ? $_SERVER['PIMPLE_ENV'] : $default;
+    }
 }
