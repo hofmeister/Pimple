@@ -1,11 +1,28 @@
 <?php
 
 class DB {
+    const HOST = 'db_host';
+    const NAME = 'db_name';
+    const USER = 'db_user';
+    const PASS = 'db_pass';
 
 	private static $debug = false;
     private static $lastResult = null;
     private static $link = null;
-	public static function connect($host, $user, $pass, $dbName) {
+
+	public static function connect($host = null, $user = null, $pass = null, $dbName = null) {
+        if (!$host) {
+            $host = Settings::get(self::HOST,'localhost');
+        }
+        if (!$user) {
+            $user = Settings::get(self::USER,'root');
+        }
+        if (!$pass) {
+            $pass = Settings::get(self::PASS,'');
+        }
+        if (!$dbName) {
+            $dbName = Settings::get(self::NAME);
+        }
 		self::$link = mysqli_connect($host, $user, $pass) or die(mysqli_error());
 		mysqli_select_db(self::$link,$dbName) or die(mysqli_error(self::$link));
         self::q('SET NAMES utf8');
