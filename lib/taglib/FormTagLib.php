@@ -59,8 +59,18 @@ class FormTagLib extends TagLib {
         return $this->tagTextArea($attrs,  $view);
     }
     protected function tagTextArea($attrs,$view) {
-        if ($attrs->name)
-            $this->body(Request::post($attrs->name,$this->body()));
+        $value = $this->body();
+
+        if ($attrs->name) {
+            if (!$value && $this->formData) {
+                $name = $attrs->name;
+                if (is_array($this->formData))
+                    $value = $this->formData[$name];
+                else
+                    $value = $this->formData->$name;
+            }
+           $value = Request::post($attrs->name,$value);
+        }
         $elmAttr = clone $attrs;
         unset($elmAttr->checker);
         unset($elmAttr->behaviour);
@@ -68,7 +78,7 @@ class FormTagLib extends TagLib {
         unset($elmAttr->help);
         unset($elmAttr->label);
         $elm = new HtmlElement('textarea',$elmAttr,true);
-        $elm->addChild(new HtmlText(htmlentities($this->body(),ENT_QUOTES,'UTF-8')));
+        $elm->addChild(new HtmlText(htmlentities($value,ENT_QUOTES,'UTF-8')));
 		return $this->formElementContainer($elm,$attrs);
 	}
     protected function tagSelect($attrs,$view) {
@@ -175,8 +185,13 @@ class FormTagLib extends TagLib {
     protected function tagCostum($attrs) {
         return $this->formElementContainer($this->body(),$attrs);
     }
+    protected function tagHidden($attrs,$view) {
+        $attrs->container = 'false';
+        $attrs->composit = 'false';
+        return $this->inputElement('hidden',$attrs, $view);
+    }
 
-	private function inputElement($type,$attrs,$view) {
+    private function inputElement($type,$attrs,$view) {
 
         if ($attrs->name) {
             if (!$attrs->value && $this->formData) {

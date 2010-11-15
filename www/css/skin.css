@@ -206,48 +206,48 @@ h3 {
     list-style-position: inside;
 }
 
-/*stroke top*/
-.stroke-t {
-	border-top:3px solid #CCC;
+/*border top*/
+.tborder {
+	border-top:1px solid #CCC;
 	padding-top:5px;
 }
-.stroke-t.small {
-	border-top-width:1px;
+.tborder.medium {
+	border-top-width:3px;
 }
-.stroke-t.large {
+.tborder.large {
 	border-top-width:5px;
 }
-/*stroke btm*/
-.stroke-b {
-	border-bottom:3px solid #CCC;
+/*border btm*/
+.bborder {
+	border-bottom:1px solid #CCC;
 	padding-bottom:5px;
 }
-.stroke-b.small {
-	border-bottom-width:1px;
+.bborder.medium {
+	border-bottom-width:3px;
 }
-.stroke-b.large {
+.bborder.large {
 	border-bottom-width:5px;
 }
-/*stroke right*/
-.stroke-r {
-	border-right:3px solid #CCC;
+/*border right*/
+.rborder {
+	border-right:1px solid #CCC;
 	padding-right:5px;
 }
-.stroke-r.small {
-	border-right-width:1px;
+.rborder.medium {
+	border-right-width:3px;
 }
-.stroke-r.large {
+.rborder.large {
 	border-right-width:5px;
 }
-/*stroke left*/
-.stroke-l {
-	border-left:3px solid #CCC;
+/*border left*/
+.lborder {
+	border-left:1px solid #CCC;
 	padding-left:5px;
 }
-.stroke-l.small {
-	border-left-width:1px;
+.lborder.medium {
+	border-left-width:3px;
 }
-.stroke-l.large {
+.lborder.large {
 	border-left-width:5px;
 }
 /* intro */

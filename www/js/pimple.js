@@ -97,8 +97,8 @@ $p.addBinding('.js-datepicker',function() {
     dom.attr('autocomplete','off');
     var opts = $p.opts(dom);
     var format = Pimple.settings.dateFormat
-                    .replace(/Y/,'yyyy')
-                    .replace(/y/,'yy')
+                    .replace(/Y/,'yy')
+                    .replace(/y/,'y')
                     .replace(/d/,'dd')
                     .replace(/m/,'mm');
     dom.datepicker({
