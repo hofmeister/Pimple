@@ -4,7 +4,8 @@ declare(ticks = 1);
 abstract class Thread {
     private $pid;
     public final function execute() {
-        if (Cli::getInstance()->isSimulation()) {
+        $hasThreads = function_exists('pcntl_signal');
+        if (!$hasThreads || Cli::getInstance()->isSimulation()) {
             flush();
             try {
                 return $this->executeNoThread();
