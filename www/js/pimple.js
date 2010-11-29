@@ -53,10 +53,10 @@ var Pimple = {
     },
     opts: function(elm) {
         var optStr = elm.attr('p:options');
-        var opts = {};
-        if (optStr)
-             opts = $.parseJSON(optStr.replace(/'/g,'"'));
-        return opts;
+        if (optStr && (optStr.indexOf('[') > -1 || optStr.indexOf('{') || optStr.indexOf('\'')))
+            return $.parseJSON(optStr.replace(/'/g,'"'));
+        else
+            return optStr;
     }
 };
 window.$p = Pimple;

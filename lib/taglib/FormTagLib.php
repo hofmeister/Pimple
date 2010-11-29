@@ -60,44 +60,26 @@ class FormTagLib extends TagLib {
     }
     protected function tagTextArea($attrs,$view) {
         $value = $this->body();
-
-        if ($attrs->name) {
-            if (!$value && $this->formData) {
-                $name = $attrs->name;
-                if (is_array($this->formData))
-                    $value = $this->formData[$name];
-                else
-                    $value = $this->formData->$name;
-            }
-           $value = Request::post($attrs->name,$value);
-        }
-        $elmAttr = clone $attrs;
-        unset($elmAttr->checker);
-        unset($elmAttr->behaviour);
-        unset($elmAttr->composit);
-        unset($elmAttr->help);
-        unset($elmAttr->label);
+        
+        $elmAttr = $this->getElementAttr($attrs);
+        $value = $this->getFieldValue($attrs,$value);
+        
         $elm = new HtmlElement('textarea',$elmAttr,true);
         $elm->addChild(new HtmlText(htmlentities($value,ENT_QUOTES,'UTF-8')));
 		return $this->formElementContainer($elm,$attrs);
 	}
+    protected function tagTokenInput($attrs,$view) {
+        $attrs->behaviour = 'tokeninput';
+        if ($attrs->options)
+            $attrs->options = new stdClass();
+        $attrs->options->url = $attrs->url;
+        unset($attrs->url);
+        return $this->tagTextarea($attrs,$view);
+    }
     protected function tagSelect($attrs,$view) {
 
-        if ($attrs->name) {
-            if (!$attrs->value && $this->formData) {
-                
-                $name = $attrs->name;
-                if (is_array($this->formData))
-                    $attrs->value = $this->formData[$name];
-                else
-                    $attrs->value = $this->formData->$name;
-            }
-            if ($this->formMethod == 'get') {
-                $attrs->value = Request::get($attrs->name,$attrs->value);
-            } else {
-                $attrs->value = Request::post($attrs->name,$attrs->value);
-            }
-        }
+        $attrs->value = $this->getFieldValue($attrs,$attrs->value);
+        
         if (is_string($attrs->options)) {
             $keyVal = json_decode(str_replace('\'','"',stripslashes($attrs->options)));
         } else {
@@ -193,30 +175,8 @@ class FormTagLib extends TagLib {
 
     private function inputElement($type,$attrs,$view) {
 
-        if ($attrs->name) {
-            if (!$attrs->value && $this->formData) {
-                
-                $name = $attrs->name;
-                if (is_array($this->formData))
-                    $attrs->value = $this->formData[$name];
-                else
-                    $attrs->value = $this->formData->$name;
-            }
-            if ($this->formMethod == 'get') {
-                $attrs->value = Request::get($attrs->name,$attrs->value);
-            } else {
-                $attrs->value = Request::post($attrs->name,$attrs->value);
-            }
-        }
+        $attrs->value = $this->getFieldValue($attrs,$attrs->value);
         
-        
-
-        $behaviours = explode(' ',$attrs->behaviour);
-        foreach($behaviours as $i=>$behaviour) {
-            if ($behaviour)
-                $behaviours[$i] = 'pb-'.$behaviour;
-        }
-        $behaviour = implode(' ',$behaviours);
         $inputElm = '';
         $checker = $attrs->checker;
         $container = $attrs->container;
@@ -232,29 +192,9 @@ class FormTagLib extends TagLib {
         if (!$attrs->id) unset($attrs->id);
         $attrs->type = $type;
         $attrs->value = htmlentities($attrs->value,ENT_QUOTES,'UTF-8');
-        $attrs->class = trim("form-".$attrs->type.' '.trim($attrs->class.' '.$behaviour));
+        $attrs->class = trim("form-".$attrs->type.' '.$attrs->class);
 
-        $elmAttr = clone $attrs;
-        unset($elmAttr->before);
-        unset($elmAttr->after);
-        unset($elmAttr->checker);
-        unset($elmAttr->behaviour);
-        unset($elmAttr->help);
-        unset($elmAttr->label);
-        unset($elmAttr->cClass);
-        unset($elmAttr->cclass);
-        unset($elmAttr->nolabel);
-        unset($elmAttr->noinstructions);
-        unset($elmAttr->simple);
-        unset($elmAttr->composit);
-        unset($elmAttr->small);
-        unset($elmAttr->currentValue);
-
-        $elmAttr = ArrayUtil::fromObject($elmAttr);
-        if ($attrs->options) {
-            $elmAttr['p:options'] = (is_string($attrs->options)) ? $attrs->options : json_encode($attrs->options);
-            unset($elmAttr['options']);
-        }
+        $elmAttr = $this->getElementAttr($attrs);
 
         $inputElm .= new HtmlElement('input',$elmAttr,false);
 
@@ -387,5 +327,59 @@ class FormTagLib extends TagLib {
         }
         $output .= '</div>';
         return $output;
+    }
+
+    private function handleBehaviour(&$attrs) {
+        $behaviours = explode(' ',$attrs->behaviour);
+        foreach($behaviours as $i=>$behaviour) {
+            if ($behaviour)
+                $behaviours[$i] = 'pb-'.$behaviour;
+        }
+        $attrs->class = trim($attrs->class.' '.implode(' ',$behaviours));
+        unset($attrs->behaviour);
+    }
+    private function handleOptions(&$attrs,&$elmAttr) {
+        if ($attrs->options) {
+            $elmAttr['p:options'] = (is_string($attrs->options)) ? $attrs->options : str_replace('"','\'',json_encode($attrs->options));
+            unset($elmAttr['options']);
+            unset($attrs->options);
+        }
+    }
+    private function clearNonHtmlAttributes(&$attrs) {
+        $nonos = array(
+            'checker','composit','help','label','options','behaviour',
+            'before','after','checker','behaviour','help','label','cClass','cclass',
+            'nolabel','noinstructions','simple','composit','small','currentValue'
+        );
+        foreach($nonos as $nono) {
+            if (is_array($attrs)) {
+                unset($attrs[$nono]);
+            } else {
+                unset($attrs->$nono);
+            }
+        }
+    }
+    protected function getElementAttr($attrs) {
+        $this->handleBehaviour($attrs);
+        $elmAttr = ArrayUtil::fromObject($attrs);
+        $this->handleOptions($attrs,$elmAttr);
+        $this->clearNonHtmlAttributes($elmAttr);
+        return $elmAttr;
+    }
+    private function getFieldValue($attrs,$value) {
+        if ($attrs->name) {
+            if (!$value && $this->formData) {
+                $name = $attrs->name;
+                if (is_array($this->formData))
+                    $value = $this->formData[$name];
+                else
+                    $value = $this->formData->$name;
+            }
+            if (strtolower($this->formMethod) == 'get')
+                $value = Request::get($attrs->name,$value);
+            else
+                $value = Request::post($attrs->name,$value);
+        }
+        return $value;
     }
 }
