@@ -416,7 +416,7 @@ class PhtmlNode extends HtmlElement {
                 } else {
                     if (preg_match('/\%\{/',$body) || (preg_match('/<\?/',$body) && preg_match('/\$[A-Z]+\-\>[A-Z]+\(/is',$body))) {
                         //Body contains tags...
-                        if (version_compare(PHP_VERSION, '5.3.0', '>=')) {
+                        if (false && version_compare(PHP_VERSION, '5.3.0', '>=')) {
                             //If in PHP 5.3 or higher - use closures
                             $closure = sprintf('function() use (&$view,&$data) {extract($view->taglibs);ob_start();?>%s<? return ob_get_clean();}',$body);;
                             $str .= sprintf('%s,$view);?>',$closure);
