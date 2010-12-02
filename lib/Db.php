@@ -44,12 +44,17 @@ class DB {
 	}
 
 	public static function value($arg) {
-		if (is_string($arg))
+        if (is_string($arg))
 			return '"' . self::escape($arg) . '"';
 		else if ($arg === null)
 			return 'NULL';
-		else
+		else if (is_array($arg)) {
+            return self::prepareList($arg);
+        } elseif (is_int($arg)) {
+            return $arg;
+        } else {
 			return $arg;
+        }
 	}
     public static function escape($arg) {
         return preg_replace('/([^\%])\%([^\%])/is','$1%%$2',mysqli_real_escape_string(self::$link,$arg));
