@@ -138,10 +138,11 @@ class FormTagLib extends TagLib {
         $this->formMethod = $attrs->method;
         
         
-        return sprintf('<form method="%s" action="%s" enctype="%s">',
+        return sprintf('<form method="%s" action="%s" enctype="%s" id="%s">',
 						$attrs->method,
 						$attrs->url,
-                        $attrs->enctype).
+                        $attrs->enctype,
+                        $attrs->id).
 				$this->body().
 				'</form>';
 	}
