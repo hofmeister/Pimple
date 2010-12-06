@@ -189,7 +189,7 @@ class DB {
         
 		$r = self::_query($sql,$sqlArr);
         $result = new DbPageResult();
-        $result->totalPages = ceil($totalRows / $rowsPrPage);
+        $result->totalPages = floor($totalRows / $rowsPrPage);
         $result->page = $page;
         do {
             while ($row = mysqli_fetch_object($r)) {
