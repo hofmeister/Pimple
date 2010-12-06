@@ -24,7 +24,7 @@ class View {
         if (!is_file($this->getTemplateFile())) {
             throw new Exception(T('View not found: %s',$this->template));
         }
-        $this->parent = $parent;
+        // $this->parent = $parent; // Parent is never set?
         $this->taglibs = Pimple::instance()->getTagLibs();
     }
     public function getTemplate() {

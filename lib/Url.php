@@ -327,7 +327,7 @@ class Url {
         else
             $host = trim($host,'/');
         if (!String::StartsWith($host,'http')) {
-            if ($_SERVER['HTTPS'])
+            if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'])
                 $p = 'https';
             else
                 $p = 'http';
@@ -346,7 +346,7 @@ class Url {
     }
     public static function current() {
         $host = $_SERVER['HTTP_HOST'];
-        if ($_SERVER['HTTPS'])
+        if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'])
             $p = 'https';
         else
             $p = 'http';
