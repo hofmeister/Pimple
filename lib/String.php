@@ -45,6 +45,16 @@ class String {
                             addslashes(
                                 preg_replace('/(\r|\t)/','',trim($string))))).$quote;
     }
+    public static function truncate($string, $maxLength = 75, $includeDots = false){
+    	$output = $string;
+    	$strLength = strlen($output);
+    	if($strLength > 0 && $strLength > $maxLength) {
+    		$output = substr($output, 0, $maxLength);
+    		if ($includeDots)
+    			$output .= '...';
+    	}
+    	return $output;
+    }
 	public static function SubWord( $string, $maxWords = 10, $includeDots = false ) {
 		if(!empty($string)) {
 			$words = explode(' ', $string);
