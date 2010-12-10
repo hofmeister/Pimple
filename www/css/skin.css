@@ -193,7 +193,10 @@ h3 {
     background-color: #333;
     color:white;
 }
-
+/*numbered list */
+.seperated li {
+    margin-bottom: 10px;
+}
 /*numbered list */
 .dotted li {
     list-style: disc;
@@ -205,7 +208,10 @@ h3 {
     list-style: decimal;
     list-style-position: inside;
 }
-
+.bordered {
+    border:1px solid #CCC;
+    padding:5px;
+}
 /*border top*/
 .tborder {
 	border-top:1px solid #CCC;

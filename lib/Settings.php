@@ -6,6 +6,9 @@ class Settings {
     public static function set($name,$value) {
         self::$settings[$name] = $value;
     }
+    public static function has($name) {
+        return isset(self::$settings[$name]);
+    }
     public static function get($name,$default = 'noDefaultValue') {
         if (isset(self::$settings[$name]))
 			return self::$settings[$name];
