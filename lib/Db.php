@@ -189,8 +189,9 @@ class DB {
         
 		$r = self::_query($sql,$sqlArr);
         $result = new DbPageResult();
-        $result->totalPages = floor($totalRows / $rowsPrPage);
+        $result->totalPages = ceil($totalRows / $rowsPrPage);
         $result->page = $page;
+        $result->totalRows = $totalRows;
         do {
             while ($row = mysqli_fetch_object($r)) {
                 $result->rows[] = $row;
