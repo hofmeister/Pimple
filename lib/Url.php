@@ -221,7 +221,9 @@ class Url {
 		$parms = array();
 		foreach ($array as $key=>$value) {
 			if(is_int($key)) continue;
-			$parms[] = self::flattenUrlParms($key,$value);
+            $result = self::flattenUrlParms($key,$value);;
+			if ($result !== null)
+                $parms[] = $result;
 		}
 		return implode('&',$parms);
 	}
@@ -234,7 +236,9 @@ class Url {
 	public static function Object2GetParms($object) {
 		$parms = array();
 		foreach ($object as $key=>$value) {
-			$parms[] = self::flattenUrlParms($key,$value);
+            $result = self::flattenUrlParms($key,$value);;
+            if ($result !== null)
+                $parms[] = $result;
 		}
 		return implode('&',$parms);
 	}
@@ -253,13 +257,12 @@ class Url {
 					$parms[] = self::flattenUrlParms($key."[$innerKey]",$innerValue);
 				elseif(is_int($innerKey))
 					$parms[] = $key."[]=".$innerValue;
-                else
+                elseif($value !== null)
                     $parms[] = $key."[$innerKey]=".$innerValue;
 			}
-			$key = implode('&',$parms);
-		} else
-			$key .= '='.String::UrlEncode($value);
-		return $key;
+			return implode('&',$parms);
+		} elseif($value!=null)
+			return $key .'='.String::UrlEncode($value);
 	}
 	/**
 	 * Parse query (&name=value) string into array
