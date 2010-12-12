@@ -730,8 +730,11 @@ table.data .section {
 .data.list td em {
     font-size:10px;
 }
-.data tr.active td {
+.data tr.odd td {
     background-color: #efefef;
+}
+.data tr.active td {
+    background-color: #FFFFCC !important;
 }
 .data tfoot td {
     border-bottom:0 !important;
