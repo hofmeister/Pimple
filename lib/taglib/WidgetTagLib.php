@@ -137,7 +137,13 @@ class WidgetTagLib extends TagLib {
         
         return sprintf('<div class="panel wizard %s"><h2>%s<strong>'.T('Step %s of %s',$cs->getStep(),$w->getNumSteps()).'</strong></h2>%s</div>',$attrs->class,$title,$this->body());
     }
-    
+
+    /**
+     * Render a tab panel (notice - must be within a tabpage to make sence)
+     *
+     * @param <type> $attrs
+     * @return string
+     */
     protected function tagTabPanel($attrs) {
         
         $id = $this->uid();
@@ -149,6 +155,12 @@ class WidgetTagLib extends TagLib {
         $this->tabPanels[$id] = $title;
         return sprintf('<div class="pw-tabpanel %s" id="%s">%s</div>',$attrs->class,$id,$this->body());
     }
+    /**
+     * Render a tab page (notice - must contain tabPanels to make sence)
+     *
+     * @param <type> $attrs
+     * @return string
+     */
     protected function tagTabPage($attrs) {
         $body= $this->body();
         $tabs = '<ul class="line horizontal pw-tabs">';
