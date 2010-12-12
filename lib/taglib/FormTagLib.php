@@ -33,6 +33,21 @@ class FormTagLib extends TagLib {
 		return $this->inputElement('file',$attrs,$view);
     }
 	protected function tagCheckbox($attrs,$view) {
+        $label = trim($attrs->label);
+        if (!$label)
+            $label = '&nbsp;';
+
+        $attrs->simple = 'true';
+        $attrs->id = $this->tagId($attrs);
+        if ($attrs->id)
+            $attrs->after = sprintf('<label for="%s">%s</label>',$attrs->id,$label).$attrs->after;
+        else
+            $attrs->after = sprintf('<label>%s</label>',$label).$attrs->after;
+
+        unset($attrs->label);
+        if ($attrs->currentValue == $attrs->value) {
+            $attrs->checked = 'checked';
+        }
 		return $this->inputElement('checkbox',$attrs,$view);
     }
 	protected function tagRadio($attrs,$view) {

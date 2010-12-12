@@ -270,13 +270,26 @@ input,select,textarea,.form-element {
     outline: none;
     background-color: transparent;
 }
+fieldset {
+    border:1px solid #ccc;
+    padding:3px;
+    border:1px solid #CCC;
+    -moz-border-radius:5px; /* FF1+ */
+    -webkit-border-radius:5px; /* Saf3-4 */
+    border-radius:5px;
+    behavior: url(plugins/pie.htc);
+}
+fieldset legend {
+    font-style: italic;
+    font-weight: bold;
+}
 .form-item .element {
     
     padding:3px;
     border:1px solid #CCC;
     -moz-border-radius:5px; /* FF1+ */
     -webkit-border-radius:5px; /* Saf3-4 */
-    border-radius:3px;
+    border-radius:5px;
     behavior: url(plugins/pie.htc);
 }
 
@@ -288,19 +301,19 @@ input,select,textarea,.form-element {
 }
  
 .form-item.small  {
-    width:100px;
+    width:100px !important;
 }
 .form-item.medium {
-    width:140px;
+    width:140px !important;
 }
 .form-item.normal {
-    width:230px;
+    width:230px !important;
 }
 .form-item.large {
-    width:300px;
+    width:300px !important;
 }
 .form-item.xlarge {
-    width:450px;
+    width:450px !important;
 }
 
 input.form-checkbox,
