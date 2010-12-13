@@ -270,5 +270,6 @@ class DbVal {
 class DbPageResult {
     public $page = 0;
     public $totalPages = 0;
+    public $totalRows = 0;
     public $rows = array();
 }
