@@ -43,11 +43,15 @@ var Pimple = {
             url += encodeURIComponent(action) + "/";
         if (parms) {
             url += '?';
-            var strings = [];
-            for(var key in parms) {
-                strings.push(key + "=" + encodeURIComponent(parms[key]));
+            if (typeof parms == 'string') {
+                url += parms;
+            } else {
+                var strings = [];
+                for(var key in parms) {
+                    strings.push(key + "=" + encodeURIComponent(parms[key]));
+                }
+                url += strings.join('&');
             }
-            url += strings.join('&');
         }
         return url;
     },
