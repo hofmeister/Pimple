@@ -46,6 +46,7 @@ ul.horizontal.right li,
     margin:0;
     font-size:12px;
 }
+.padded {padding:10px !important;}
 .rpad {padding-right:10px !important;}
 .lpad {padding-left:10px !important;}
 .tpad {padding-top:10px !important;}
