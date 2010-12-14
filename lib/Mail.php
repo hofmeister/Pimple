@@ -33,16 +33,15 @@ class Mail {
 		}
 	}
 
-    public static function preview($view,$data) {
-        $containerViewFile = 'mail';
+    public static function preview($view,$data,$containerViewFile = 'mail') {
         $mailViewFile = "mail/$view";
         $mailContainer = new View($containerViewFile);
         $mailView = new View($mailViewFile);
         return $mailContainer->render(array('body'=>$mailView->render($data),'subject'=>$subject,'name'=>$name,'email'=>$email));
     }
-    public static function send($email,$name,$subject,$view,$data) {
+    public static function send($email,$name,$subject,$view,$data,$containerViewFile = 'mail') {
 		self::init();
-        $html = self::preview($view,$data);
+        $html = self::preview($view,$data,$containerViewFile);
 
 		$mail = new Zend_Mail(Settings::get(Settings::ENCODING));
 		$fromName = Settings::get(self::FROM_NAME);
