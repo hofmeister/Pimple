@@ -109,6 +109,9 @@ class WidgetTagLib extends TagLib {
         if ($attrs->id) {
             $add .= sprintf(' id="%s"',$attrs->id);
         }
+        if ($attrs->style) {
+            $add .= sprintf(' style="%s"',$attrs->style);
+        }
         return sprintf('<div class="panel %s"%s><h2>%s</h2>%s</div>',$attrs->class,$add,$attrs->title,$this->body());
     }
     protected function tagWizard($attrs) {
