@@ -45,7 +45,7 @@ class PimpleController extends Controller {
         $data = Request::get();
         $view = $data->view;
 
-        echo Mail::preview($view,$data);
+        echo Mail::preview($view,$data->toArray(),$data->container);
         Pimple::end();
     }
 }
