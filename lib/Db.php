@@ -56,6 +56,34 @@ class DB {
 			return $arg;
         }
 	}
+    public static function parseGeoData($geoText) {
+        if (!$geoText) return null;
+        list($type,$data) = explode('(',trim($geoText,')'),2);
+        if (!$type) return null;
+        $data = trim($data,'()');
+        switch(strtoupper($type)) {
+            case 'POINT':
+                $result = explode(' ',$data);
+                $geo = new stdClass();
+                $geo->lat = floatval($result[0]);
+                $geo->lng = floatval($result[1]);
+                return $geo;
+                break;
+            case 'POLYGON':
+                $points = explode(',',$data);
+                $result = array();
+                foreach($points as $point) {
+                    $point = explode(' ', $point);;
+                    $geo = new stdClass();
+                    $geo->lat = floatval($point[0]);
+                    $geo->lng = floatval($point[1]);
+                    $result[] = $geo;
+                }
+                return $result;
+                break;
+        }
+
+    }
     public static function escape($arg) {
         return preg_replace('/([^\%])\%([^\%])/is','$1%%$2',mysqli_real_escape_string(self::$link,$arg));
     }

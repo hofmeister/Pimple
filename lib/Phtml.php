@@ -9,7 +9,13 @@ class Phtml {
     const DOCTYPE = 'DOCTYPE';
     const ATTR = 'ATTR';
     const SCRIPT = 'SCRIPT';
-    const P_EVAL= 'P_EVAL';
+    const PHP = 'PHP';
+    const P_EVAL = 'P_EVAL';
+    const COMMENT = 'COMMENT';
+
+    private static $IGNORELIST = array(self::PHP,self::COMMENT,self::SCRIPT,self::STRING,self::P_EVAL,self::DOCTYPE);
+    private static $IGNOREALLLIST = array(self::PHP,self::COMMENT,self::STRING,self::P_EVAL,self::DOCTYPE);
+    private static $SCRIPTAGS = array('script','style','inline');
 
     private $withinStack = array();
     private $current = '';
@@ -23,6 +29,7 @@ class Phtml {
     private $debugTrace = '';
     private $ignoreNextChar = false;
     private $ignoreTags = false;
+    private $ignoreChars = false;
 
     /**
      *
@@ -55,61 +62,59 @@ class Phtml {
             
             switch($chr) {
                 case '<':
-                    if ($this->nextChar == '?') {
-                        $this->pushWithin(self::SCRIPT);
-                        $this->ignoreTags = true;
-                        $this->debug('START IGNORING TAGS (1)');
+                    if (mb_substr($string,$i+1,3) == '!--') {
+                        $this->pushWithin(self::COMMENT);
                         break;
                     }
-                    if (!$this->ignoreTags) {
-                        if ($this->nextChar == '/') {
-                            $this->pushWithin(self::TAGEND);
-                            $this->getNode()->setContainer(true);
-                            $this->onNodeEnd();
-                        } elseif ($this->nextChar == '!') {
-                            $this->pushWithin(self::DOCTYPE);
-                        } else {
-                            $this->onTagStart();
-                        }
+                    if ($this->nextChar == '?') {
+                        $this->pushWithin(self::PHP);
+                        break;
+                    } 
+                    if (!$this->ignoreAll() && $this->nextChar == '/') {
+                        $this->ignoreChars = true;
+                        $this->pushWithin(self::TAGEND);
+                        $this->getNode()->setContainer(true);
+                        
+                    } elseif ($this->nextChar == '!') {
+                        $this->pushWithin(self::DOCTYPE);
+                    } else {
+                        $this->onTagStart();
                     }
+                    
                     break;
                 case '>':
-                    if ($this->lastChar == '?' && $this->isWithin(self::SCRIPT)) {
+                    if (mb_substr($string,$i-2,2) == '--' && $this->isWithin(self::COMMENT)) {
                         $this->popWithin();
-                        $this->ignoreTags = false;
-                        $this->debug('STOP IGNORING TAGS (1)');
-                    } elseif(!$this->ignoreTags) {
-                        if ($this->isWithin(self::TAGEND)) {
-                            $this->popWithin();
-                            $this->clearCurrent();
-                            $this->debug('IGNORING NEXT CHR (1): '.$this->char);
-                            $this->ignoreNextChar = true;//Used because the tag is marked ended before the char is added
-                        } elseif ($this->isWithin(self::DOCTYPE)) {
-                            $this->popWithin();
-                            $this->onWordEnd();
-                        } else {
-                            $this->onWordEnd();
-                            $this->onTagEnd();
-                            $this->debug('IGNORING NEXT CHR (2): '.$this->char);
-                            $this->ignoreNextChar = true;//Used because the tag is marked ended before the char is added
-                        }
+                        break;
                     }
+                    if ($this->lastChar == '?' && $this->isWithin(self::PHP)) {
+                        $this->popWithin();
+                    } elseif ($this->isWithin(self::TAGEND)) {
+                        $this->popWithin();
+                        $this->onNodeEnd();
+                        $this->ignoreChars = false;
+                        $this->ignoreNextChar(1);
+                    } elseif ($this->isWithin(self::DOCTYPE)) {
+                        $this->popWithin();
+                        $this->onWordEnd();
+                    } elseif(!$this->ignoreAll()) {
+                        $this->onWordEnd();
+                        $this->onTagEnd();
+                        $this->ignoreNextChar(2);
+                    }
+                    
                     break;
                 case ':':
                     if ($this->isWithin(self::ATTR)) {break;}
                 case '%':
-                    if ($this->ignoreTags) break;
+                    if ($this->ignoreTags()) break;
                     if ($this->nextChar == '{') {
                         $this->pushWithin(self::P_EVAL);
-                        $this->debug('START IGNORING TAGS (2)');
-                        $this->ignoreTags = true;
                         break;
                     }
                 case '}':
-                    if ($this->isWithin(self::P_EVAL)) {
+                    if ($this->isWithin(self::P_EVAL) && $this->lastChar != '\\') {
                         $this->popWithin();
-                        $this->debug('STOP IGNORING TAGS (2)');
-                        $this->ignoreTags = false;
                         break;
                     }
                 case ' ':
@@ -118,7 +123,7 @@ class Phtml {
                 case "\r":
                 case '/':
                 case '=':
-                    if ($this->ignoreTags) break;
+                    if ($this->ignoreTags() && !$this->isWithin(self::ATTR)) break;
                     $this->onWordEnd();
                     break;
                 case '"':
@@ -149,8 +154,20 @@ class Phtml {
 
         $node = $this->getNode();
         $this->clear();
+        if (Settings::get(Settings::DEBUG,false) && isset($_GET['__viewdebug'])) {
+            throw new PhtmlException($this->phtmlRaw,$this->char,$this->lineCount,$this->charCount,$this->debugTrace);
+        }
         return $node;
-
+    }
+    protected function ignoreAll() {
+        return in_array($this->within(),self::$IGNOREALLLIST);
+    }
+    protected function ignoreTags() {
+        return in_array($this->within(),self::$IGNORELIST);
+    }
+    protected function ignoreNextChar($debugKey) {
+        $this->debug('IGNORING NEXT CHR ('.$debugKey.'): '.$this->char);
+        $this->ignoreNextChar = true;//Used because the tag is marked ended before the char is added
     }
     protected function clear() {
         $this->node = null;
@@ -163,7 +180,7 @@ class Phtml {
         $this->attrName = '';
     }
     protected function addChar($chr) {
-        if (!$this->ignoreNextChar)
+        if (!$this->ignoreNextChar && !$this->ignoreChars)
             $this->current .= $chr;
         $this->ignoreNextChar = false;
     }
@@ -171,8 +188,7 @@ class Phtml {
         if ($this->stringStartChar && $this->stringStartChar != $this->char) return;
         $this->stringStartChar = $this->char;
         $this->debug("STRING START");
-        $this->debug('START IGNORING TAGS (3)');
-        $this->ignoreTags = true;
+        
         $this->pushWithin(self::STRING);
         $this->current = substr($this->current,1);
     }
@@ -180,15 +196,14 @@ class Phtml {
         if ($this->stringStartChar != $this->char || $this->lastChar == '\\') return;
         $this->stringStartChar = '';
         $this->debug("STRING END");
-        $this->debug('STOP IGNORING TAGS (3)');
-        $this->ignoreTags = false;
         $this->popWithin();
     }
-    protected function getCurrent($alphanum = false) {
+    protected function getCurrent($alphanum = false,$erase = true) {
         $result = $this->current;
         if ($alphanum)
             $result = preg_replace ('/[^A-Z0-9_\-]/i','', $result);
-        $this->current = '';
+        if ($erase)
+            $this->current = '';
         return $result;
     }
     protected function clearCurrent() {
@@ -209,9 +224,11 @@ class Phtml {
     }
 
     protected function onWordEnd() {
-        if ($this->isWithin(self::STRING) || !$this->hasCurrent()) return;//ignore
+        if (!$this->hasCurrent()) return;//ignore
+        
         switch($this->within()) {
             case self::TAG:
+                if ($this->ignoreTags()) return;
                 $current = $this->getCurrent(true);
                 if (!$current) return;
                 if ($this->char == ':')
@@ -219,11 +236,14 @@ class Phtml {
                 else {
                     $this->getNode()->setTag($current);
                     $this->debug("STARTING NODE: '".$this->getNode()->getTag()."'");
+                    if ($this->isScriptTag($current)) {
+                        $this->pushBefore(self::SCRIPT);
+                    }
                 }
                 break;
             case self::ATTR:
                 if (!$this->attrName) {
-                    $current = preg_replace ('/[^A-Z0-9_\-:]/i','',$this->getCurrent());
+                    $current = $this->getCurrent(true);
                     if (!$current) return;
                     $this->attrName = $current;
                     $this->debug("ATTR FOUND: $this->attrName");
@@ -238,11 +258,19 @@ class Phtml {
                 break;
         }
     }
+    protected function isScriptTag($tag) {
+        return in_array(strtolower($tag),self::$SCRIPTAGS);
+    }
     protected function pushWithin($within) {
         array_push($this->withinStack,$within);
     }
+    protected function pushBefore($within) {
+        $oldWithin = $this->popWithin();
+        $this->pushWithin($within);
+        $this->pushWithin($oldWithin);
+    }
     protected function popWithin() {
-        array_pop($this->withinStack);
+        return array_pop($this->withinStack);
     }
     protected function within() {
         return $this->withinStack[count($this->withinStack)-1];
@@ -257,7 +285,8 @@ class Phtml {
 
     protected function onTagStart() {
         if (!$this->isWithin(self::NOTHING)) return;
-        
+
+        if ($this->ignoreTags()) return;
         $node = new PhtmlNode();
         $text = $this->getCurrent();
         $this->pushWithin(self::TAG);
@@ -271,6 +300,7 @@ class Phtml {
 
     protected function onTagEnd() {
         if (!$this->isWithin(self::TAG)) return;
+        if ($this->ignoreTags()) return;
         $this->debug("ENDING TAG: ".$this->getNode()->getTag());
         
         if ($this->lastChar == '/')
@@ -279,11 +309,15 @@ class Phtml {
         $this->popWithin();
     }
     protected function onNodeEnd() {
+        if ($this->ignoreAll()) return;
         $parent = $this->getNode()->getParent();
         $text = $this->getCurrent();
         if ($text)
             $this->getNode()->addChild(new PhtmlNodeText($text));
         $this->debug("ENDING NODE: ".$this->getNode()->getTag());
+        if ($this->isScriptTag($this->getNode()->getTag())) {
+            $this->popWithin();//Pop an extra time for the SCRIPT
+        }
         $this->node = $parent;
     }
     protected function getNode() {
