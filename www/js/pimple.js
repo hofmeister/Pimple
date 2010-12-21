@@ -4,6 +4,8 @@ var Pimple = {
     },
     widget:{},
     _bindings:{},
+    _messageTimeout:null,
+    
     addBinding: function(selector,method){
         
         if (!this._bindings[selector]) {
@@ -66,6 +68,27 @@ var Pimple = {
             return $.parseJSON(optStr.replace(/'/g,'"'));
         else
             return optStr;
+    },
+    addMessage: function(text,isError,timeout) {
+        var cls = (isError) ? 'error' : 'success';
+        $('.pimple-messages')
+                    .append('<div class="message '+cls+'">'+text+'</div>');
+        return Pimple.showMessages(timeout);
+    },
+    showMessages: function(timeout) {
+        if (!timeout) timeout = 15000;
+        $('.pimple-messages')
+                    .show();
+        if (Pimple._messageTimeout) {
+            clearTimeout(Pimple._messageTimeout);
+            Pimple._messageTimeout = null;
+        }
+        Pimple._messageTimeout = setTimeout(function() {
+            $('.pimple-messages').fadeOut('fast',function() {
+                $('.pimple-messages').html('');
+            });
+        },timeout);
+        return Pimple;
     }
 };
 window.$p = Pimple;
@@ -84,7 +107,6 @@ $.fn.selectRange = function(start, end) {
                 }
         });
 };
-$p._messageTimeout = null;
 $(function() {
     if (window.YAHOO != undefined) {
         if (YAHOO.widget && YAHOO.widget.Chart && Pimple.settings.pimplePath)
@@ -104,22 +126,6 @@ $(function() {
        $('.pimple-messages').css('bottom',0 - $(window).scrollTop());
     })
 });
-$p.addMessage = function(text,isError,customTimeout) {
-    if (!customTimeout) customTimeout = 15000;
-    var cls = (isError) ? 'error' : 'success';
-    $('.pimple-messages')
-                .show()
-                .append('<div class="message '+cls+'">'+text+'</div>');
-    if ($p._messageTimeout) {
-        clearTimeout($p._messageTimeout);
-        $p._messageTimeout = null;
-    }
-    $p._messageTimeout = setTimeout(function() {
-        $('.pimple-messages').fadeOut('fast',function() {
-            $('.pimple-messages').html('');
-        });
-    },customTimeout);
-};
 
 /* add various bindings */
 
