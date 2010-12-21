@@ -123,8 +123,12 @@ class FormTagLib extends TagLib {
                 $options .= sprintf('<option %s>%s</option>',$checked,$val);
             }
         }
-        $selectElm = sprintf('<select name="%s" class="form-select %s">%s</select>',
-					$attrs->name,$attrs->class,$options);
+        $addon = '';
+        if ($attrs->id) {
+            $addon .= sprintf(' id="%s"',$attrs->id);
+        }
+        $selectElm = sprintf('<select name="%s" class="form-select %s" %s>%s</select>',
+					$attrs->name,$attrs->class,$addon,$options);
 		return $this->formElementContainer($selectElm,$attrs);
 	}
 	protected function tagForm($attrs,$view) {
@@ -297,7 +301,7 @@ class FormTagLib extends TagLib {
         }
         $output .= '>';
         $label = trim($label);
-        if (!$label && !$attrs->simple)
+        if (!$label && (!$attrs->simple && $attrs->composit != 'false'))
             $label = '&nbsp;';
 
         if ($label) {

@@ -2,14 +2,12 @@
 ul.horizontal li,
 	ol.horizontal li,
     .horizontal .form-item,
-    .horizontal input,
     .horizontal button {
 	float:left;
 }
 ul.horizontal.right li,
 	ol.horizontal.right li,
     .horizontal.right .form-item,
-    .horizontal.right input,
     .horizontal.right button {
 	float:right;
 }
@@ -34,6 +32,9 @@ ul.horizontal.right li,
 }
 .right {
     float:right;
+}
+.nofloat {
+    float:none !important;
 }
 .pimple-messages {
     position:absolute;
