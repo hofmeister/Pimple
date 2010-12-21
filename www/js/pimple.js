@@ -84,20 +84,42 @@ $.fn.selectRange = function(start, end) {
                 }
         });
 };
-
+$p._messageTimeout = null;
 $(function() {
     if (window.YAHOO != undefined) {
         if (YAHOO.widget && YAHOO.widget.Chart && Pimple.settings.pimplePath)
             YAHOO.widget.Chart.SWFURL = Pimple.settings.pimplePath + "js/plugins/yui/charts/assets/charts.swf";
     }
     Pimple.bind();
-    setTimeout(function() {
-       $('.pimple-messages').fadeOut();
+    if ($p._messageTimeout) {
+        clearTimeout($p._messageTimeout);
+        $p._messageTimeout = null;
+    }
+    $p._messageTimeout = setTimeout(function() {
+       $('.pimple-messages').fadeOut('fast',function() {
+            $('.pimple-messages').html('');
+        });
     },15000);
     $(window).scroll(function() {
        $('.pimple-messages').css('bottom',0 - $(window).scrollTop());
     })
 });
+$p.addMessage = function(text,isError,customTimeout) {
+    if (!customTimeout) customTimeout = 15000;
+    var cls = (isError) ? 'error' : 'success';
+    $('.pimple-messages')
+                .show()
+                .append('<div class="message '+cls+'">'+text+'</div>');
+    if ($p._messageTimeout) {
+        clearTimeout($p._messageTimeout);
+        $p._messageTimeout = null;
+    }
+    $p._messageTimeout = setTimeout(function() {
+        $('.pimple-messages').fadeOut('fast',function() {
+            $('.pimple-messages').html('');
+        });
+    },customTimeout);
+};
 
 /* add various bindings */
 
