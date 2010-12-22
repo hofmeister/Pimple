@@ -74,22 +74,44 @@ class BasicTagLib extends TagLib {
     }
 
 	protected function tagLink($attrs,$view) {
-        if ($attrs) {
-            $lAttrs = clone $attrs;
+        $linkAttrs = new stdClass();
+        $tagAttrs = new stdClass();
+        
+        if ($attrs->parms) {
+            //If parms argument is found restrict url to parms, controller and action attributes
+            $linkAttrs = $this->toObject($attrs->parms);
+            if ($attrs->controller)
+                $linkAttrs->controller =  $attrs->controller;
+            if ($attrs->action)
+                $linkAttrs->action = $attrs->action;
+            $tagAttrs = $attrs;
+            unset($tagAttrs->controller);
+            unset($tagAttrs->action);
+            unset($tagAttrs->parms);
         } else {
-            $lAttrs = new stdClass();
+            //If parms argument not present - allow only "class","style" and "title" for tag - assume rest is for url
+            $tagAttrs = new stdClass();
+            if ($attrs->class)
+                $tagAttrs->class = $attrs->class;
+            if ($attrs->style)
+                $tagAttrs->style = $attrs->style;
+            if ($attrs->title)
+                $tagAttrs->title = $attrs->title;
+            
+            $linkAttrs = $attrs;
+            unset($linkAttrs->class);
+            unset($linkAttrs->style);
+            unset($linkAttrs->title);
         }
-        unset($lAttrs->class);
-        unset($lAttrs->style);
-        $link = $this->url($lAttrs,$this->body(),$view);
+
+
+
+        $link = $this->url($linkAttrs,$this->body(),$view);
         if (!$this->body())
             $this->body($link);
-        unset($attrs->controller);
-        unset($attrs->action);
-        unset($attrs->parms);
         
-        $attrs->href = $link;
-        $a = new HtmlElement('a', $attrs);
+        $tagAttrs->href = $link;
+        $a = new HtmlElement('a', $tagAttrs);
         $a->addChild(new HtmlText($this->body()));
 		return $a;
 	}

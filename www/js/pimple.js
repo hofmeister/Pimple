@@ -89,6 +89,33 @@ var Pimple = {
             });
         },timeout);
         return Pimple;
+    },
+    /**
+     * @param string the html to get size of
+     * @param element optional element to put html into
+     * @param function optional method to apply to clone of element
+     */
+    getSizeOfHtml: function(html,elm,elmPrepare) {
+        var tmp = null;
+        if (!elm)
+            tmp = $('<div></div>');
+        else
+            tmp = elm.clone().attr('id','');
+        if (elmPrepare) {
+            elmPrepare(tmp);
+        }
+        tmp.html(html);
+        tmp.css({
+            position:'absolute',
+            left:'-9999px'
+        }).show();
+        $('body').append(tmp);
+        var result = {
+            height:tmp.height(),
+            width:tmp.width()
+        }
+        tmp.detach();
+        return result;
     }
 };
 window.$p = Pimple;

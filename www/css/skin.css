@@ -34,12 +34,42 @@ em {
     -webkit-border-radius:5px;
     behavior: url(plugins/PIE.htc)
 }
+.brounded {
+    border-radius:0px 0px 5px 5px;
+    -moz-border-radius:0px 0px 5px 5px;
+    -webkit-border-radius:0px 0px 5px 5px;
+    behavior: url(plugins/PIE.htc)
+}
 .shaded {
     -moz-box-shadow: 3px 3px 2px #999;
     -webkit-box-shadow: 3px 3px 2px #999;
     box-shadow: 3px 3px 2px #999;
 }
-
+.grey {
+    background-color: #ccc;
+}
+.grey-light {
+    background-color: #efefef;
+}
+.yellow {
+    background-color: #ffffcc;
+}
+.yellow-light {
+    background-color: #ffffee;
+}
+.blue {
+    background-color: #004E7A;
+    color:#fff;
+}
+.blue a {
+    color:#fff;
+}
+.blue-light {
+    background-color: #BBC7DE;
+}
+.green {
+    background-color: #BBDEC2;
+}
 .header {
     border-bottom:1px solid #333;
 }
@@ -133,6 +163,20 @@ h3 {
     .menu a.active {
 	color:#333;
 	background-color: #efefef;
+}
+
+/* disabled button color */
+.menu a.disabled,
+    .sub-menu a.disabled,
+    .button.disabled,
+    .menu a.disabled:hover,
+    .sub-menu a.disabled:hover,
+    .button.disabled:hover{
+    background-color:#efefef;
+    color:#aaa;
+    border:0;
+    font-weight: normal;
+    font-style: italic;
 }
 
 /* menu */
@@ -770,6 +814,20 @@ table.data .section {
 }
 .icon16x16.remove,.icon16x16.delete {
     background-image: url(../images/skin/delete.png);
+}
+.loader-circle {
+    background-image: url(../images/skin/loader-circle.gif);
+    background-repeat: no-repeat;
+    background-position: center center;
+    width:26px;
+    height:26px;
+}
+.loader-bar {
+    background-image: url(../images/skin/loader-bar.gif);
+    background-repeat: no-repeat;
+    width:128px;
+    height:15px;
+    background-position: center center;
 }
 
 /* jquery UI overwrites */

@@ -15,11 +15,19 @@ class TagLib {
 		self::$uidCount++;
 		return $uid;
 	}
+    protected function toObject($value) {
+        if (is_string($value)) {
+            return json_decode(str_replace('\'','"',stripslashes($value)));
+        } else {
+            return $value;
+        }
+    }
 
 
     public function __call($name,$args) {
         return $this->callTag($name,$args[0],$args[1],$args[2]);
     }
+
     public function callTag($name,$attrs,$body = null,$view = null) {
         $method = 'tag'.ucfirst($name);
         if (!method_exists($this,$method)) {

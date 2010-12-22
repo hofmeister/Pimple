@@ -95,11 +95,8 @@ class FormTagLib extends TagLib {
 
         $attrs->value = $this->getFieldValue($attrs,$attrs->value);
         
-        if (is_string($attrs->options)) {
-            $keyVal = json_decode(str_replace('\'','"',stripslashes($attrs->options)));
-        } else {
-            $keyVal = $attrs->options;
-        }
+        $keyVal = $this->toObject($attrs->options);
+        
         $options = "";
         if ($attrs->emptyText) {
             if ($attrs->emptyValue) {
