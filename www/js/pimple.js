@@ -5,6 +5,7 @@ var Pimple = {
     widget:{},
     _bindings:{},
     _messageTimeout:null,
+    _uidCount:0,
     
     addBinding: function(selector,method){
         
@@ -62,6 +63,11 @@ var Pimple = {
         }
         return url;
     },
+    uid:function() {
+        var uid = "pimple-uid-" + Pimple._uidCount;
+        Pimple._uidCount++;
+        return uid;
+    },
     opts: function(elm) {
         var optStr = elm.attr('p:options');
         if (optStr && (optStr.indexOf('[') > -1 || optStr.indexOf('{') || optStr.indexOf('\'')))
@@ -116,6 +122,24 @@ var Pimple = {
         }
         tmp.detach();
         return result;
+    },
+    forceFocus:function(elm) {
+        if (!elm) elm = $('body');
+        var felm = elm.find('.pimple-focus-element');
+        if (felm.length == 0) {
+            felm = $('<input class="pimple-focus-element" style="position:absolute;left:-9999px;top:0px;" />')
+            elm.append(felm);
+        }
+        felm.focus();
+    },
+    forceBlur:function(elm) {
+        if (!elm) elm = $('body');
+        var felm = elm.find('.pimple-focus-element');
+        if (felm.length == 0) {
+            felm = $('<input class="pimple-focus-element" style="position:absolute;left:-9999px;top:0px;" />')
+            elm.append(felm);
+        }
+        felm.blur();
     }
 };
 window.$p = Pimple;
