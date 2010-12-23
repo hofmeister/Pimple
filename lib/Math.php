@@ -2,13 +2,36 @@
 class Math {
 
     public static function DMStoDECfromString($str) {
-        $str = trim($str);
-        $lastLetter = strtoupper(substr($str,-1));
-        $parts = preg_split('/[^0-9]/',preg_replace('/[^0-9\.\s]/','',$str));
-        //var_dump($parts);
-        return self::DMStoDEC(intval($parts[0]),intval($parts[1]),intval($parts[2])) * ($lastLetter == 'W' ? -1 : 1) ;
-    }
-    public static function DMStoDEC($deg,$min,$sec) {
-        return $deg+((($min*60)+($sec))/3600);
+        $str = utf8_decode($str);
+        $str = trim($str,' \"\'“');
+        $str = preg_replace('/[^0-9A-Z\s\.\+\-]*/is','',$str);
+        $str = str_replace('.',' ',$str);
+
+        var_dump($str);
+        var_dump(explode(' ',$str));
+        list($degrees,$min,$sec,$dir) = explode(' ',$str);
+        if (!($degrees !== null && $min !== null && $sec !== null))
+            return false;
+        $dir = strtoupper($dir);
+        //Convert from strings
+        $degrees = floatval($degrees);
+        $min = floatval($min);
+        $sec = floatval($sec);
+
+        if ($degrees < 0) {
+            $negative = true;
+            $degrees = abs($degrees);
+        }
+
+        //Calculate
+        $sec=($sec/60);
+        $min=($min+$sec);
+        $min=($min/60);
+        $decimal = ($degrees+$min);
+        
+        if ($negative || ($dir=="S") || ($dir=="W")) {
+            $decimal = $decimal*-1;
+        }
+        return $decimal;
     }
 }
