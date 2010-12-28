@@ -61,9 +61,23 @@ class Pimple {
         return $this->controller.'/'.$this->action;
     }
     public function execute() {
-        if (isset($_GET['__clearcache'])) {
-            //Clear cache
-            Dir::emptyDir(CACHEDIR,true);
+        if (Settings::get(Settings::DEBUG,false)) {
+            if (isset($_GET['__clearcache'])) {
+                //Clear cache
+                Dir::emptyDir(CACHEDIR,true);
+            }
+            if (isset($_GET['__clearview'])) {
+                //Clear cache
+                Dir::emptyDir(Dir::concat(CACHEDIR,'view'),true);
+            }
+            if (isset($_GET['__clearjs'])) {
+                //Clear cache
+                Dir::emptyDir(Dir::concat(CACHEDIR,'js'),true);
+            }
+            if (isset($_GET['__clearcss'])) {
+                //Clear cache
+                Dir::emptyDir(Dir::concat(CACHEDIR,'css'),true);
+            }
         }
         
         if (!$this->controller)
