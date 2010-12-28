@@ -1,3 +1,4 @@
+/* nominify */
 String.prototype.trim = function () {
     return this.replace(/^\s*/, "").replace(/\s*$/, "");
 }
@@ -238,8 +239,9 @@ var HTML = {
         //Replace all whitespace characters with spaces
         source = source.replace(/(\s|&nbsp;)+/g, ' ');
         //replace weird word characters
-        for (i = 0; i < this.rchars[0].length; i++)
+        for (i = 0; i < this.rchars[0].length; i++) {
             source = source.replace(new RegExp(this.rchars[0][i], 'g'), this.rchars[1][i]);
+        }
 
         //initialize flags
         //what the next character is expected to be
@@ -548,5 +550,5 @@ var HTML = {
         else
             return character;
     }
-}
+};
 

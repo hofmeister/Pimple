@@ -48,4 +48,67 @@ class PimpleController extends Controller {
         echo Mail::preview($view,$data->toArray(),$data->container);
         Pimple::end();
     }
+    public function javascript() {
+        $this->setContentType('application/x-javascript; charset=utf-8;');
+        $this->setCache(Date::SPAN_MONTH);
+        //set_time_limit(0);
+        require_once Pimple::instance()->getBaseDir().'lib/Javascript.php';
+        $cacheDir = Pimple::instance()->getSiteDir().'cache/js/';
+        Dir::ensure($cacheDir);
+        $templates = array('application');
+        $view = Request::get('view',false);
+        if ($view) {
+            $templates[] = $view;
+        }
+        foreach($templates as $template) {
+            $cacheFile = $cacheDir.$template.'.js';
+            echo "// $template\n";
+            Dir::ensure(dirname($cacheFile));
+            if (!is_file($cacheFile)) {
+                File::truncate($cacheFile);
+                $view = new View($template);
+                $view->render();
+                $files = $view->getJsFiles();
+                foreach($files as $file) {
+                    File::append($cacheFile,"//FILE:".basename($file).chr(10));
+                    if (preg_match('/(3rdparty)/i',$file) || stristr(file_get_contents($file,null, null,0,100),'nominify'))
+                        File::append($cacheFile,String::normalize(file_get_contents($file),false));
+                    else
+                        File::append($cacheFile,Javascript::minify($file));
+                    File::append($cacheFile,chr(10));
+                }
+            }
+            echo file_get_contents($cacheFile);
+        }
+
+        Pimple::end();
+    }
+    public function css() {
+        $this->setContentType('text/css; charset=utf-8;');
+        require_once Pimple::instance()->getBaseDir().'lib/Stylesheet.php';
+        $cacheDir = Pimple::instance()->getSiteDir().'cache/css/';
+        Dir::ensure($cacheDir);
+        $templates = array('application');
+        $view = Request::get('view',false);
+        if ($view) {
+            $templates[] = $view;
+        }
+        foreach($templates as $template) {
+            $cacheFile = $cacheDir.$template.'.css';
+            echo "/* $template */\n";
+            Dir::ensure(dirname($cacheFile));
+            if (!is_file($cacheFile)) {
+                File::truncate($cacheFile);
+                $view = new View($template);
+                $view->render();
+                $files = $view->getCssFiles();
+                foreach($files as $file) {
+                    File::append($cacheFile,"/*FILE:".basename($file).'*/'.chr(10).Stylesheet::minify($file).chr(10));
+                }
+            }
+            echo file_get_contents($cacheFile);
+        }
+
+        Pimple::end();
+    }
 }

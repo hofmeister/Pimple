@@ -146,6 +146,9 @@ class Controller {
         echo $value;
         Pimple::instance()->end();
     }
+    protected function setContentType($type) {
+        header('Content-type: '.$type,true);
+    }
     protected function asCSV($array,$firstRowHeader = true,$seperator = ';') {
         $this->setSkipView(true);
         header('Content-type: text/csv');
@@ -169,5 +172,11 @@ class Controller {
     }
     protected function asDownload($filename) {
         header('Content-Disposition: attachment; filename="'.$filename.'"');
+    }
+    protected function setCache($seconds) {
+
+        header("Cache-Control: max-age=".$seconds,true);
+        if ($seconds == 0) $seconds = -1*time();
+        header("Expires: ".date(DATE_RFC1123,time()+$seconds),true);
     }
 }

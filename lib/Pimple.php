@@ -57,6 +57,9 @@ class Pimple {
     public function getAction() {
         return $this->action;
     }
+    public function getViewFile() {
+        return $this->controller.'/'.$this->action;
+    }
     public function execute() {
         if (isset($_GET['__clearcache'])) {
             //Clear cache
@@ -81,7 +84,7 @@ class Pimple {
 
             $ctrlClass = ucfirst($this->controller).'Controller';
             $appViewFile = 'application';
-            $viewFile = '/'.$this->controller.'/'.$this->action;
+            $viewFile = $this->getViewFile();
             if (!class_exists($ctrlClass)) {
                 $ctrlFile = Dir::normalize(BASEDIR).'controller/'.$ctrlClass.'.php';
                 if (!File::exists($ctrlFile)) {
@@ -230,5 +233,12 @@ class Pimple {
     
     public static function getEnvironment($default = null) {
         return ($_SERVER['PIMPLE_ENV']) ? $_SERVER['PIMPLE_ENV'] : $default;
+    }
+    public static function getCacheFile($filename) {
+        $dirname = dirname(substr($filename,strlen(BASEDIR)));
+        return Dir::concat(CACHEDIR,$dirname).basename($filename);
+    }
+    public static function getSiteDir() {
+        return Dir::normalize(BASEDIR);
     }
 }

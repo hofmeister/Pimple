@@ -4,6 +4,7 @@ class BasicTagLib extends TagLib {
 	
     private static $globalVars = array();
     private $lastIfOutcome = true;
+    private static $firstCssFound = false;
     protected function tagUid($attrs,$view) {
 		return $this->uid();
 	}
@@ -139,16 +140,38 @@ class BasicTagLib extends TagLib {
         }
         return $output.'</div>';
     }
-	protected function tagStylesheet($attrs) {
+	protected function tagStylesheet($attrs,$view) {
+        if($attrs->collect == 'true') {
+            if (Settings::get(Settings::DEBUG,false) && Request::get('__nominify',false))
+                return '';
+            Dir::ensure(Pimple::instance()->getSiteDir().'cache/css/');
+            $cacheFile = Pimple::instance()->getSiteDir().'cache/css/counter.tmp';
+            if (File::exists($cacheFile))
+                $stamp = file_get_contents($cacheFile);
+            else {
+                $stamp = time();
+                file_put_contents($cacheFile,$stamp);
+            }
+            return sprintf('<link href="%s" rel="stylesheet" type="text/css" />',Url::makeLink('pimple','css',array('view'=> Pimple::instance()->getViewFile(),'stamp'=>$stamp)))."\n";
+        }
 		if ($attrs->local == 'false') {
 			$base = Settings::get(Pimple::URL);
+            $view->addCssFile(Pimple::instance()->getBaseDir().'www/'.$attrs->path);
 		} else {
+            $view->addCssFile(Pimple::instance()->getSiteDir().$attrs->path);
 			$base = Url::basePath();
 		}
+
+
         
         $url = $base.$attrs->path;
-        if ($attrs->inline != 'true')
-            return sprintf('<link href="%s" rel="stylesheet" type="text/css" />',$url);
+        if ($attrs->inline != 'true') {
+            if (Settings::get(Settings::DEBUG,false) && Request::get('__nominify',false)) {
+                return sprintf('<link href="%s" rel="stylesheet" type="text/css" />',$url);
+            } 
+            return '';
+        }
+
 
         $path = Dir::normalize(BASEDIR).$attrs->path;
         $css = file_get_contents($path);

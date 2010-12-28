@@ -6,8 +6,16 @@ class View {
     const CACHE = 'VIEW_CACHE';
     private static $_current = array();
 
+    private $jsFiles = array();
+    private $cssFiles = array();
+
+
+
     public static function current() {
         return end(self::$_current);
+    }
+    public static function top() {
+        return self::$_current[0];
     }
     public static function addCurrent($view) {
         array_push(self::$_current,$view);
@@ -34,8 +42,7 @@ class View {
         return VIEWDIR.$this->template.'.php';
     }
     public function getCacheName() {
-        $dirname = dirname(substr($this->getTemplateFile(),strlen(BASEDIR)));
-        return Dir::concat(CACHEDIR,$dirname).basename($this->getTemplateFile());
+        return Pimple::getCacheFile($this->getTemplateFile());
     }
     private function parseTemplate() {
         $cachename = $this->getCacheName();
@@ -53,7 +60,7 @@ class View {
             $parsed->toPhp($cachename);
         }
     }
-    public function render($data) {
+    public function render($data = array()) {
         self::addCurrent($this);
         $cachename = $this->getCacheName();
         if ($data instanceof Model)
@@ -94,5 +101,24 @@ class View {
         if (!$this->taglibs[$ns])
             throw new Exception(T('Unknown tag lib: %s',$ns));
         return $this->taglibs[$ns];
+    }
+    public function addJsFile($file) {
+        if ($this != self::top())
+            self::top()->addJsFile($file);
+        else
+            $this->jsFiles[] = $file;
+    }
+    public function addCssFile($file) {
+        if ($this != self::top())
+            self::top()->addCssFile($file);
+        else
+            $this->cssFiles[] = $file;
+    }
+    public function getJsFiles() {
+        return $this->jsFiles;
+    }
+
+    public function getCssFiles() {
+        return $this->cssFiles;
     }
 }

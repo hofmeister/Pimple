@@ -160,6 +160,19 @@ class File {
 
 		return $content;
 	}
+    public static function truncate($file) {
+        file_put_contents($file,'');
+    }
+    public static function append($file,$data) {
+        $fp = fopen($file,'a');
+        if ($fp) {
+            fwrite($fp,$data);
+            fclose($fp);
+        } else {
+            throw new Exception('Could not create or append to file: '.$file);
+        }
+    }
+
     public static function string2Filename($string) {
         return preg_replace('/[^0-9A-Z_\.\-]/is','', $string);
     }

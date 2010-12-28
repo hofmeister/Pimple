@@ -1,4 +1,4 @@
-$p.addBinding('.pb-autocomplete',function() {
+$p.addBinding('.pb-autocomplete',function() {
     var dom = $(this);
     dom.attr('autocomplete','off');
     var opts = $p.opts(dom);

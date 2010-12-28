@@ -75,6 +75,7 @@ IncludePath::instance()->addPath(Pimple::instance()->getRessource('lib/'),1);
 define('CACHEDIR',Dir::normalize(BASEDIR).'cache');
 Dir::ensure(CACHEDIR);
 
+
 Pimple::instance()->registerTagLib('c',new CoreTagLib());
 Pimple::instance()->registerTagLib('val',new ValueTagLib());
 Pimple::instance()->registerTagLib('p',new BasicTagLib());
