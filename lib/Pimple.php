@@ -194,6 +194,10 @@ class Pimple {
             $path = '/';
         return $path;
     }
+    /**
+     *
+     * @return Controller
+     */
     public function getControllerInstance() {
         return $this->controllerInstance;
     }

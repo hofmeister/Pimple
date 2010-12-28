@@ -24,15 +24,23 @@ var Pimple = {
                         $(elm).filter(sel).each(m);
                         $(elm).find(sel).each(m);
                     } else {
-                        $(elm).filter(sel)[m]();
-                        $(elm).find(sel)[m]();
+                        if (typeof $(sel)[m] == 'function') {
+                            $(elm).filter(sel)[m]();
+                            $(elm).find(sel)[m]();
+                        } else if (console) {
+                            console.log("Failed to init binding: " + m);
+                        }
                     }
                     
                 } else {
                     if (typeof m == 'function') {
                         $(sel).each(m);
                     } else {
-                        $(sel)[m]();
+                        if (typeof $(sel)[m] == 'function') {
+                            $(sel)[m]();
+                        } else if (console) {
+                            console.log("Failed to init binding: " + m);
+                        }
                     }
                 }
             }

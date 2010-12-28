@@ -38,7 +38,12 @@ class JavascriptTagLib extends TagLib {
             $stamp = time();
             file_put_contents($cacheFile,$stamp);
         }
-        return self::$jsScripts.sprintf('<script type="text/javascript" src="%s"></script>',Url::makeLink('pimple','javascript',array('view'=>Pimple::instance()->getViewFile(),'stamp'=>$stamp)))."\n";
+        $ctrl = Pimple::instance()->getControllerInstance();
+        $skipLayout = 0;
+        if ($ctrl->getSkipLayout()) {
+            $skipLayout = 1;
+        }
+        return self::$jsScripts.sprintf('<script type="text/javascript" src="%s"></script>',Url::makeLink('pimple','javascript',array('view'=>Pimple::instance()->getViewFile(),'stamp'=>$stamp,'skipLayout'=>$skipLayout)))."\n";
     }
     protected function tagScript($attrs) {
         return sprintf('<script type="text/javascript">%s</script>',"\n${$this->body()}\n")."\n";

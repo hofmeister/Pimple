@@ -105,13 +105,13 @@ class View {
     public function addJsFile($file) {
         if ($this != self::top())
             self::top()->addJsFile($file);
-        else
+        elseif(!in_array($file,$this->jsFiles))
             $this->jsFiles[] = $file;
     }
     public function addCssFile($file) {
         if ($this != self::top())
             self::top()->addCssFile($file);
-        else
+        elseif(!in_array($file,$this->cssFiles))
             $this->cssFiles[] = $file;
     }
     public function getJsFiles() {

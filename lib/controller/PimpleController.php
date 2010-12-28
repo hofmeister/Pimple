@@ -55,7 +55,10 @@ class PimpleController extends Controller {
         require_once Pimple::instance()->getBaseDir().'lib/Javascript.php';
         $cacheDir = Pimple::instance()->getSiteDir().'cache/js/';
         Dir::ensure($cacheDir);
-        $templates = array('application');
+        $templates = array();
+        if (!Request::get('skipLayout',false)) {
+            $templates[] = 'application';
+        }
         $view = Request::get('view',false);
         if ($view) {
             $templates[] = $view;
