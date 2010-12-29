@@ -123,10 +123,11 @@ class DB {
 	public static function q($sql) {
 		$args = func_get_args();
 		array_shift($args);
-		// If the first argument is an array, assume it's all the params
-		if (is_array($args[0])){
-			$args = $args[0];
-		}
+		$r = self::_query($sql, $args);
+		return $r;
+	}
+	
+	public static function qWithArray($sql, $args){
 		$r = self::_query($sql, $args);
 		return $r;
 	}
@@ -191,10 +192,19 @@ class DB {
 	public static function fetchAll($sql) {
 		$args = func_get_args();
 		array_shift($args);
-		// If the first argument is an array, assume it's all the params
-		if (is_array($args[0])){
-			$args = $args[0];
-		}
+
+		$r = self::_query($sql, $args);
+		$result = array();
+        do {
+            while ($row = mysqli_fetch_object($r)) {
+                $result[] = $row;
+            }
+        } while(mysqli_next_result(self::$link));
+        self::freeResult();
+		return $result;
+	}
+	
+	public static function fetchAllArray($sql, $args){
 
 		$r = self::_query($sql, $args);
 		$result = array();
