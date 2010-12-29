@@ -89,6 +89,7 @@ class FormTagLib extends TagLib {
             $attrs->options = new stdClass();
         $attrs->options->url = $attrs->url;
         unset($attrs->url);
+        $this->setFieldValue($attrs,'');//Not supported yet
         return $this->tagTextarea($attrs,$view);
     }
     protected function tagSelect($attrs,$view) {
@@ -398,5 +399,20 @@ class FormTagLib extends TagLib {
                 $value = Request::post($attrs->name,$value);
         }
         return $value;
+    }
+    private function setFieldValue($attrs,$value) {
+        if ($attrs->name) {
+            $name = $attrs->name;
+            if (!$value && $this->formData) {
+                if (is_array($this->formData))
+                    $this->formData[$name] = $value;
+                else
+                    $this->formData->$name = $value;
+            }
+            if (strtolower($this->formMethod) == 'get')
+                Request::get()->$name = $value;
+            else
+                Request::post()->$name = $value;
+        }
     }
 }
