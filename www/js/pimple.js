@@ -6,6 +6,9 @@ var Pimple = {
     _bindings:{},
     _messageTimeout:null,
     _uidCount:0,
+    _action:'',
+    _controller:'',
+    _parms:'',
     
     addBinding: function(selector,method){
         
@@ -70,6 +73,15 @@ var Pimple = {
             }
         }
         return url;
+    },
+    getController:function() {
+        return Pimple._controller;
+    },
+    getAction:function() {
+        return Pimple._action;
+    },
+    getParms:function() {
+        return Pimple._parms;
     },
     uid:function() {
         var uid = "pimple-uid-" + Pimple._uidCount;
@@ -171,6 +183,17 @@ $(function() {
         if (YAHOO.widget && YAHOO.widget.Chart && Pimple.settings.pimplePath)
             YAHOO.widget.Chart.SWFURL = Pimple.settings.pimplePath + "js/plugins/yui/charts/assets/charts.swf";
     }
+    /* resolve path */
+    var url = location.href.substr(Pimple.settings.basePath.length);
+    Pimple._parms = '';
+    if (url.indexOf('?') > -1) {
+        Pimple._parms = url.substr(url.indexOf('?')+1);
+        url = url.substr(0,url.indexOf('?'));
+    }
+    var parts = url.substr(0,url.length-1).split('/');
+    Pimple._controller = parts[0];
+    Pimple._action = parts[1];
+    /* bind behaviours */
     Pimple.bind();
     if ($p._messageTimeout) {
         clearTimeout($p._messageTimeout);
