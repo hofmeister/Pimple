@@ -117,28 +117,34 @@ class WidgetTagLib extends TagLib {
     protected function tagWizard($attrs) {
         $current = Pimple::instance()->getAction();
         $w = Wizard::get($attrs->id);
-        $cs = $w->getStep($current);
-        $title = '<ul class="horizontal divided">';
-        $before = true;
-        foreach($w->getSteps() as $s) {
-            if ($s->getId() == $current) {
-                $title .= sprintf('<li class="active">%s</li>',$s->getTitle());
-                $before = false;
-            } else {
-                $add = '';
-                if ($before) {
-                    $add = ' class="done"';
+        if ($w)
+            $cs = $w->getStep($current);
+        if ($cs) {
+            $title = '<ul class="horizontal divided">';
+            $before = true;
+            foreach($w->getSteps() as $s) {
+                if ($s->getId() == $current) {
+                    $title .= sprintf('<li class="active">%s</li>',$s->getTitle());
+                    $before = false;
+                } else {
+                    $add = '';
+                    if ($before) {
+                        $add = ' class="done"';
+                    }
+                    if ($cs->canJumpTo($s->getId()))
+                        $title .= sprintf('<li%s><a href="%s">%s</a></li>',$add,Url::makeLink(Pimple::instance()->getController(),$s->getId()),$s->getTitle());
+                    else
+                        $title .= sprintf('<li%s>%s</li>',$add,$s->getTitle());
                 }
-                if ($cs->canJumpTo($s->getId()))
-                    $title .= sprintf('<li%s><a href="%s">%s</a></li>',$add,Url::makeLink(Pimple::instance()->getController(),$s->getId()),$s->getTitle());
-                else
-                    $title .= sprintf('<li%s>%s</li>',$add,$s->getTitle());
+
             }
-            
+            $title .= '</ul>';
+            return sprintf('<div class="panel wizard %s"><h2>%s<strong>'.T('Step %s of %s',$cs->getStep(),$w->getNumSteps()).'</strong></h2>%s</div>',$attrs->class,$title,$this->body());
+        } else {
+            return sprintf('<div class="panel">%s</div>',$this->body());
         }
-        $title .= '</ul>';
         
-        return sprintf('<div class="panel wizard %s"><h2>%s<strong>'.T('Step %s of %s',$cs->getStep(),$w->getNumSteps()).'</strong></h2>%s</div>',$attrs->class,$title,$this->body());
+        
     }
 
     /**

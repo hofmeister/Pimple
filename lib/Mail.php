@@ -33,15 +33,37 @@ class Mail {
 		}
 	}
 
-    public static function preview($view,$data,$containerViewFile = 'mail') {
+    public static function preview($view,$data,$containerViewFile = 'mail',$textonly = false) {
         $mailViewFile = "mail/$view";
+        if (!$containerViewFile)
+            $containerViewFile = 'mail';
         $mailContainer = new View($containerViewFile);
         $mailView = new View($mailViewFile);
-        return $mailContainer->render(array('body'=>$mailView->render($data),'subject'=>$subject,'name'=>$name,'email'=>$email));
+        if (!is_array($data)) {
+            $data = ArrayUtil::fromObject($data);
+        }
+        $data['textonly'] = $textonly;
+        $container = $data;
+        $container['body'] = $mailView->render($data);
+        return $mailContainer->render($container);
     }
     public static function send($email,$name,$subject,$view,$data,$containerViewFile = 'mail') {
 		self::init();
-        $html = self::preview($view,$data,$containerViewFile);
+        if (is_object($data)) {
+            $data->email = $email;
+            $data->subject = $subject;
+        } else if (is_array($data)) {
+            $data['email'] = $email;
+            $data['subject'] = $subject;
+        } else {
+            $data = array();
+            $data['email'] = $email;
+            $data['subject'] = $subject;
+        }
+        $html = self::preview($view,$data,$containerViewFile,false);
+        $text = trim(self::preview($view,$data,$containerViewFile,true));
+        if (String::isHtml($text) || $text == '')
+            $text = T("This is an HTML message. Please use an HTML capable mail program to read this message.");
 
 		$mail = new Zend_Mail(Settings::get(Settings::ENCODING));
 		$fromName = Settings::get(self::FROM_NAME);
@@ -52,9 +74,7 @@ class Mail {
 		$mail->setSubject($subject);
         $mail->setBodyHtml($html);
 		$mail->addTo($email, $name);
-
-		$txt= T("This is an HTML message. Please use an HTML capable mail program to read this message.");
-		$mail->setBodyText($txt);
+		$mail->setBodyText($text);
         $mail->send();
     }
 }

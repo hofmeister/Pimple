@@ -13,12 +13,13 @@ class Phtml {
     const P_EVAL = 'P_EVAL';
     const COMMENT = 'COMMENT';
 
-    private static $IGNORELIST = array(self::PHP,self::COMMENT,self::SCRIPT,self::STRING,self::P_EVAL,self::DOCTYPE);
+    private static $IGNORELIST = array(self::PHP,self::COMMENT,self::STRING,self::P_EVAL,self::DOCTYPE);
     private static $IGNOREALLLIST = array(self::PHP,self::COMMENT,self::STRING,self::P_EVAL,self::DOCTYPE);
     private static $SCRIPTAGS = array('script','style','inline');
 
     private $withinStack = array();
     private $current = '';
+    private $currentIgnore = '';
     private $node;
     private $lastChar,$nextChar,$char,$attrName;
     private $debug = false;
@@ -90,6 +91,7 @@ class Phtml {
                     if ($this->lastChar == '?' && $this->isWithin(self::PHP)) {
                         $this->popWithin();
                     } elseif ($this->isWithin(self::TAGEND)) {
+                        $this->checkEndTag();
                         $this->popWithin();
                         $this->onNodeEnd();
                         $this->ignoreChars = false;
@@ -97,7 +99,7 @@ class Phtml {
                     } elseif ($this->isWithin(self::DOCTYPE)) {
                         $this->popWithin();
                         $this->onWordEnd();
-                    } elseif(!$this->ignoreAll()) {
+                    } elseif(!$this->ignoreTags()) {
                         $this->onWordEnd();
                         $this->onTagEnd();
                         $this->ignoreNextChar(2);
@@ -183,6 +185,7 @@ class Phtml {
         if (!$this->ignoreNextChar && !$this->ignoreChars)
             $this->current .= $chr;
         $this->ignoreNextChar = false;
+        $this->currentIgnore .= $chr;
     }
     protected function onStringStart() {
         if ($this->stringStartChar && $this->stringStartChar != $this->char) return;
@@ -202,12 +205,14 @@ class Phtml {
         $result = $this->current;
         if ($alphanum)
             $result = preg_replace ('/[^A-Z0-9_\-]/i','', $result);
-        if ($erase)
-            $this->current = '';
+        if ($erase) {
+            $this->clearCurrent();
+        }
         return $result;
     }
     protected function clearCurrent() {
         $this->current = '';
+        $this->currentIgnore = '';
     }
     protected function onWordStart() {
         if ($this->isWithin(self::STRING)) return;//ignore
@@ -224,6 +229,8 @@ class Phtml {
     }
 
     protected function onWordEnd() {
+        if ($this->char != ':')
+            $this->currentIgnore = '';
         if (!$this->hasCurrent()) return;//ignore
         
         switch($this->within()) {
@@ -284,7 +291,7 @@ class Phtml {
     }
 
     protected function onTagStart() {
-        if (!$this->isWithin(self::NOTHING)) return;
+        if ($this->ignoreTags()) return;
 
         if ($this->ignoreTags()) return;
         $node = new PhtmlNode();
@@ -308,13 +315,30 @@ class Phtml {
 
         $this->popWithin();
     }
+    protected function checkEndTag() {
+        $endTag = trim($this->currentIgnore,"</> \t\n\r");
+        if ($endTag) {
+            $ns = '';
+            if (!stristr($endTag,':'))
+                $tag = $endTag;
+            else
+                list($ns,$tag) = explode(':',$endTag);;
+            
+            if (strtolower($this->getNode()->getTag()) != strtolower($tag) ||
+                 strtolower($this->getNode()->getNs()) != strtolower($ns)) {
+                 $this->debug("ERROR WRONG END TAG: $endTag ($ns:$tag) for ".$this->getNode()->getTag());
+            }
+        }
+    }
     protected function onNodeEnd() {
         if ($this->ignoreAll()) return;
         $parent = $this->getNode()->getParent();
+        
         $text = $this->getCurrent();
         if ($text)
             $this->getNode()->addChild(new PhtmlNodeText($text));
         $this->debug("ENDING NODE: ".$this->getNode()->getTag());
+        
         if ($this->isScriptTag($this->getNode()->getTag())) {
             $this->popWithin();//Pop an extra time for the SCRIPT
         }
@@ -325,7 +349,7 @@ class Phtml {
         return $this->node;
     }
     protected function debug($msg) {
-        $msg = "[".implode(',',$this->withinStack)."] ".$msg;
+        $msg = htmlentities("[".implode(',',$this->withinStack)."] ".$msg);
         if ($this->debug)
             echo "\n$msg";
         else
