@@ -127,6 +127,9 @@ class SessionHandler {
 			throw new Exception('Session handler is missing a ISession model');
 		return $this->session;
 	}
+    public function hasSession() {
+        return ($this->session != null);
+    }
 
 	public function setSession($session) {
 		$this->session = $session;
