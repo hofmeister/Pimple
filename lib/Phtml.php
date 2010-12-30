@@ -78,7 +78,7 @@ class Phtml {
                         
                     } elseif ($this->nextChar == '!') {
                         $this->pushWithin(self::DOCTYPE);
-                    } else {
+                    } elseif (preg_match('/[A-Z0-9]/i',$this->nextChar)) {
                         $this->onTagStart();
                     }
                     
