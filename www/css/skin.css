@@ -770,13 +770,11 @@ table.data .section {
     -moz-border-radius:5px 0px 0px 5px ;
     -webkit-border-radius:5px 0px 0px 5px;
     border-radius:5px 0px 0px 5px;
-    behavior: url(plugins/pie.htc);
 }
 .data.list th:last-child {
     -moz-border-radius:0px 5px 5px 0px;
     -webkit-border-radius:0px 5px 5px 0px;
     border-radius:0px 5px 5px 0px;
-    behavior: url(plugins/pie.htc);
 }
 .data.list th {
     text-align:left;
