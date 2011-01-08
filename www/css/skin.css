@@ -29,16 +29,16 @@ em {
     font-style: italic;
 }
 .rounded {
-    border-radius:5px;
-    -moz-border-radius:5px;
-    -webkit-border-radius:5px;
-    behavior: url(plugins/PIE.htc)
+    border-radius:5px 5px 5px 5px;
+    -moz-border-radius:5px 5px 5px 5px;
+    -webkit-border-radius:5px 5px 5px 5px;
+    behavior: url(plugins/pie.htc);
 }
 .brounded {
     border-radius:0px 0px 5px 5px;
     -moz-border-radius:0px 0px 5px 5px;
     -webkit-border-radius:0px 0px 5px 5px;
-    behavior: url(plugins/PIE.htc)
+    behavior: url(plugins/pie.htc);
 }
 .shaded {
     -moz-box-shadow: 3px 3px 2px #999;
@@ -98,9 +98,9 @@ h3 {
 
 
 .framed {
-    -moz-border-radius:5px; /* FF1+ */
-    -webkit-border-radius:5px; /* Saf3-4 */
-    border-radius:5px;
+    -moz-border-radius:5px 5px 5px 5px; /* FF1+ */
+    -webkit-border-radius:5px 5px 5px 5px; /* Saf3-4 */
+    border-radius:5px 5px 5px 5px;
     behavior: url(plugins/pie.htc);
     border:1px solid #ccc;
     padding:5px;
@@ -196,9 +196,9 @@ h3 {
 	padding:5px 10px;
 	margin-right:5px;
 	display:block;
-    -moz-border-radius:5px;
-    -webkit-border-radius:5px;
-    border-radius:5px;
+    -moz-border-radius:5px 5px 5px 5px;
+    -webkit-border-radius:5px 5px 5px 5px;
+    border-radius:5px 5px 5px 5px;
     behavior: url(plugins/pie.htc);
 }
 .paging a:hover,.paging a.active.menu a:hover,.menu a.active {
@@ -229,9 +229,9 @@ h3 {
 }
 .sub-menu a {
     background-color: transparent;
-    -moz-border-radius:5px 5px 0 0;
-    -webkit-border-radius:5px 5px 0 0;
-    border-radius:5px 5px 0 0;
+    -moz-border-radius:5px 5px 0px 0px;
+    -webkit-border-radius:5px 5px 0px 0px;
+    border-radius:5px 5px 0px 0px;
     behavior: url(plugins/pie.htc);
     border:0;
     color:#333;
@@ -323,9 +323,9 @@ fieldset {
     border:1px solid #ccc;
     padding:3px;
     border:1px solid #CCC;
-    -moz-border-radius:5px; /* FF1+ */
-    -webkit-border-radius:5px; /* Saf3-4 */
-    border-radius:5px;
+    -moz-border-radius:5px 5px 5px 5px; /* FF1+ */
+    -webkit-border-radius:5px 5px 5px 5px; /* Saf3-4 */
+    border-radius:5px 5px 5px 5px;
     behavior: url(plugins/pie.htc);
 }
 fieldset legend {
@@ -336,9 +336,9 @@ fieldset legend {
     
     padding:3px;
     border:1px solid #CCC;
-    -moz-border-radius:5px; /* FF1+ */
-    -webkit-border-radius:5px; /* Saf3-4 */
-    border-radius:5px;
+    -moz-border-radius:5px 5px 5px 5px; /* FF1+ */
+    -webkit-border-radius:5px 5px 5px 5px; /* Saf3-4 */
+    border-radius:5px 5px 5px 5px;
     behavior: url(plugins/pie.htc);
 }
 
@@ -375,16 +375,16 @@ textarea,.form-element {
 .form-item.focus .element,
     .form-item.error .element,
     .form-item.valid .element {
-    -moz-border-radius:5px 0 0 5px; /* FF1+ */
-    -webkit-border-radius:5px 0 0 5px; /* Saf3-4 */
-    border-radius:5px 0 0 5px;
+    -moz-border-radius:5px 0px 0px 5px; /* FF1+ */
+    -webkit-border-radius:5px 0px 0px 5px; /* Saf3-4 */
+    border-radius:5px 0px 0px 5px;
     behavior: url(plugins/pie.htc);
     border-right-color: #AAA;
 }
 .form-item.no-instructions .element {
-    -moz-border-radius:5px; /* FF1+ */
-    -webkit-border-radius:5px; /* Saf3-4 */
-    border-radius:5px;
+    -moz-border-radius:5px 5px 5px 5px; /* FF1+ */
+    -webkit-border-radius:5px 5px 5px 5px; /* Saf3-4 */
+    border-radius:5px 5px 5px 5px;
     behavior: url(plugins/pie.htc);
 }
 
@@ -427,9 +427,9 @@ label span.required {
     padding-left:10px;
     font-size:12px;
     visibility: hidden;
-    -moz-border-radius:0 5px 5px 0; /* FF1+ */
-    -webkit-border-radius:0 5px 5px 0; /* Saf3-4 */
-    border-radius:0 5px 5px 0;
+    -moz-border-radius:0px 5px 5px 0px; /* FF1+ */
+    -webkit-border-radius:0px 5px 5px 0px; /* Saf3-4 */
+    border-radius:0px 5px 5px 0px;
     behavior: url(plugins/pie.htc);
     border-left:0;
     color:#444;
@@ -539,9 +539,9 @@ input.no-checker {
     margin-right: 5px;
 }
 .button,a.button {
-    -moz-border-radius:5px; /* FF1+ */
-    -webkit-border-radius:5px; /* Saf3-4 */
-    border-radius:5px;
+    -moz-border-radius:5px 5px 5px 5px; /* FF1+ */
+    -webkit-border-radius:5px 5px 5px 5px; /* Saf3-4 */
+    border-radius:5px 5px 5px 5px;
     behavior: url(plugins/pie.htc);
     padding:5px 10px;
     width:auto;
@@ -561,9 +561,9 @@ input.button {
     float:none;
 }
 .button.icononly {
-    -moz-border-radius:0; /* FF1+ */
-    -webkit-border-radius:0; /* Saf3-4 */
-    border-radius:0;
+    -moz-border-radius:0px 0px 0px 0px; /* FF1+ */
+    -webkit-border-radius:0px 0px 0px 0px; /* Saf3-4 */
+    border-radius:0px 0px 0px 0px;
     behavior: url(plugins/pie.htc);
     border:0;
     width:auto;
@@ -632,9 +632,9 @@ img.captcha {
 .form-flow-list input,
     .form-flow-list textarea,
     .form-flow-list select {
-    -moz-border-radius:5px !important; /* FF1+ */
-    -webkit-border-radius:5px !important; /* Saf3-4 */
-    border-radius:5px !important;
+    -moz-border-radius:5px 5px 5px 5px !important; /* FF1+ */
+    -webkit-border-radius:5px 5px 5px 5px !important; /* Saf3-4 */
+    border-radius:5px 5px 5px 5px !important;
     behavior: url(plugins/pie.htc);
     
 }
@@ -677,9 +677,9 @@ img.captcha {
 }
 .wizard h2 ul {
     float:left;
-    -moz-border-radius:5px 5px 0 0; /* FF1+ */
-    -webkit-border-radius:5px 5px 0 0; /* Saf3-4 */
-    border-radius:5px 5px 0 0;
+    -moz-border-radius:5px 5px 0px 0px; /* FF1+ */
+    -webkit-border-radius:5px 5px 0px 0px; /* Saf3-4 */
+    border-radius:5px 5px 0px 0px;
     behavior: url(plugins/pie.htc);
     border:1px solid #CCC;
     border-bottom: 0;
@@ -768,15 +768,15 @@ table.data .section {
     width:100%;
 }
 .data.list th:first-child {
-    -moz-border-radius:5px 0 0 5px ;
-    -webkit-border-radius:5px 0 0 5px;
-    border-radius:5px 0 0 5px;
+    -moz-border-radius:5px 0px 0px 5px ;
+    -webkit-border-radius:5px 0px 0px 5px;
+    border-radius:5px 0px 0px 5px;
     behavior: url(plugins/pie.htc);
 }
 .data.list th:last-child {
-    -moz-border-radius:0 5px 5px 0  ;
-    -webkit-border-radius:0 5px 5px 0 ;
-    border-radius:0 5px 5px 0 ;
+    -moz-border-radius:0px 5px 5px 0px;
+    -webkit-border-radius:0px 5px 5px 0px;
+    border-radius:0px 5px 5px 0px;
     behavior: url(plugins/pie.htc);
 }
 .data.list th {

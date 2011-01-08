@@ -45,6 +45,7 @@ class Mail {
         $data['textonly'] = $textonly;
         $container = $data;
         $container['body'] = $mailView->render($data);
+        
         return $mailContainer->render($container);
     }
     public static function send($email,$name,$subject,$view,$data,$containerViewFile = 'mail') {
