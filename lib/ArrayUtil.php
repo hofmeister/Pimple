@@ -89,5 +89,18 @@ class ArrayUtil {
 		}
 		return $obj;
 	}
+	public static function stripValues($arr){
+		if (is_array($arr)){
+			foreach ($arr as $key => $val){
+				if (is_array($val)){
+					$arr[$key] = self::stripValues($val);
+				} else {
+	    	    	$arr[$key] = strip_tags($val);
+	    	    	$arr[$key] = preg_replace('/<[A-Za-z]+/is', '', $val);
+	    	    }
+		   	}
+		}
+		return $arr;
+	}
 }
 

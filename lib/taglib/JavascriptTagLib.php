@@ -56,8 +56,12 @@ class JavascriptTagLib extends TagLib {
     }
     protected function tagJson($attrs) {
         require_once Pimple::instance()->getRessource('lib/Zend/Json.php');
-        $result = Zend_Json::encode($attrs->value);
+        $value = $attrs->value;
+        if ($attrs->striptags){
+        	$value = ArrayUtil::stripValues($value);
+        }
+        $result = Zend_Json::encode($value);
         return $result;
     }
-
+    
 }
