@@ -70,6 +70,7 @@ em {
 }
 .header {
     border-bottom:1px solid #333;
+    padding-bottom:5px;
 }
 h1 {
     font-size:30px;
@@ -178,9 +179,7 @@ h3 {
 
 /* menu */
 .menu {
-    margin:0px;
     padding-left:10px;
-    margin-bottom:5px;
     list-style:none outside none;
 }
 .menu li {

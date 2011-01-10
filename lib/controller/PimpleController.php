@@ -48,6 +48,8 @@ class PimpleController extends Controller {
         $mail = Mail::preview($view,$data->toArray(),$data->container,$data->textonly);
         if ($data->textonly) {
             $this->asText(trim($mail));
+        } else {
+            echo $mail;
         }
         Pimple::end();
     }

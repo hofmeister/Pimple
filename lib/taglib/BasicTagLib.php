@@ -154,11 +154,14 @@ class BasicTagLib extends TagLib {
             }
             return sprintf('<link href="%s" rel="stylesheet" type="text/css" />',Url::makeLink('pimple','css',array('view'=> Pimple::instance()->getViewFile(),'stamp'=>$stamp)))."\n";
         }
+
 		if ($attrs->local == 'false') {
 			$base = Settings::get(Pimple::URL);
-            $view->addCssFile(Pimple::instance()->getBaseDir().'www/'.$attrs->path);
+            if ($view != null)
+                $view->addCssFile(Pimple::instance()->getBaseDir().'www/'.$attrs->path);
 		} else {
-            $view->addCssFile(Pimple::instance()->getSiteDir().$attrs->path);
+            if ($view != null)
+                $view->addCssFile(Pimple::instance()->getSiteDir().$attrs->path);
 			$base = Url::basePath();
 		}
 
@@ -166,7 +169,7 @@ class BasicTagLib extends TagLib {
         
         $url = $base.$attrs->path;
         if ($attrs->inline != 'true') {
-            if (Settings::get(Settings::DEBUG,false) && Request::get('__nominify',false)) {
+            if ($view == null || Settings::get(Settings::DEBUG,false) && Request::get('__nominify',false)) {
                 return sprintf('<link href="%s" rel="stylesheet" type="text/css" />',$url);
             } 
             return '';
