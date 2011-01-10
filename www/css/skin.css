@@ -32,13 +32,11 @@ em {
     border-radius:5px;
     -moz-border-radius:5px;
     -webkit-border-radius:5px;
-    behavior: url(plugins/PIE.htc)
 }
 .brounded {
     border-radius:0px 0px 5px 5px;
     -moz-border-radius:0px 0px 5px 5px;
     -webkit-border-radius:0px 0px 5px 5px;
-    behavior: url(plugins/PIE.htc)
 }
 .shaded {
     -moz-box-shadow: 3px 3px 2px #999;
@@ -101,7 +99,6 @@ h3 {
     -moz-border-radius:5px; /* FF1+ */
     -webkit-border-radius:5px; /* Saf3-4 */
     border-radius:5px;
-    behavior: url(plugins/pie.htc);
     border:1px solid #ccc;
     padding:5px;
 }
@@ -199,7 +196,6 @@ h3 {
     -moz-border-radius:5px;
     -webkit-border-radius:5px;
     border-radius:5px;
-    behavior: url(plugins/pie.htc);
 }
 .paging a:hover,.paging a.active.menu a:hover,.menu a.active {
 	text-decoration: none;
@@ -232,7 +228,6 @@ h3 {
     -moz-border-radius:5px 5px 0 0;
     -webkit-border-radius:5px 5px 0 0;
     border-radius:5px 5px 0 0;
-    behavior: url(plugins/pie.htc);
     border:0;
     color:#333;
 }
@@ -326,7 +321,6 @@ fieldset {
     -moz-border-radius:5px; /* FF1+ */
     -webkit-border-radius:5px; /* Saf3-4 */
     border-radius:5px;
-    behavior: url(plugins/pie.htc);
 }
 fieldset legend {
     font-style: italic;
@@ -339,7 +333,6 @@ fieldset legend {
     -moz-border-radius:5px; /* FF1+ */
     -webkit-border-radius:5px; /* Saf3-4 */
     border-radius:5px;
-    behavior: url(plugins/pie.htc);
 }
 
 .form-item input,
@@ -378,14 +371,12 @@ textarea,.form-element {
     -moz-border-radius:5px 0 0 5px; /* FF1+ */
     -webkit-border-radius:5px 0 0 5px; /* Saf3-4 */
     border-radius:5px 0 0 5px;
-    behavior: url(plugins/pie.htc);
     border-right-color: #AAA;
 }
 .form-item.no-instructions .element {
     -moz-border-radius:5px; /* FF1+ */
     -webkit-border-radius:5px; /* Saf3-4 */
     border-radius:5px;
-    behavior: url(plugins/pie.htc);
 }
 
 textarea,.form-element {
@@ -430,7 +421,6 @@ label span.required {
     -moz-border-radius:0 5px 5px 0; /* FF1+ */
     -webkit-border-radius:0 5px 5px 0; /* Saf3-4 */
     border-radius:0 5px 5px 0;
-    behavior: url(plugins/pie.htc);
     border-left:0;
     color:#444;
 }
@@ -542,7 +532,6 @@ input.no-checker {
     -moz-border-radius:5px; /* FF1+ */
     -webkit-border-radius:5px; /* Saf3-4 */
     border-radius:5px;
-    behavior: url(plugins/pie.htc);
     padding:5px 10px;
     width:auto;
     cursor: pointer;
@@ -564,7 +553,6 @@ input.button {
     -moz-border-radius:0; /* FF1+ */
     -webkit-border-radius:0; /* Saf3-4 */
     border-radius:0;
-    behavior: url(plugins/pie.htc);
     border:0;
     width:auto;
     padding:0;
@@ -635,7 +623,6 @@ img.captcha {
     -moz-border-radius:5px !important; /* FF1+ */
     -webkit-border-radius:5px !important; /* Saf3-4 */
     border-radius:5px !important;
-    behavior: url(plugins/pie.htc);
     
 }
 /* panels */
@@ -680,7 +667,6 @@ img.captcha {
     -moz-border-radius:5px 5px 0 0; /* FF1+ */
     -webkit-border-radius:5px 5px 0 0; /* Saf3-4 */
     border-radius:5px 5px 0 0;
-    behavior: url(plugins/pie.htc);
     border:1px solid #CCC;
     border-bottom: 0;
 }
@@ -771,13 +757,11 @@ table.data .section {
     -moz-border-radius:5px 0 0 5px ;
     -webkit-border-radius:5px 0 0 5px;
     border-radius:5px 0 0 5px;
-    behavior: url(plugins/pie.htc);
 }
 .data.list th:last-child {
     -moz-border-radius:0 5px 5px 0  ;
     -webkit-border-radius:0 5px 5px 0 ;
     border-radius:0 5px 5px 0 ;
-    behavior: url(plugins/pie.htc);
 }
 .data.list th {
     text-align:left;
