@@ -175,6 +175,11 @@ class Pimple {
 
     }
     public function render() {
+        if (Settings::get(Settings::DEBUG,false) && isset($_GET['__viewdebug'])) {
+            $this->view->render(array('body'=>$this->body));
+            return;
+        }
+            
         if (Request::isAjax()
                 || ($this->controllerInstance && $this->controllerInstance->getSkipView())
                 || ($this->controllerInstance && $this->controllerInstance->getSkipLayout())) {

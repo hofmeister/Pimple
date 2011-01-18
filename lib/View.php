@@ -52,7 +52,7 @@ class View {
 
             $phtml = file_get_contents($this->getTemplateFile());
             $parser = new Phtml();
-            $parsed = $parser->read($phtml);
+            $parsed = $parser->read($phtml,$this->getTemplate());
 
             Dir::ensure(dirname($cachename));
             //die($parsed->toPhp());

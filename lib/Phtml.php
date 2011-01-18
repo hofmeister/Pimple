@@ -37,7 +37,7 @@ class Phtml {
      * @param phtml $string
      * @return PhtmlNode
      */
-    public function read($string) {
+    public function read($string,$file) {
         $string = String::normalize($string,false);
         $this->withinStack = array(self::NOTHING);
         $this->current = '';
@@ -101,8 +101,9 @@ class Phtml {
                         $this->onWordEnd();
                     } elseif(!$this->ignoreTags()) {
                         $this->onWordEnd();
+                        if ($this->isWithin(self::TAG))
+                            $this->ignoreNextChar(2);
                         $this->onTagEnd();
-                        $this->ignoreNextChar(2);
                     }
                     
                     break;
@@ -156,8 +157,10 @@ class Phtml {
 
         $node = $this->getNode();
         $this->clear();
-        if (Settings::get(Settings::DEBUG,false) && isset($_GET['__viewdebug'])) {
-            throw new PhtmlException($this->phtmlRaw,$this->char,$this->lineCount,$this->charCount,$this->debugTrace);
+        if (Settings::get(Settings::DEBUG,false) && $_GET['__viewdebug'] == $file) {
+            $test = new PhtmlException($this->phtmlRaw,$this->char,$this->lineCount,$this->charCount,$this->debugTrace);
+            echo $test;
+            Pimple::end();
         }
         return $node;
     }
