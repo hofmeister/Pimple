@@ -24,6 +24,9 @@ require_once 'lib/Validate.php';
 //Mail handling
 require_once 'lib/Mail.php';
 
+//Pdf handling
+require_once 'lib/Pdf.php';
+
 //Filesystem handling
 require_once 'lib/Url.php';
 require_once 'lib/File.php';

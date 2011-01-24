@@ -174,7 +174,7 @@ class File {
     }
 
     public static function string2Filename($string) {
-        return preg_replace('/[^0-9A-Z_\.\-]/is','', $string);
+        return strtolower(preg_replace('/[^0-9A-Z\_\.\-]/is','',str_replace(' ','_',trim($string))));
     }
 }
 
