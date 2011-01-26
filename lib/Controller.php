@@ -91,7 +91,7 @@ class Controller {
                         $validationName = $field;
                     }
                     
-                    if (!$v->validate($val,$data)) {
+                    if (!$v->validate(trim($val),$data)) {
                         if (!is_array($errors[$validationName]))
                             $errors[$validationName] = array();
                         $errors[$validationName][] = $v->getError();

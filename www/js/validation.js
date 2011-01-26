@@ -84,7 +84,7 @@ jQuery.fn.validate = function(show) {
         var css = domValids[i];
         var validator = Pimple.validators[css];
         if (!validator) throw "Invalid validator: " + css;
-        if (!validator(elm,elm.val(),args[css])) {
+        if (!validator(elm,elm.val().trim(),args[css])) {
             if (hasValidated || show) {
                 dom.removeClass('valid').addClass('error');
                 dom.find('.error').html(dom.find('.error-' + css.substr(2)).html())
