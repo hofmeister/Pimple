@@ -95,12 +95,12 @@ class FormTagLib extends TagLib {
     protected function tagSelect($attrs,$view) {
 
         $attrs->value = $this->getFieldValue($attrs,$attrs->value);
-        
+
         $keyVal = $this->toObject($attrs->options);
         
         $options = "";
         if ($attrs->emptyText) {
-            if ($attrs->emptyValue) {
+            if (isset($attrs->emptyValue)) {
                 $options .= sprintf('<option value="%s">%s</option>',$attrs->emptyValue,$attrs->emptyText);
             } else {
                 $options .= sprintf('<option>%s</option>',$attrs->emptyText);
@@ -109,13 +109,20 @@ class FormTagLib extends TagLib {
         
         $isMap = (is_object($keyVal) || ArrayUtil::isMap($keyVal));
         foreach($keyVal as $key=>$val) {
-            $key = ($isMap) ? $key : $val;
+            if (is_object($val)) {
+                $propKey = $attrs->propKey ? $attrs->propKey : 'key';
+                $propVal = $attrs->propValue ? $attrs->propKey : 'value';
+                $key = $val->$propKey;
+                $val = $val->$propVal;
+            } else {
+                $key = ($isMap) ? $key : $val;
+            }
             if ($key == $attrs->value) {
                 $checked = 'selected="true"';
             } else {
                 $checked = '';
             }
-            if ($isMap) {
+            if ($key != $val) {
                 $options .= sprintf('<option %s value="%s">%s</option>',$checked,$key,$val);
             } else {
                 $options .= sprintf('<option %s>%s</option>',$checked,$val);
