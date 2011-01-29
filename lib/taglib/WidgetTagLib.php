@@ -160,6 +160,8 @@ class WidgetTagLib extends TagLib {
         unset($attrs->title);
         if (count($this->tabPanels) == 0) {
             $attrs->class .= ' active';
+        } else {
+            $attrs->class .= ' offscreen';
         }
         $this->tabPanels[$id] = $title;
         return sprintf('<div class="pw-tabpanel %s" id="%s">%s</div>',$attrs->class,$id,$this->body());

@@ -36,6 +36,11 @@ ul.horizontal.right li,
 .nofloat {
     float:none !important;
 }
+.offscreen {
+    position:absolute;
+    left:-9999px;
+    top:0px;
+}
 .pimple-messages {
     position:absolute;
     width:100%;

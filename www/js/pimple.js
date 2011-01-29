@@ -149,8 +149,21 @@ var Pimple = {
         if (felm.length == 0) {
             felm = $('<input class="pimple-focus-element" style="position:absolute;left:-9999px;top:0px;" />')
             elm.append(felm);
+            felm.bind('focus',function() {
+                elm.addClass('focussed');
+            }).bind('blur',function() {
+                elm.removeClass('focussed');
+            });
         }
-        felm.focus();
+        var scroll = {
+            top:elm.scrollTop(),
+            left:elm.scrollLeft()
+        };
+        if (!elm.hasClass("focussed")) {
+            felm.focus();
+            elm.scrollTo(scroll);
+        }
+        
     },
     forceBlur:function(elm) {
         if (!elm) elm = $('body');
@@ -158,8 +171,20 @@ var Pimple = {
         if (felm.length == 0) {
             felm = $('<input class="pimple-focus-element" style="position:absolute;left:-9999px;top:0px;" />')
             elm.append(felm);
+            felm.bind('focus',function() {
+                elm.addClass('focussed');
+            }).bind('blur',function() {
+                elm.removeClass('focussed');
+            });
         }
-        felm.blur();
+        var scroll = {
+            top:elm.scrollTop(),
+            left:elm.scrollLeft()
+        };
+        if (elm.hasClass("focussed")) {
+            felm.blur();
+            elm.scrollTo(scroll);
+        }
     }
 };
 window.$p = Pimple;
