@@ -11,9 +11,7 @@ class TagLib {
     }
 
 	protected function uid() {
-		$uid = 'guid-'.(self::$uidCount);
-		self::$uidCount++;
-		return $uid;
+		return 'guid-'.md5(microtime(true) + rand(1, 99999));
 	}
     protected function toObject($value) {
         if (is_string($value)) {
