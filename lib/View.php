@@ -61,6 +61,7 @@ class View {
         }
     }
     public function render($data = array()) {
+        
         self::addCurrent($this);
         $cachename = $this->getCacheName();
         if ($data instanceof Model)
@@ -76,6 +77,7 @@ class View {
 			//TODO: Handle errors
 			echo $e;
 		}
+        
 		//unlink($cachename);
         $result = ob_get_clean();
         self::removeCurrent();
@@ -121,7 +123,6 @@ class View {
         }
     }
     public function getJsFiles() {
-        
         krsort($this->jsFiles);
         $files = array();
         foreach ($this->jsFiles as $jsfiles) {

@@ -165,7 +165,11 @@ var Pimple = {
         return result;
     },
     forceFocus:function(elm) {
-        if (!elm) elm = $('body');
+        var container = elm;
+        if (!elm) {
+            elm = $('body');
+            container = $(window);
+        }
         var felm = elm.find('.pimple-focus-element');
         if (felm.length == 0) {
             felm = $('<input class="pimple-focus-element" style="position:absolute;left:-9999px;top:0px;" />')
@@ -176,18 +180,18 @@ var Pimple = {
                 elm.removeClass('focussed');
             });
         }
-        var scroll = {
-            top:elm.scrollTop(),
-            left:elm.scrollLeft()
-        };
         if (!elm.hasClass("focussed")) {
+            felm.css('top',container.scrollTop()+40);
             felm.focus();
-            elm.scrollTo(scroll);
         }
         
     },
     forceBlur:function(elm) {
-        if (!elm) elm = $('body');
+        var container = elm;
+        if (!elm) {
+            elm = $('body');
+            container = $(window);
+        }
         var felm = elm.find('.pimple-focus-element');
         if (felm.length == 0) {
             felm = $('<input class="pimple-focus-element" style="position:absolute;left:-9999px;top:0px;" />')
@@ -198,13 +202,9 @@ var Pimple = {
                 elm.removeClass('focussed');
             });
         }
-        var scroll = {
-            top:elm.scrollTop(),
-            left:elm.scrollLeft()
-        };
         if (elm.hasClass("focussed")) {
+            felm.css('top',container.scrollTop()+40);
             felm.blur();
-            elm.scrollTo(scroll);
         }
     }
 };
