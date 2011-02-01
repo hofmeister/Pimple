@@ -326,7 +326,7 @@ fieldset legend {
     font-weight: bold;
 }
 .form-item .element {
-    
+    background-color: white;
     padding:3px;
     border:1px solid #CCC;
     -moz-border-radius:5px; /* FF1+ */
