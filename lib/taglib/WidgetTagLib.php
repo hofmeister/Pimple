@@ -71,14 +71,15 @@ class WidgetTagLib extends TagLib {
      * @param View $view 
      */
     protected function tagMenuButton($attrs,$view) {
-        if ($attrs->section) {
-            
-            $ctrl = Pimple::instance()->getControllerInstance();
-            if ($ctrl && $ctrl->isSection($attrs->section)) {
-                $attrs->class = trim($attrs->class.' active');
-            }
-            unset($attrs->section);
+        $section = $attrs->section ? $attrs->section : $attrs->action;
+        if (!$section) $section = 'index';
+        
+        $ctrl = Pimple::instance()->getControllerInstance();
+        if ($ctrl && $ctrl->isSection($section)) {
+            $attrs->class = trim($attrs->class.' active');
         }
+        unset($attrs->section);
+        
         return $view->taglibs['p']->link($attrs,$this->body(),$view);
     }
     private function evt2css($type) {
