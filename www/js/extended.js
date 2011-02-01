@@ -1,12 +1,29 @@
 /* nominify */
-String.prototype.trim = function () {
-    return this.replace(/^\s*/, "").replace(/\s*$/, "");
+if (!String.prototype.trim) {
+    String.prototype.trim = function () {
+        return this.replace(/^\s*/, "").replace(/\s*$/, "");
+    };
 }
-RegExp.escape = function(str)
-{
+if (!Array.prototype.indexOf) {
+    Array.prototype.indexOf = function(elt) {
+        var len = this.length;
+        var from = Number(arguments[1]) || 0;
+        from = (from < 0)  ? Math.ceil(from)  : Math.floor(from);
+        if (from < 0)
+            from += len;
+
+        for (; from < len; from++) {
+        if (from in this && this[from] === elt)
+            return from;
+        }
+        return -1;
+    };
+}
+
+RegExp.escape = function(str) {
   var specials = new RegExp("[.*+?|()\\[\\]{}\\\\]", "g"); // .*+?|()[]{}\
   return str.replace(specials, "\\$&");
-}
+};
 
 var Caret = {
     cc:'\u2009',

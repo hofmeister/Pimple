@@ -54,7 +54,7 @@ class PimpleController extends Controller {
         Pimple::end();
     }
     public function javascript() {
-        $this->setContentType('application/x-javascript; charset=utf-8;');
+        $this->setContentType('text/javascript; charset=utf-8;');
         $this->setCache(Date::SPAN_MONTH);
         //set_time_limit(0);
         require_once Pimple::instance()->getBaseDir().'lib/Javascript.php';
@@ -68,21 +68,22 @@ class PimpleController extends Controller {
         if ($view) {
             $templates[] = $view;
         }
+        $used = array();
         foreach($templates as $template) {
             $cacheFile = $cacheDir.$template.'.js';
             echo "// $template\n";
             Dir::ensure(dirname($cacheFile));
+            
             if (!is_file($cacheFile)) {
                 File::truncate($cacheFile);
                 $view = new View($template);
                 $view->render();
                 $files = $view->getJsFiles();
+                File::append($cacheFile,"/*FILES:\n\t".implode("\n\t",$files).'*/'.chr(10));
                 foreach($files as $file) {
-                    File::append($cacheFile,"//FILE:".basename($file).chr(10));
-                    if (preg_match('/(3rdparty)/i',$file) || stristr(file_get_contents($file,null, null,0,100),'nominify'))
-                        File::append($cacheFile,String::normalize(file_get_contents($file),false));
-                    else
-                        File::append($cacheFile,Javascript::minify($file));
+                    if (in_array($file,$used)) continue;
+                    $used[] = $file;
+                    File::append($cacheFile,"/*FILE:".basename($file).'*/'.chr(10).String::normalize(file_get_contents($file),false));
                     File::append($cacheFile,chr(10));
                 }
             }
@@ -101,6 +102,7 @@ class PimpleController extends Controller {
         if ($view) {
             $templates[] = $view;
         }
+        $used = array();
         foreach($templates as $template) {
             $cacheFile = $cacheDir.$template.'.css';
             echo "/* $template */\n";
@@ -110,7 +112,10 @@ class PimpleController extends Controller {
                 $view = new View($template);
                 $view->render();
                 $files = $view->getCssFiles();
+                File::append($cacheFile,"/*FILES:\n\t".implode("\n\t",$files).'*/'.chr(10));
                 foreach($files as $file) {
+                    if (in_array($file,$used)) continue;
+                    $used[] = $file;
                     File::append($cacheFile,"/*FILE:".basename($file).'*/'.chr(10).Stylesheet::minify($file).chr(10));
                 }
             }

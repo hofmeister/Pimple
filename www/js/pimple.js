@@ -9,7 +9,28 @@ var Pimple = {
     _action:'',
     _controller:'',
     _parms:'',
-    
+    _init:false,
+    _onInit:[],
+    init: function() {
+        var i;
+        if (arguments.length > 0) {
+            for(i = 0;i < arguments.length;i++) {
+                if (Pimple._init) {
+                    arguments[i]();
+                } else {
+                    Pimple._onInit.push(arguments[i]);
+                }
+            }
+        } else {
+            if (Pimple._init) {
+                return;
+            }
+            Pimple._init = true;
+            for(i = 0;i < Pimple._onInit.length;i++) {
+                Pimple._onInit[i]();
+            }
+        }
+    },
     addBinding: function(selector,method){
         
         if (!this._bindings[selector]) {
@@ -203,11 +224,29 @@ $.fn.selectRange = function(start, end) {
                 }
         });
 };
+/* add various bindings */
+
+$p.addBinding('.js-datepicker',function() {
+    var dom = $(this);
+    dom.attr('autocomplete','off');
+    var opts = $p.opts(dom);
+    var format = Pimple.settings.dateFormat
+                    .replace(/Y/,'yy')
+                    .replace(/y/,'y')
+                    .replace(/d/,'dd')
+                    .replace(/m/,'mm');
+    dom.datepicker({
+        dateFormat:format
+    });
+});
+
+
 $(function() {
     if (window.YAHOO != undefined) {
         if (YAHOO.widget && YAHOO.widget.Chart && Pimple.settings.pimplePath)
             YAHOO.widget.Chart.SWFURL = Pimple.settings.pimplePath + "js/plugins/yui/charts/assets/charts.swf";
     }
+    Pimple.init();
     /* resolve path */
     var url = location.href.substr(Pimple.settings.basePath.length);
     Pimple._parms = '';
@@ -232,20 +271,4 @@ $(function() {
     $(window).scroll(function() {
        $('.pimple-messages').css('bottom',0 - $(window).scrollTop());
     })
-});
-
-/* add various bindings */
-
-$p.addBinding('.js-datepicker',function() {
-    var dom = $(this);
-    dom.attr('autocomplete','off');
-    var opts = $p.opts(dom);
-    var format = Pimple.settings.dateFormat
-                    .replace(/Y/,'yy')
-                    .replace(/y/,'y')
-                    .replace(/d/,'dd')
-                    .replace(/m/,'mm');
-    dom.datepicker({
-        dateFormat:format
-    });
 });

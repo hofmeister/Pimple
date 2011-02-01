@@ -49,10 +49,10 @@ class JavascriptTagLib extends TagLib {
         return sprintf('<script type="text/javascript">%s</script>',"\n${$this->body()}\n")."\n";
 	}
     protected function tagSetting($attrs) {
-        return sprintf('<script type="text/javascript">%s;</script>',"\n".sprintf('Pimple.settings.%s = %s',$attrs->name,json_encode($attrs->value))."\n")."\n";
+        return sprintf('<script type="text/javascript">Pimple.init(function() {%s;})</script>',"\n".sprintf('Pimple.settings.%s = %s',$attrs->name,json_encode($attrs->value))."\n")."\n";
     }
     protected function tagExpose($attrs) {
-        return sprintf('<script type="text/javascript">%s</script>',"\n".sprintf('%s = %s',$attrs->as,json_encode($attrs->value))."\n")."\n";
+        return sprintf('<script type="text/javascript">Pimple.init(function() {%s})</script>',"\n".sprintf('window.%s = %s;',$attrs->as,json_encode($attrs->value))."\n")."\n";
     }
     protected function tagJson($attrs) {
         require_once Pimple::instance()->getRessource('lib/Zend/Json.php');

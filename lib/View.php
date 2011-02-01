@@ -102,23 +102,40 @@ class View {
             throw new Exception(T('Unknown tag lib: %s',$ns));
         return $this->taglibs[$ns];
     }
-    public function addJsFile($file) {
+    public function addJsFile($file,$lvl = 0) {
         if ($this != self::top())
-            self::top()->addJsFile($file);
-        elseif(!in_array($file,$this->jsFiles))
-            $this->jsFiles[] = $file;
+            self::top()->addJsFile($file,count(self::$_current));
+        elseif(!is_array($this->jsFiles[$lvl]) || !in_array($file,$this->jsFiles[$lvl])) {
+            if (!$this->jsFiles[$lvl])
+                $this->jsFiles[$lvl] = array();
+            $this->jsFiles[$lvl][] = $file;
+        }
     }
-    public function addCssFile($file) {
+    public function addCssFile($file,$lvl = 0) {
         if ($this != self::top())
-            self::top()->addCssFile($file);
-        elseif(!in_array($file,$this->cssFiles))
-            $this->cssFiles[] = $file;
+            self::top()->addCssFile($file,count(self::$_current));
+        elseif(!is_array($this->cssFiles[$lvl]) || !in_array($file,$this->cssFiles[$lvl])) {
+            if (!$this->cssFiles[$lvl])
+                $this->cssFiles[$lvl] = array();
+            $this->cssFiles[$lvl][] = $file;
+        }
     }
     public function getJsFiles() {
-        return $this->jsFiles;
+        
+        krsort($this->jsFiles);
+        $files = array();
+        foreach ($this->jsFiles as $jsfiles) {
+            ArrayUtil::append($files,$jsfiles);
+        }
+        return array_unique($files);
     }
 
     public function getCssFiles() {
-        return $this->cssFiles;
+        krsort($this->cssFiles);
+        $files = array();
+        foreach ($this->cssFiles as $jsfiles) {
+            ArrayUtil::append($files,$jsfiles);
+        }
+        return array_unique($files);
     }
 }
