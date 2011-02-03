@@ -53,6 +53,13 @@ class ArrayUtil {
 			}
 		}
 	}
+    public static function equals($array1,$array2) {
+        if (count($array1) != count($array2)) return false;
+        foreach($array1 as $key=>$val) {
+            if ($array2[$key] != $val) return false;
+        }
+        return true;
+    }
 	/**
 	 * Trim empty elements of array
 	 *

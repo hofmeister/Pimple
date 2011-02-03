@@ -777,6 +777,9 @@ table.data .section {
 .data tr.odd td {
     background-color: #efefef;
 }
+.data tr.even td {
+    background-color: #ffffff;
+}
 .data tr.active td {
     background-color: #FFFFCC !important;
 }
