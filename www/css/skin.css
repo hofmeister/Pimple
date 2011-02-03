@@ -103,6 +103,9 @@ h3 {
     border:1px solid #ccc;
     padding:5px;
 }
+.framed.dark {
+    border:5px solid #333;
+}
 
 
 .contents {
@@ -224,12 +227,40 @@ h3 {
 }
 .sub-menu a {
     background-color: transparent;
-    -moz-border-radius:5px 5px 0 0;
-    -webkit-border-radius:5px 5px 0 0;
-    border-radius:5px 5px 0 0;
     border:0;
     color:#333;
 }
+.sub-menu.left,.sub-menu.right,.sub-menu.vertical {
+    float:none;
+    border-bottom:0;
+}
+.sub-menu.left a,
+    .sub-menu.right a,
+    .sub-menu.vertical a{
+    margin:0;
+    margin-top:2px;
+}
+.sub-menu.vertical a  {
+    -moz-border-radius:5px;
+    -webkit-border-radius:5px;
+    border-radius:5px;
+}
+.sub-menu.left a {
+    -moz-border-radius:5px 0 0 5px ;
+    -webkit-border-radius:5px 0 0 5px ;
+    border-radius:5px 0 0 5px ;
+}
+.sub-menu.right a {
+    -moz-border-radius: 0 5px 5px 0 ;
+    -webkit-border-radius: 0 5px 5px 0 ;
+    border-radius: 0 5px 5px 0 ;
+}
+.sub-menu.horizontal a {
+    -moz-border-radius:5px 5px 0 0;
+    -webkit-border-radius:5px 5px 0 0;
+    border-radius:5px 5px 0 0;
+}
+
 .sub-menu a.active,
     .sub-menu a:hover,
     .sub-menu a.main:hover {

@@ -69,25 +69,39 @@ class PimpleController extends Controller {
             $templates[] = $view;
         }
         $used = array();
+        $isDebug = Settings::get(Settings::DEBUG,false);
         foreach($templates as $template) {
             $cacheFile = $cacheDir.$template.'.js';
             echo "// $template\n";
-            Dir::ensure(dirname($cacheFile));
-            
-            if (!is_file($cacheFile)) {
-                File::truncate($cacheFile);
+            if (!$isDebug)
+                Dir::ensure(dirname($cacheFile));
+            if ($isDebug) {
                 $view = new View($template);
                 $view->render();
                 $files = $view->getJsFiles();
-                File::append($cacheFile,"/*FILES:\n\t".implode("\n\t",$files).'*/'.chr(10));
+                echo("/*FILES:\n\t".implode("\n\t",$files).'*/'.chr(10));
                 foreach($files as $file) {
                     if (in_array($file,$used)) continue;
                     $used[] = $file;
-                    File::append($cacheFile,"/*FILE:".basename($file).'*/'.chr(10).String::normalize(file_get_contents($file),false));
-                    File::append($cacheFile,chr(10));
+                    echo("/*FILE:".basename($file).'*/'.chr(10).String::normalize(file_get_contents($file),false));
+                    echo(chr(10));
                 }
+            } else {
+                if (!is_file($cacheFile)) {
+                    File::truncate($cacheFile);
+                    $view = new View($template);
+                    $view->render();
+                    $files = $view->getJsFiles();
+                    File::append($cacheFile,"/*FILES:\n\t".implode("\n\t",$files).'*/'.chr(10));
+                    foreach($files as $file) {
+                        if (in_array($file,$used)) continue;
+                        $used[] = $file;
+                        File::append($cacheFile,"/*FILE:".basename($file).'*/'.chr(10).String::normalize(file_get_contents($file),false));
+                        File::append($cacheFile,chr(10));
+                    }
+                }
+                echo file_get_contents($cacheFile);
             }
-            echo file_get_contents($cacheFile);
         }
 
         Pimple::end();
@@ -103,23 +117,36 @@ class PimpleController extends Controller {
             $templates[] = $view;
         }
         $used = array();
+        $isDebug = Settings::get(Settings::DEBUG,false);
         foreach($templates as $template) {
             $cacheFile = $cacheDir.$template.'.css';
             echo "/* $template */\n";
-            Dir::ensure(dirname($cacheFile));
-            if (!is_file($cacheFile)) {
-                File::truncate($cacheFile);
+            if ($isDebug) {
                 $view = new View($template);
                 $view->render();
                 $files = $view->getCssFiles();
-                File::append($cacheFile,"/*FILES:\n\t".implode("\n\t",$files).'*/'.chr(10));
+                echo("/*FILES:\n\t".implode("\n\t",$files).'*/'.chr(10));
                 foreach($files as $file) {
                     if (in_array($file,$used)) continue;
                     $used[] = $file;
-                    File::append($cacheFile,"/*FILE:".basename($file).'*/'.chr(10).Stylesheet::minify($file).chr(10));
+                    echo("/*FILE:".basename($file).'*/'.chr(10).Stylesheet::minify($file).chr(10));
                 }
+            } else {
+                Dir::ensure(dirname($cacheFile));
+                if (!is_file($cacheFile)) {
+                    File::truncate($cacheFile);
+                    $view = new View($template);
+                    $view->render();
+                    $files = $view->getCssFiles();
+                    File::append($cacheFile,"/*FILES:\n\t".implode("\n\t",$files).'*/'.chr(10));
+                    foreach($files as $file) {
+                        if (in_array($file,$used)) continue;
+                        $used[] = $file;
+                        File::append($cacheFile,"/*FILE:".basename($file).'*/'.chr(10).Stylesheet::minify($file).chr(10));
+                    }
+                }
+                echo file_get_contents($cacheFile);
             }
-            echo file_get_contents($cacheFile);
         }
 
         Pimple::end();
