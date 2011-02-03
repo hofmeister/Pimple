@@ -164,6 +164,21 @@ var Pimple = {
         tmp.detach();
         return result;
     },
+    getParm:function(name) {
+        if (Pimple._parms.indexOf('#') > -1) {
+            var prop = Pimple._parms.substr(Pimple._parms.indexOf('#'));
+            Pimple._parms = Pimple._parms.substr(0,Pimple._parms.indexOf('#'));
+        }
+            
+        var parts = Pimple._parms.split('&');
+
+        for(var i in parts) {
+            var nameVal = parts[i].split("=");
+            if (nameVal[0] == name)
+                return nameVal[1];
+        }
+        return "";
+    },
     forceFocus:function(elm) {
         var container = elm;
         if (!elm) {
