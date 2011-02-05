@@ -70,7 +70,7 @@ class HtmlElement extends XmlElement implements HtmlNode {
 		if ($this->isContainer()) {
 			$str .= '>';
 			$children = $this->getChildren();
-			foreach ($children as &$child) {
+			foreach ($children as $child) {
 				$str .= $child->__toString();
 			}
 			$str .= "</$tagName>";
