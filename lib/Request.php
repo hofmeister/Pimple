@@ -30,7 +30,7 @@ class Request {
      */
 	public static function file($key = null,$default = null) {
         if ($key) {
-            return self::file()->$key ? self::file()->$key : $default;
+            return self::file()->__get($key) ? self::file()->__get($key) : $default;
         }
 		if (!self::$file) {
             self::$file = new Request_Multipart($_FILES);
@@ -47,7 +47,7 @@ class Request {
      */
 	public static function get($key = null,$default = null) {
         if ($key) {
-            return self::get()->$key ? self::get()->$key : $default;
+            return self::get()->__get($key) ? self::get()->__get($key) : $default;
         }
 		if (!self::$get) {
             self::$get = new Request_Parms($_GET);
@@ -81,11 +81,11 @@ class Request_Parms implements POPOWrapper {
     public function get() {
         $args = func_get_args();
         if (count($args) == 1) {
-            return $this->$args[0];
+            return $this->__get($args[0]);
         }
         $result = new stdClass();
         foreach($args as $key) {
-            $result->$key = $this->$key;
+            $result->$key = $this->__get($key);
         }
         return $result;
     }
