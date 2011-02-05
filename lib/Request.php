@@ -12,7 +12,7 @@ class Request {
      */
 	public static function post($key = null,$default = null) {
         if ($key) {
-            return isset(self::post()->$key) ? self::post()->$key : $default;
+            return isset(self::post()->__get($key)) ? self::post()->__get($key) : $default;
         }
         if (count($_POST) == 0) return false;
 		if (!self::$post) {
