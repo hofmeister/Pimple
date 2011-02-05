@@ -38,8 +38,8 @@ ul.horizontal.right li,
 }
 .offscreen {
     position:absolute;
-    left:-9999px;
-    top:0px;
+    left:-99999px;
+    top:-99999px;
 }
 .pimple-messages {
     position:absolute;

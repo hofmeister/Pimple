@@ -3,6 +3,7 @@ class TagLib {
     private static $uidCount = 0;
     private $preprocess = false;
     private $bodies = array();
+
     function __construct($preprocess = false) {
         $this->preprocess = $preprocess;
     }

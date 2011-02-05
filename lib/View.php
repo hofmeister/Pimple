@@ -46,19 +46,32 @@ class View {
     }
     private function parseTemplate() {
         $cachename = $this->getCacheName();
+        $serializedName = $cachename.'.serialized';
 		umask(0002);
         $cache = Settings::get(View::CACHE,true);
-        if (!$cache || !is_file($cachename)) {
+        $parsed = null;
+        if (!$cache || !is_file($cachename) || !is_file($serializedName)) {
 
             $phtml = file_get_contents($this->getTemplateFile());
             $parser = new Phtml();
             $parsed = $parser->read($phtml,$this->getTemplate());
 
             Dir::ensure(dirname($cachename));
-            //die($parsed->toPhp());
-            //die(get_class($parsed));
+            file_put_contents($serializedName,serialize($parsed));
             $parsed->toPhp($cachename);
         }
+        return $parsed;
+    }
+    /**
+     * @return PhtmlNode
+     */
+    public function getNodeTree() {
+        $cachename = $this->getCacheName();
+        $serializedName = $cachename.'.serialized';
+        $tree = $this->parseTemplate();
+        if (!$tree)
+            $tree = unserialize (file_get_contents ($serializedName));
+        return $tree->resolve();
     }
     public function render($data = array()) {
         
@@ -105,6 +118,7 @@ class View {
         return $this->taglibs[$ns];
     }
     public function addJsFile($file,$lvl = 0) {
+        
         if ($this != self::top())
             self::top()->addJsFile($file,count(self::$_current));
         elseif(!is_array($this->jsFiles[$lvl]) || !in_array($file,$this->jsFiles[$lvl])) {
@@ -138,5 +152,36 @@ class View {
             ArrayUtil::append($files,$jsfiles);
         }
         return array_unique($files);
+    }
+    public function getInternalJsFiles() {
+        $nodes = $this->getNodeTree()->getElementsByTagNameNS('js','include');
+        $files = array();
+        foreach($nodes as $node) {
+            if ($node->getAttribute('local') == 'false')
+                $base = Pimple::instance()->getBaseDir().'www/';
+            else
+                $base = Pimple::instance()->getSiteDir();
+            $path = $node->getAttribute('path');
+            if (String::StartsWith($path,"http://") || String::StartsWith($path,"https://"))
+                $base = '';
+
+            $files[] = $base.$path;
+        }
+        return $files;
+    }
+    public function getInternalCssFiles() {
+        $nodes = $this->getNodeTree()->getElementsByTagNameNS('p','stylesheet');
+        $files = array();
+        foreach($nodes as $node) {
+            if ($node->getAttribute('local') == 'false')
+                $base = Pimple::instance()->getBaseDir().'www/';
+            else
+                $base = Pimple::instance()->getSiteDir();
+            $path = $node->getAttribute('path');
+            if (String::StartsWith($path,"http://") || String::StartsWith($path,"https://"))
+                $base = '';
+            $files[] = $base.$path;
+        }
+        return $files;
     }
 }

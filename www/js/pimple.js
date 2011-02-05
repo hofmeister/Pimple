@@ -1,4 +1,11 @@
 var Pimple = {
+    E_NONE:0,
+    E_FATAL:1,
+    E_ERROR:2,
+    E_WARNING:3,
+    E_DEBUG:4,
+    E_INFO:5,
+    logLevel:0,
     settings:{
         basePath:'/'
     },
@@ -38,32 +45,69 @@ var Pimple = {
         }
         this._bindings[selector].push(method);
     },
+    setLogLevel:function(lvl) {
+        this.logLevel = lvl;
+    },
+    log:function(lvl,msg) {
+        if ((typeof msg) == "undefined") {
+            msg = lvl;
+            lvl = 0;
+        }
+        if (lvl > this.logLevel) return;
+        if ((typeof console) != "undefined" &&
+                (typeof console.log) != "undefined" ) {
+            var prefix = "";
+            switch(lvl) {
+                case Pimple.E_DEBUG:
+                    prefix = "DBG";
+                    break;
+                case Pimple.E_INFO:
+                    prefix = "INFO";
+                    break;
+                case Pimple.E_ERROR:
+                    prefix = "ERR";
+                    break;
+                case Pimple.E_FATAL:
+                    prefix = "FATAL";
+                    break;
+                case Pimple.E_WARNING:
+                    prefix = "WARN";
+                    break;
+            }
+            if (prefix.length > 0)
+                console.log(prefix + ": "+ msg);
+            else
+                console.log(msg);
+        }
+    },
     bind:function(elm) {
-
+        
         for(var sel in this._bindings) {
             for(var x = 0; x < this._bindings[sel].length;x++) {
                 var m = this._bindings[sel][x];
                 if (elm) {
-                    if (typeof m == 'function') {
-                        $(elm).filter(sel).each(m);
-                        $(elm).find(sel).each(m);
-                    } else {
-                        if (typeof $(sel)[m] == 'function') {
-                            $(elm).filter(sel)[m]();
-                            $(elm).find(sel)[m]();
-                        } else if (console) {
-                            console.log("Failed to init binding: " + m);
+                    $(elm).each(function() {
+                        var el = $(this);
+                        if (typeof m == 'function') {
+                            el.filter(sel).each(m);
+                            el.find(sel).each(m);
+                        } else {
+                            if (typeof $(sel)[m] == 'function') {
+                                el.filter(sel)[m]();
+                                el.find(sel)[m]();
+                            } else {
+                                Pimple.log(Pimple.E_FATAL,"Failed to init binding: " + m);
+                            }
                         }
-                    }
-                    
+                    });
                 } else {
                     if (typeof m == 'function') {
                         $(sel).each(m);
                     } else {
                         if (typeof $(sel)[m] == 'function') {
                             $(sel)[m]();
-                        } else if (console) {
-                            console.log("Failed to init binding: " + m);
+                        } else {
+                            Pimple.log(Pimple.E_FATAL,"Failed to init binding: " + m);
                         }
                     }
                 }
@@ -138,9 +182,9 @@ var Pimple = {
         return Pimple;
     },
     /**
-     * @param string the html to get size of
-     * @param element optional element to put html into
-     * @param function optional method to apply to clone of element
+     * @param html the html to get size of
+     * @param elm optional element to put html into
+     * @param elmPrepare optional method to apply to clone of element
      */
     getSizeOfHtml: function(html,elm,elmPrepare) {
         var tmp = null;
@@ -172,7 +216,7 @@ var Pimple = {
             
         var parts = Pimple._parms.split('&');
 
-        for(var i in parts) {
+        for(var i = 0;i < parts.length;i++) {
             var nameVal = parts[i].split("=");
             if (nameVal[0] == name)
                 return nameVal[1];

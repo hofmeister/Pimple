@@ -11,6 +11,7 @@ jQuery.fn.tabpage = function() {
             tab = $(this);
             tab.addClass('active');
             var id = tab.attr('href');
+            id = id.substr(id.indexOf('#'));
             panel = panels.filter(id).addClass('active').removeClass("offscreen");
             panel.trigger('active');
             evt.preventDefault();

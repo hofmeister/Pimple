@@ -366,7 +366,7 @@ class PhtmlNode extends HtmlElement {
     private static $closureCount = 0;
     private static $append = '';
     private static $prepend = '';
-    private $ns;
+    
     private $container = false;
     
     public static function getNextClosure() {
@@ -375,9 +375,6 @@ class PhtmlNode extends HtmlElement {
         $basis2 = String::GUID();
         //echo "\n$basis";
         return "closure".md5($basis.md5($basis2));
-    }
-    public function getNs() {
-        return $this->ns;
     }
 
     
@@ -390,9 +387,6 @@ class PhtmlNode extends HtmlElement {
     }
 
 
-    public function setNs($ns) {
-        $this->ns = $ns;
-    }
 
     public function __toString() {
         if ($this->getTag() == 'phtml') {
@@ -473,7 +467,7 @@ class PhtmlNode extends HtmlElement {
                 $taglibs = Pimple::instance()->getTagLibs();
                 if ($taglibs[$this->getNs()] && $taglibs[$this->getNs()]->isPreprocess()) {
                     $tag = $this->getTag();
-                    $str = $taglibs[$this->ns]->callTag($tag,$this->getAttrs(),$body);
+                    $str = $taglibs[$this->getNs()]->callTag($tag,$this->getAttrs(),$body);
                 } else {
                     if (preg_match('/\%\{/',$body) || (preg_match('/<\?/',$body) && preg_match('/\$[A-Z]+\-\>[A-Z]+\(/is',$body))) {
                         //Body contains tags...
@@ -550,6 +544,50 @@ class PhtmlNode extends HtmlElement {
         //$val = trim($val,'".');
 
         return $val;
+    }
+    private $resolved = false;
+    /**
+     * merge all included templates into this one
+     * @return PhtmlNode
+     */
+    public function resolve() {
+        if ($this->resolved) return $this;
+        $this->resolved = true;
+        $includeTags = array('p:render:template','p:include:file');
+        foreach($includeTags as $tagName) {
+            list($ns,$tag,$attr) = explode(':',$tagName);
+            $includeNodes = $this->getElementsByTagNameNS($ns,$tag);
+            
+            foreach($includeNodes as $renderNode) {
+                $template = $renderNode->getAttribute($attr);
+                $children = $renderNode->getChildren();
+                $view = new View($template);
+                $innerTree = $view->getNodeTree();
+                //echo "\nFOUND:$template\n";
+                
+                if (count($children) > 0) {
+                    $bodyNodes = $innerTree->getElementsByTagNameNS('p','body');
+                    foreach($bodyNodes as &$bodyNode) {
+                        $parent = $bodyNode->getParent();
+                        $ix = $bodyNode->getIndex();
+                        //echo "\nFOuND BODY AT $ix: Children: ".count($children).chr(10);
+                        //print_r($children);
+                        $parent->addChildrenAt($ix, $children);
+                        $bodyNode->detach();
+                        break;
+                    }
+                }
+                $parent = $renderNode->getParent();
+                //echo "\nPARENT TAG: {$parent->getTag()} : ".count($parent->getChildren())."\n";
+                $ix = $renderNode->getIndex();
+                //echo "\nRENDER IX: $ix : {$innerTree->getTag()} : ".count($innerTree->getChildren())."\n";
+                $parent->addChildrenAt($ix,$innerTree->getChildren());
+                $renderNode->detach();
+                //echo "\nPARENT TAG: {$parent->getTag()} : ".count($parent->getChildren())."\n";
+
+            }
+        }
+        return $this;
     }
 }
 

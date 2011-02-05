@@ -50,7 +50,10 @@ class HtmlElement extends XmlElement implements HtmlNode {
 	}
 
 	public function __toString() {
-		$str = "<";
+		return $this->toHtml();
+	}
+    public function toHtml() {
+        $str = "<";
 		$tagName = '';
 		$tagName .= $this->getTag();
 		$str .= $tagName;
@@ -72,8 +75,11 @@ class HtmlElement extends XmlElement implements HtmlNode {
 			$str .= '/>';
 		}
 		return $str;
-	}
+    }
 }
 class HtmlText extends XmlText implements HtmlNode {
 
+    public function toHtml() {
+        return $this->toXml();
+    }
 }

@@ -1,6 +1,14 @@
 <?php
 interface XmlNode {
 	public function __toString();
+    /**
+     * @param XmlNode $parent
+     */
+    public function setParent($parent);
+    /**
+     * @return XmlNode
+     */
+    public function getParent();
 }
 
 class Xml {
@@ -58,10 +66,12 @@ class XmlElement implements XmlNode {
 	private $parent;
 	private $attrs = array();
 	private $children = array();
+    private $ns;
 
-	public function __construct($tag = null, $attrs=array()) {
+	public function __construct($tag = null, $attrs=array(),$ns = "") {
 		$this->tag = $tag;
 		$this->attrs = $attrs;
+        $this->ns = $ns;
 	}
 
 	public function getAttrs() {
@@ -79,6 +89,13 @@ class XmlElement implements XmlNode {
 	public function setTag($tag) {
 		$this->tag = $tag;
 	}
+    public function getNs() {
+        return $this->ns;
+    }
+    public function setNs($ns) {
+        $this->ns = $ns;
+    }
+
 
 	public function getParent() {
 		return $this->parent;
@@ -96,6 +113,10 @@ class XmlElement implements XmlNode {
 	public function getChildren() {
 		return $this->children;
 	}
+    public function setChildren($children) {
+        $this->clear();
+        $this->addChildren($children);
+    }
 
 	public function setAttribute($name, $value) {
 		$this->attrs[$name] = $value;
@@ -106,12 +127,106 @@ class XmlElement implements XmlNode {
 	}
 
 	public function __toString() {
-		$str = "";
-		if (!$this->parent) {
+		return $this->toXml();
+	}
+
+    public function getIndex() {
+        if (!$this->parent) return -1;
+        return $this->getParent()->getChildIndex($this);
+    }
+
+    public function getChildIndex(XmlNode $node) {
+        return array_search($node,$this->children);
+    }
+    public function setChildAt($i,XmlNode $node) {
+        if ($i < 0 || $i > count($this->children))
+            throw new Exception ("Child offset out of bounds: $i. Child count : ".count($this->children));
+        unset($this->children[$i]);
+        $this->children[intval($i)] = $node;
+        ksort($this->children);
+        return $this;
+    }
+    public function removeChildAt($i) {
+        if ($i < 0 || $i > count($this->children))
+            throw new Exception ("Child offset out of bounds: $i. Child count : ".count($this->children));
+        unset($this->children[$i]);
+        $this->children = array_values($this->children);
+        return $this;
+    }
+    public function removeChild(XmlNode $node) {
+        return $this->removeChildAt($this->getChildIndex($node));
+    }
+    public function addChildAt($offset,XmlNode $node) {
+        if ($offset < 0)
+            throw new Exception ("Child offset must be greater than -1".count($this->children));
+        $result = array();
+        if ($offset >= count($this->children)) {
+            return $this->addChild($node);
+        }
+        for($i = 0; $i < count($this->children);$i++) {
+            $result[] = $this->children[$i];
+            if ($i == $offset) {
+                $result[] = $node;
+                $node->setParent($this);
+            }
+        }
+        $this->children = $result;
+        return $this;
+    }
+    public function addChildren($children) {
+        foreach($children as $node) {
+            $this->addChild($node);
+        }
+    }
+    public function addChildrenAt($offset,$children) {
+        $i = 0;
+        foreach($children as $node) {
+            $this->addChildAt($offset+$i,$node);
+            $i++;
+        }
+    }
+    public function detach() {
+        $this->getParent()->removeChild($this);
+    }
+    /**
+     * replace node with other node
+     * @param PhtmlNode $otherNode
+     */
+    public function replace($otherNode) {
+        $parent = $this->getParent();
+        $i = $parent->getChildIndex($this);
+        $this->detach();
+        $parent->addChildAt($i,$otherNode);
+    }
+    public function clear() {
+        foreach ($this->children as $child) {
+            $child->setParent(null);
+        }
+        $this->children = array();
+    }
+
+
+    public function getElementsByTagNameNS($ns,$tagName) {
+        $result = array();
+        for($i = 0; $i < count($this->children);$i++) {
+            if (!($this->children[$i] instanceof  XmlElement)) continue;
+            if (strtolower($this->children[$i]->getNs()) == strtolower($ns)
+                    && strtolower($this->children[$i]->getTag()) == strtolower($tagName)) {
+                $result[] = $this->children[$i];
+            }
+            ArrayUtil::append($result, $this->children[$i]->getElementsByTagNameNS($ns,$tagName));
+        }
+        return $result;
+    }
+    public function toXml($makeParent = true) {
+        $str = "";
+		if (!$this->parent && $makeParent) {
 			$str = '<?xml version="1.0" encoding="UTF-8" ?>'.chr(10);
 		}
 		$str .= "<";
 		$tagName = '';
+        if ($this->getNs() != '')
+            $tagName .= $this->getNs().':';
 		$tagName .= $this->tag;
 		$str .= $tagName;
 		if (count($this->attrs) > 0) {
@@ -131,7 +246,7 @@ class XmlElement implements XmlNode {
 			$str .= '/>';
 		}
 		return $str;
-	}
+    }
 }
 
 class XmlText implements XmlNode {
@@ -161,5 +276,8 @@ class XmlText implements XmlNode {
 	public function __toString() {
 		return $this->text;
 	}
+    public function toXml() {
+        return $this->text;
+    }
 
 }

@@ -77,11 +77,13 @@ class PimpleController extends Controller {
                 Dir::ensure(dirname($cacheFile));
             if ($isDebug) {
                 $view = new View($template);
-                $view->render();
-                $files = $view->getJsFiles();
+                $files = $view->getInternalJsFiles();
+                
                 echo("/*FILES:\n\t".implode("\n\t",$files).'*/'.chr(10));
                 foreach($files as $file) {
-                    if (in_array($file,$used)) continue;
+                    if (in_array($file,$used)
+                            || String::StartsWith($file,"http://")
+                            || String::StartsWith($file,"https://")) continue;
                     $used[] = $file;
                     echo("/*FILE:".basename($file).'*/'.chr(10).String::normalize(file_get_contents($file),false));
                     echo(chr(10));
@@ -90,11 +92,12 @@ class PimpleController extends Controller {
                 if (!is_file($cacheFile)) {
                     File::truncate($cacheFile);
                     $view = new View($template);
-                    $view->render();
-                    $files = $view->getJsFiles();
+                    $files = $view->getInternalJsFiles();
                     File::append($cacheFile,"/*FILES:\n\t".implode("\n\t",$files).'*/'.chr(10));
                     foreach($files as $file) {
-                        if (in_array($file,$used)) continue;
+                        if (in_array($file,$used)
+                            || String::StartsWith($file,"http://")
+                            || String::StartsWith($file,"https://")) continue;
                         $used[] = $file;
                         File::append($cacheFile,"/*FILE:".basename($file).'*/'.chr(10).String::normalize(file_get_contents($file),false));
                         File::append($cacheFile,chr(10));
@@ -123,11 +126,12 @@ class PimpleController extends Controller {
             echo "/* $template */\n";
             if ($isDebug) {
                 $view = new View($template);
-                $view->render();
-                $files = $view->getCssFiles();
+                $files = $view->getInternalCssFiles();
                 echo("/*FILES:\n\t".implode("\n\t",$files).'*/'.chr(10));
                 foreach($files as $file) {
-                    if (in_array($file,$used)) continue;
+                    if (in_array($file,$used)
+                            || String::StartsWith($file,"http://")
+                            || String::StartsWith($file,"https://")) continue;
                     $used[] = $file;
                     echo("/*FILE:".basename($file).'*/'.chr(10).Stylesheet::minify($file).chr(10));
                 }
@@ -136,11 +140,12 @@ class PimpleController extends Controller {
                 if (!is_file($cacheFile)) {
                     File::truncate($cacheFile);
                     $view = new View($template);
-                    $view->render();
-                    $files = $view->getCssFiles();
+                    $files = $view->getInternalCssFiles();
                     File::append($cacheFile,"/*FILES:\n\t".implode("\n\t",$files).'*/'.chr(10));
                     foreach($files as $file) {
-                        if (in_array($file,$used)) continue;
+                        if (in_array($file,$used)
+                            || String::StartsWith($file,"http://")
+                            || String::StartsWith($file,"https://")) continue;
                         $used[] = $file;
                         File::append($cacheFile,"/*FILE:".basename($file).'*/'.chr(10).Stylesheet::minify($file).chr(10));
                     }
