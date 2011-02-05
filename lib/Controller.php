@@ -75,7 +75,7 @@ class Controller {
             } else {
                 $fieldName = $field;
             }
-            $value = $data->$fieldName;
+            $value = $data->__get($fieldName);
             if (!is_array($value)) {
                 $valArr = array($value);
             } else {

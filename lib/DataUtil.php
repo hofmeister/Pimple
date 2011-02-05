@@ -12,14 +12,14 @@ class DataUtil {
         if (is_array($ds)){
             return $ds[$key];
         } else if (is_object($ds)) {
-            return $ds->$key;
+            return $ds->__get($key);
         }
     }
 
     public static function has($ds,$key) {
         if (is_array($ds) && array_key_exists($key,$ds)){
             return true;
-        } else if (is_object($ds) && isset($ds->$key)) {
+        } else if (is_object($ds) && property_exists ($ds,$key)) {
             return true;
         }
         return false;

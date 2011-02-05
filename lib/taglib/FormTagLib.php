@@ -417,9 +417,9 @@ class FormTagLib extends TagLib {
                     $this->formData->$name = $value;
             }
             if (strtolower($this->formMethod) == 'get')
-                Request::get()->$name = $value;
+                Request::get()->__set($name,$value);
             else
-                Request::post()->$name = $value;
+                Request::post()->__set($name,$value);
         }
     }
 }
