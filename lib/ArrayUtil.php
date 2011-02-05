@@ -42,7 +42,7 @@ class ArrayUtil {
     }
 	public static function doRecursive(&$array,$method,$byReference = false) {
 		if (!is_array($array)) return;
-		foreach ($array as &$value) {
+		foreach ($array as $value) {
 			if (is_array($value))
 				self::doRecursive($value,$method);
 			else {

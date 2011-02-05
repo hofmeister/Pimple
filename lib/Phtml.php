@@ -579,7 +579,7 @@ class PhtmlNode extends HtmlElement {
                 
                 if (count($children) > 0) {
                     $bodyNodes = $innerTree->getElementsByTagNameNS('p','body');
-                    foreach($bodyNodes as &$bodyNode) {
+                    foreach($bodyNodes as $bodyNode) {
                         $parent = $bodyNode->getParent();
                         $ix = $bodyNode->getIndex();
                         //echo "\nFOuND BODY AT $ix: Children: ".count($children).chr(10);
@@ -640,7 +640,7 @@ class PhtmlException extends Exception {
     public function __toString() {
         $lines = explode("\n",$this->phtml);
         $i = 1;
-        foreach($lines as &$line) {
+        foreach($lines as $line) {
             $spaces = str_repeat(' ',3-strlen("$i"));
             $line = "<strong>$spaces$i:</strong> ".htmlentities($line,ENT_QUOTES,'UTF-8');
             $i++;

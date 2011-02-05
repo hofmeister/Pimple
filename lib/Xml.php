@@ -238,7 +238,7 @@ class XmlElement implements XmlNode {
 		}
 		if (count($this->children) > 0) {
 			$str .= '>';
-			foreach ($this->children as &$child) {
+			foreach ($this->children as $child) {
 				$str .= $child->__toString();
 			}
 			$str .= "</$tagName>";
