@@ -68,7 +68,9 @@ class Request_Parms implements POPOWrapper {
         }
     }
     public function  __get($name) {
-        return $this->_data[$name];
+        if ($this->__isset($name))
+            return $this->_data[$name];
+        return "";
     }
     public function  __set($name, $value) {
         $this->_data[$name] = $value;

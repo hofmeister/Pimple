@@ -55,7 +55,10 @@ class HtmlElement extends XmlElement implements HtmlNode {
     public function toHtml() {
         $str = "<";
 		$tagName = '';
+        if ($this->getNs() != '')
+            $tagName .= $this->getNs().':';
 		$tagName .= $this->getTag();
+
 		$str .= $tagName;
 		if (count($this->getAttrs()) > 0) {
 			$str .= ' ';

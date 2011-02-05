@@ -31,6 +31,7 @@ class Phtml {
     private $ignoreNextChar = false;
     private $ignoreTags = false;
     private $ignoreChars = false;
+    private $conditionalComment = false;
 
     /**
      *
@@ -88,6 +89,12 @@ class Phtml {
                         $this->popWithin();
                         break;
                     }
+                    //Handle conditional comments
+                    if (($this->conditionalComment && $this->lastChar == ']') && $this->isWithin(self::COMMENT)) {
+                        $this->conditionalComment = false;
+                        $this->popWithin();
+                        break;
+                    }
                     if ($this->lastChar == '?' && $this->isWithin(self::PHP)) {
                         $this->popWithin();
                     } elseif ($this->isWithin(self::TAGEND)) {
@@ -120,6 +127,7 @@ class Phtml {
                         $this->popWithin();
                         break;
                     }
+                
                 case ' ':
                 case "\t":
                 case "\n":
@@ -138,6 +146,10 @@ class Phtml {
                         $this->onStringStart();
                     }
                     break;
+                case '[':
+                    if (mb_substr($string,$i-4,4) == '<!--' && $this->isWithin(self::COMMENT)) {
+                        $this->conditionalComment = true;
+                    }
                 default:
                     $this->onWordStart();
                     
