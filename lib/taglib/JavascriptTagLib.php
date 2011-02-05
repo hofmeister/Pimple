@@ -48,7 +48,7 @@ class JavascriptTagLib extends TagLib {
         return self::$jsScripts.sprintf('<script type="text/javascript" src="%s"></script>',Url::makeLink('pimple','javascript',array('view'=>Pimple::instance()->getViewFile(),'stamp'=>$stamp,'skipLayout'=>$skipLayout)))."\n";
     }
     protected function tagScript($attrs) {
-        return sprintf('<script type="text/javascript">%s</script>',"\n${$this->body()}\n")."\n";
+        return sprintf('<script type="text/javascript">%s</script>',"\n".$this->body()."\n")."\n";
 	}
     protected function tagSetting($attrs) {
         return sprintf('<script type="text/javascript">Pimple.init(function() {%s;})</script>',"\n".sprintf('Pimple.settings.%s = %s',$attrs->name,json_encode($attrs->value))."\n")."\n";
