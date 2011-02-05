@@ -1,4 +1,5 @@
 <?php
+
 if (!defined('VIEWDIR')) {
     define('VIEWDIR',Dir::concat(BASEDIR,'view'));
 }
