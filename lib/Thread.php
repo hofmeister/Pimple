@@ -1,6 +1,4 @@
 <?php
-declare(ticks = 1);
-
 abstract class Thread {
     private $pid;
     public final function execute() {
