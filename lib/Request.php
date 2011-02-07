@@ -12,7 +12,7 @@ class Request {
      */
 	public static function post($key = null,$default = null) {
         if ($key) {
-            return isset(self::post()->__get($key)) ? self::post()->__get($key) : $default;
+            return (self::post() && self::post()->__isset($key)) ? self::post()->__get($key) : $default;
         }
         if (count($_POST) == 0) return false;
 		if (!self::$post) {
@@ -30,7 +30,7 @@ class Request {
      */
 	public static function file($key = null,$default = null) {
         if ($key) {
-            return self::file()->__get($key) ? self::file()->__get($key) : $default;
+            return self::file()->__isset($key) ? self::file()->__get($key) : $default;
         }
 		if (!self::$file) {
             self::$file = new Request_Multipart($_FILES);
@@ -47,7 +47,7 @@ class Request {
      */
 	public static function get($key = null,$default = null) {
         if ($key) {
-            return self::get()->__get($key) ? self::get()->__get($key) : $default;
+            return self::get()->__isset($key) ? self::get()->__get($key) : $default;
         }
 		if (!self::$get) {
             self::$get = new Request_Parms($_GET);
