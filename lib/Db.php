@@ -119,6 +119,9 @@ class DB {
 		array_shift($args);
 		return vsprintf($sql, self::processArgs($args));
 	}
+    public static function compileArray($sql,$args = array()) {
+		return vsprintf($sql, self::processArgs($args));
+	}
 
 	public static function q($sql) {
 		$args = func_get_args();

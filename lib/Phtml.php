@@ -115,7 +115,10 @@ class Phtml {
                     
                     break;
                 case ':':
-                    if ($this->isWithin(self::ATTR)) {break;}
+                    if ($this->isWithin(self::ATTR)) {
+                        
+                        break;
+                    }
                 case '%':
                     if ($this->ignoreTags()) break;
                     if ($this->nextChar == '{') {
@@ -265,7 +268,7 @@ class Phtml {
                 break;
             case self::ATTR:
                 if (!$this->attrName) {
-                    $current = $this->getCurrent(true);
+                    $current = preg_replace ('/[^A-Z0-9_\-\:]/i','',$this->getCurrent(false));
                     if (!$current) return;
                     $this->attrName = $current;
                     $this->debug("ATTR FOUND: $this->attrName");
