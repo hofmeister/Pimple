@@ -104,17 +104,17 @@ class String {
 	public static function toLower($string) {
                 if (!self::isValidString($string))
                     throw new InvalidArgumentException(sprintf('String::toLower() requires argument 1 to be a string. %s given',gettype($string)),E_USER_ERROR);
-		return mb_strtolower($string,Site::GetCharset());
+		return mb_strtolower($string,'UTF-8');
 	}
 	public static function ucWords($string) {
                 if (!self::isValidString($string))
                     throw new InvalidArgumentException(sprintf('String::toLower() requires argument 1 to be a string. %s given',gettype($string)),E_USER_ERROR);
-		return mb_convert_case($string,MB_CASE_TITLE,Site::GetCharset());
+		return mb_convert_case($string,MB_CASE_TITLE,'UTF-8');
 	}
 	public static function toUpper($string) {
                 if (!self::isValidString($string))
                     throw new InvalidArgumentException(sprintf('String::toUpper() requires argument 1 to be a string. %s given',gettype($string)),E_USER_ERROR);
-		return mb_strtoupper($string,Site::GetCharset());
+		return mb_strtoupper($string,'UTF-8');
 	}
         public static function isValidString($string) {
             try {
