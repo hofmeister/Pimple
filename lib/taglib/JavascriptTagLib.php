@@ -42,7 +42,7 @@ class JavascriptTagLib extends TagLib {
         }
         $ctrl = Pimple::instance()->getControllerInstance();
         $skipLayout = 0;
-        if ($ctrl->getSkipLayout()) {
+        if ($ctrl && $ctrl->getSkipLayout()) {
             $skipLayout = 1;
         }
         return self::$jsScripts.sprintf('<script type="text/javascript" src="%s"></script>',Url::makeLink('pimple','javascript',array('view'=>Pimple::instance()->getViewFile(),'stamp'=>$stamp,'skipLayout'=>$skipLayout)))."\n";

@@ -5,11 +5,12 @@
  * @license BSD
  * @package Basic
  */
+
 class String {
 	public static function htmlEncode($string) {
         if (!self::isValidString($string))
             throw new InvalidArgumentException(sprintf('String::htmlEncode() requires argument 1 to be a string. %s given',gettype($string)),E_USER_ERROR);
-		return self::normalize(str_replace('"','&quot;',(htmlentities(str_replace('&amp;','&',$string),null,Site::GetCharset()))));
+		return self::normalize(str_replace('"','&quot;',(htmlentities(str_replace('&amp;','&',$string),null))));
 	}
 
 	public static function Strip( $string ) {
