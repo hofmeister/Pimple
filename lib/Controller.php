@@ -49,12 +49,12 @@ class Controller {
         $url = Url::makeLink($controller, $action, $parms);
 		Url::gotoUrl($url);
         echo T("Redirecting to %s",$url);
-        throw new Interrupt(); //Not yet submitted...
+        Pimple::end();
 	}
     protected function refresh() {
         $this->setSkipView(true);
         Url::refresh();
-        throw new Interrupt(); //Not yet submitted...
+        Pimple::end();
 	}
     protected function setFields($fields) {
         $this->validation = $fields;
