@@ -14,6 +14,7 @@ jQuery.fn.tabpage = function() {
             id = id.substr(id.indexOf('#'));
             panel = panels.filter(id).addClass('active').removeClass("offscreen");
             panel.trigger('active');
+            dom.trigger("tabselected",panel);
             evt.preventDefault();
         });
         dom.bind('focus',function(evt) {
