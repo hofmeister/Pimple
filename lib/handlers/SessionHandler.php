@@ -32,7 +32,7 @@ class SessionHandler {
 	protected $SID;
 	protected $sessionKey = 'PSID';
 	protected $sessionSecret = "anythingGoes";
-	protected $expires = 3600;
+	protected $expires = 0;
 	protected $remember;
 	/**
 	 *
@@ -42,7 +42,8 @@ class SessionHandler {
 	protected $sessionData;
 
 	public function __construct() {
-		$this->remember = (3600 * 24 * 7 * 365);
+        $thus->expires = 3600*7*24;
+		$this->remember = (3600 * 24 * 365);
 	}
 
 	public function init() {
