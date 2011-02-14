@@ -42,11 +42,16 @@ class BasicTagLib extends TagLib {
         return constant($key);
     }
     protected function tagRender($attrs,$view) {
-        $innerView = new View($attrs->template);
+        if ($attrs->template) {
+            $innerView = new View($attrs->template);
         
-        $attrs->body = $this->body();
-        unset($attrs->template);
-        return $innerView->render($attrs);
+            $attrs->body = $this->body();
+            unset($attrs->template);
+            if (is_object($attrs->data) || is_array($attrs->data))
+                $attrs = $attrs->data;
+            return $innerView->render($attrs);
+        }
+        return $this->body();
         
     }
 	protected function tagButtonGroup($attrs,$view) {
