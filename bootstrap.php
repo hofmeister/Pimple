@@ -1,9 +1,10 @@
 <?php
-define('BASEDIR',exec('pwd'));
+require_once 'lib/Server.php';
+define('BASEDIR', Server::IsPlatform(Server::$PLATFORM_WINDOWS) ? 'c:\\workspace\\skybox' : exec('pwd'));
 
 if (BASEURL == 'BASEURL')
     throw new Exception("BASEURL must be defined!");
-
+    
 if (!is_dir(BASEDIR))
     throw new Exception(BASEDIR." not found!");
 
@@ -77,7 +78,6 @@ IncludePath::instance()->addPath(Pimple::instance()->getRessource('lib/'),1);
 
 define('CACHEDIR',Dir::normalize(BASEDIR).'cache');
 Dir::ensure(CACHEDIR);
-
 
 Pimple::instance()->registerTagLib('c',new CoreTagLib());
 Pimple::instance()->registerTagLib('val',new ValueTagLib());
