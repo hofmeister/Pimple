@@ -79,7 +79,7 @@ class FormTagLib extends TagLib {
         $elmAttr = $this->getElementAttr($attrs);
         $value = $this->getFieldValue($attrs,$value);
         
-        $elm = new HtmlElement('textarea',$elmAttr,true);
+        $elm = new HtmlElement('textarea',$elmAttr);
         $elm->addChild(new HtmlText(htmlentities($value,ENT_QUOTES,'UTF-8')));
 		return $this->formElementContainer($elm,$attrs);
 	}
