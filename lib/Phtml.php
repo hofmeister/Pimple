@@ -560,7 +560,7 @@ class PhtmlNode extends HtmlElement {
         }
         //$val = trim($val,'".');
         //Dirty hack:
-        return str_replace('&quote;','\\"',$val);
+        return str_replace('&quot;','\\"',$val);
     }
     private $resolved = false;
     /**
