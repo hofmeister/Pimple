@@ -556,7 +556,7 @@ class PhtmlNode extends HtmlElement {
         } else {
             //Replace %{} with ".." - and trim if "".$expr."" exists
             $val = preg_replace('/%\{([^\}]*)\}/i','".$1."','"'.$val.'"');
-            //$val = preg_replace('/(""\.|\."")/i','',$val);
+            $val = preg_replace('/(""\.|\."")/i','',$val);
         }
         //$val = trim($val,'".');
         //Dirty hack:
