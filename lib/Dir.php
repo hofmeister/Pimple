@@ -9,7 +9,7 @@ class Dir {
     public static function normalize($dir) {
         $dir= trim($dir,'/');
         if (strlen($dir) > 0)
-            return '/'.$dir.'/';
+            return ((Server::IsPlatform(Server::$PLATFORM_WINDOWS)) ? '' . trim($dir, DIRECTORY_SEPARATOR) : '/' . $dir ) .'/';
         else {
             return '/';
         }

@@ -82,7 +82,6 @@ class BasicTagLib extends TagLib {
 	protected function tagLink($attrs,$view) {
         $linkAttrs = new stdClass();
         $tagAttrs = new stdClass();
-        
         if ($attrs->parms) {
             //If parms argument is found restrict url to parms, controller and action attributes
             $linkAttrs = $this->toObject($attrs->parms);
@@ -109,7 +108,6 @@ class BasicTagLib extends TagLib {
             unset($linkAttrs->style);
             unset($linkAttrs->title);
         }
-
 
 
         $link = $this->url($linkAttrs,$this->body(),$view);

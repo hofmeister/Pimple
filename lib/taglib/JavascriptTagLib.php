@@ -8,9 +8,7 @@ class JavascriptTagLib extends TagLib {
      * @param View $view
      * @return string
      */
-	protected function tagInclude($attrs,$view) {
-
-            
+	protected function tagInclude($attrs,$view) {            
         if (String::StartsWith($attrs->path,'http')) {
             
             self::$jsScripts .= sprintf('<script type="text/javascript" src="%s"></script>',$attrs->path)."\n";
