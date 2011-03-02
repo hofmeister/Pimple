@@ -551,14 +551,16 @@ class PhtmlNode extends HtmlElement {
     }
     private function processAttrValue($val) {
         if (preg_match('/<\?\=(.*)\?>/i',$val)) {
+            //Remove php start/end tags that might have gotten here from %{} evaluations
             $val = preg_replace('/<\?\=(.*)\?>/i','$1',$val);
         } else {
+            //Replace %{} with ".." - and trim if "".$expr."" exists
             $val = preg_replace('/%\{([^\}]*)\}/i','".$1."','"'.$val.'"');
-            $val = preg_replace('/(""\.|\."")/i','',$val);
+            //$val = preg_replace('/(""\.|\."")/i','',$val);
         }
         //$val = trim($val,'".');
-
-        return $val;
+        //Dirty hack:
+        return str_replace('&quote;','\\"',$val);
     }
     private $resolved = false;
     /**
