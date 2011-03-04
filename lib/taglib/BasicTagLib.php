@@ -103,11 +103,14 @@ class BasicTagLib extends TagLib {
                 $tagAttrs->style = $attrs->style;
             if ($attrs->title)
                 $tagAttrs->title = $attrs->title;
+            if ($attrs->rel)
+                $tagAttrs->rel = $attrs->rel;
             
             $linkAttrs = $attrs;
             unset($linkAttrs->class);
             unset($linkAttrs->style);
             unset($linkAttrs->title);
+            unset($linkAttrs->rel);
         }
 
 
