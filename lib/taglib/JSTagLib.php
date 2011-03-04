@@ -3,10 +3,24 @@ class JSTagLib extends TagLib {
 	protected $containers = array();
 	private static $JS_WRAPPER_TAG = '';
 	private static $JS_EXPRESSION = '/js{(.*?)}/';
+	private static $JS_WIDGET_EXPRESSION = '/js{_widget(.*?)}/';
+	private static $JS_WIDGET_EXPRESSION_REPLACEMENT = '';
 	
 	public function __construct() {
 		parent::__construct(false, true);
 		self::$JS_WRAPPER_TAG = $this->uid();
+	}
+	
+	private function requireAttributes($attrs, array $name) {
+		$errors = array();
+		foreach($name as $n) {
+			if(!isset($attrs->$n)) {
+				$errors[] = $n;
+			}
+		}
+		if(count($errors) > 0) {
+			throw new ErrorException('The current tag requires the attribute(s): '. join(', ', $errors));
+		}
 	}
 	
 	private function makeJsString($string) {
@@ -14,83 +28,70 @@ class JSTagLib extends TagLib {
 	}
 	
 	private function replaceJsExpressions($string) {
-		return preg_replace(self::$JS_EXPRESSION, '"+$1+"', $string);
-	}
-	
-	private function outputJs($body) {
-		$matches = array();
-		$js = array();
-		preg_match_all('%<'.self::$JS_WRAPPER_TAG.'\b[^>]*>(.*?)</'.self::$JS_WRAPPER_TAG.'>%', $body, $matches);
-		$html = preg_split('%<'.self::$JS_WRAPPER_TAG.'\b[^>]*>(.*?)</'.self::$JS_WRAPPER_TAG.'>%', $body);
-		if(isset($matches[1])) {
-			foreach($matches[1] as $m) {
-				$js[] = $m;
+		$fixedExpressions=array();
+		$expressionMatches=array();
+		/* Change all widget expressions */
+		$string = preg_replace(self::$JS_WIDGET_EXPRESSION, '"+$p.getWidget(g)$1+"', $string);
+		preg_match_all(self::$JS_EXPRESSION, $string, $expressionMatches);
+		if(count($expressionMatches) > 0) {
+			/* Let's ensure that our js-expression don't get addslashed */
+			foreach($expressionMatches[1] as $match) {
+				$fixedExpressions[] = '"+'.String::RemoveSlashes($match).'+"';
+			}
+			/* Now we replace the expression tags, with the fixed js expression */
+			for($i=0;$i<count($expressionMatches[0]);$i++) {
+				$string = str_replace($expressionMatches[0][$i], $fixedExpressions[$i], $string);
 			}
 		}
-		$output = '';
-		for($i=0;$i<count($js);$i++) {
-			if($i==0) {
-				$output .= sprintf('var o=%s;', $this->replaceJsExpressions(String::JsEncode(((isset($html[$i])) ? $this->makeJsString($html[$i]) : '')))) .chr(10) . chr(10);
-			}
-			$output .= $js[$i] .chr(10) . chr(10);
-			$a = (isset($html[$i+1])) ? $this->makeJsString($html[$i+1]) : '';
-			if(!empty($a)) {
-				$output .= sprintf('o+=%s;', String::JsEncode($a)).chr(10) . chr(10);
-			}
-		}
-		return $output;
+		return $string;
 	}
 	
 	protected function tagContainer($attrs, $view) {
-		if(!isset($attrs->id)) {
-			throw new ErrorException("TagContainer must have at least one parameter (id)");
+		$this->requireAttributes($attrs, array('id'));
+		$output = sprintf('$.%1$s=function(d,g){var o="<%3$s>%2$s</%3$s>"; return o;};', $attrs->id, $this->makeJsString($this->body()), self::$JS_WRAPPER_TAG);
+		$matches=array();
+		preg_match_all('%<'.self::$JS_WRAPPER_TAG.'>(.*?)</'.self::$JS_WRAPPER_TAG.'>%', $output, $matches);
+		if(isset($matches[1])) {
+			foreach($matches[1] as $m) {
+				$output = str_replace('<'.self::$JS_WRAPPER_TAG.'>'.$m.'</'.self::$JS_WRAPPER_TAG.'>', addslashes($m), $output);
+			}
 		}
-		$this->containers[$attrs->id] = sprintf('$.'.$attrs->id.' = function() { %s };', $this->outputJs($this->body()));
-	}
-	
-	private function outputInnerTags($body) {
-		// TODO: Argh... virker bare ikke john john
+		$this->containers[$attrs->id] = String::UTF8Encode($this->replaceJsExpressions($output));
 	}
 	
 	protected function tagIf($attrs, $view) {
-		//$this->outputInnerTags($this->body());
-		return sprintf("%sif (%s) { o += %s; }%s", '<'.self::$JS_WRAPPER_TAG.'>',
-													$attrs->test,
-													$this->outputInnerTags($this->body()),
-													'</'.self::$JS_WRAPPER_TAG.'>');
+		$this->requireAttributes($attrs, array('test'));
+		return sprintf('</%3$s>";if(%1$s){o+="<%3$s>%2$s</%3$s>"; } o += "<%3$s>', $attrs->test, $this->makeJsString($this->body()), self::$JS_WRAPPER_TAG);
 	}
 	
 	protected function tagElse($attrs, $view) {
-		return sprintf("%s} else { o += %s; } %s", '<'.self::$JS_WRAPPER_TAG.'>',
-													$this->outputInnerTags($this->body()),
-													'</'.self::$JS_WRAPPER_TAG.'>');
+		return sprintf('</%2$s>";}else{o+="<%2$s>%s', $this->makeJsString($this->body()), self::$JS_WRAPPER_TAG);
 	}
 	
 	protected function tagElseIf($attrs, $view) {
-		$body = $this->body();
-		return sprintf("%s} else if (%s) { o += %s; %s", '<'.self::$JS_WRAPPER_TAG.'>',
-													$attrs->test,
-													$this->outputInnerTags($this->body()),
-													'</'.self::$JS_WRAPPER_TAG.'>');
+		$this->requireAttributes($attrs, array('test'));
+		return sprintf('</%3$s>";}else if(%1$s){o+="<%3$s>%2$s";', $attrs->test, $this->makeJsString($this->body()), self::$JS_WRAPPER_TAG);
 	}
 	
 	protected function tagWhile($attrs, $view) {
-		
+		$this->requireAttributes($attrs, array('test'));
+		return sprintf('</%3$s>";while(%1$s){o+="<%3$s>%2$s</%3$s>";}o+="<%3$s>', $attrs->test, $this->makeJsString($this->body()), self::$JS_WRAPPER_TAG);
 	}
 	
 	protected function tagFor($attrs, $view) {
-		
+		$this->requireAttributes($attrs, array('test'));
+		return sprintf('</%3$s>";for(var i=0;%1$s;i++){o+="<%3$s>%2$s</%3$s>";}o+="<%3$s>', $attrs->test, $this->makeJsString($this->body()), self::$JS_WRAPPER_TAG);
 	}
 	
 	protected function tagCollect($attrs, $view) {
-		$output = array('<!-- JSTagLib output --><script type="text/javascript"> $(function() { ');
+		$output = array('<!-- JSTaglib output start --><script type="text/javascript">$(function(){');
 		if($this->containers) {
 			$functionJs = array();
 			foreach($this->containers as $c) {
 				$output[] = $c;
 			}
 		}
-		$output[] = '});</script>';
+		$output[] = '});</script><!-- JSTaglib end -->';
 		return join('', $output);
 	}
 }

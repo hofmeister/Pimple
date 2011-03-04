@@ -39,6 +39,9 @@ class String {
         }
         return self::normalize($string);
     }
+    public static function RemoveSlashes($string) {
+    	return str_replace('\\"', '"', str_replace("\\'", "'", $string));
+    }
 	public static function JsEncode($string,$quote = '"') {
         return $quote.str_replace('script>','scri" + "pt>',
 
