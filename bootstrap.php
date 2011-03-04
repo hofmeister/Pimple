@@ -1,6 +1,6 @@
 <?php
 require_once 'lib/Server.php';
-define('BASEDIR', Server::IsPlatform(Server::$PLATFORM_WINDOWS) ? 'c:\\workspace\\skybox' : exec('pwd'));
+define('BASEDIR', Server::IsPlatform(Server::PLATFORM_WINDOWS) ? exec('echo %cd%') : exec('pwd'));
 
 if (BASEURL == 'BASEURL')
     throw new Exception("BASEURL must be defined!");

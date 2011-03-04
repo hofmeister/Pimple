@@ -1,11 +1,11 @@
 <?php
 class Server {
-	public static $PLATFORM_WINDOWS = 'Windows';
-	public static $PLATFORM_MAC = 'Mac';
-	public static $PLATFORM_LINUX = 'Linux';
-	public static $PLATFORM_UNIX = 'Unix';
+	const PLATFORM_WINDOWS = 'win';
+	const PLATFORM_MAC = 'mac';
+	const PLATFORM_LINUX = 'linux';
+	const PLATFORM_UNIX = 'unix';
 	
 	public static function IsPlatform($Platform) {
-		return (strstr($_SERVER['HTTP_USER_AGENT'], $Platform));
+		return (strstr(strtolower(PHP_OS), $Platform));
 	}
 }
