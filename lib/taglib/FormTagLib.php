@@ -160,15 +160,19 @@ class FormTagLib extends TagLib {
             $this->formData = $view->data;
         $attrs->method = strtolower($attrs->method ? $attrs->method : 'post');
         $this->formMethod = $attrs->method;
-        
-        
-        return sprintf('<form method="%s" action="%s" enctype="%s" id="%s">',
-						$attrs->method,
-						$attrs->url,
-                        $attrs->enctype,
-                        $attrs->id).
-				$this->body().
-				'</form>';
+        $elm = new HtmlElement('form');
+        $elm->setAttribute('method', $attrs->method);
+        $elm->setAttribute('enctype', $attrs->enctype);
+        $elm->setAttribute('action', $attrs->url);
+
+        if ($attrs->id)
+            $elm->setAttribute('id', $attrs->id);
+
+        if ($attrs->class)
+            $elm->setAttribute('class', $attrs->class);
+
+        $elm->addChild(new HtmlText($this->body()));
+        return $elm->toHtml();
 	}
     protected function tagButtonGroup($attrs,$view) {
 		return '<div class="horizontal line buttongroup '.$attrs->class.'">'.chr(10).

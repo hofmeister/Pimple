@@ -1,5 +1,4 @@
 <?php
-
 class BasicTagLib extends TagLib {
 	
     private static $globalVars = array();
@@ -82,6 +81,7 @@ class BasicTagLib extends TagLib {
 	protected function tagLink($attrs,$view) {
         $linkAttrs = new stdClass();
         $tagAttrs = new stdClass();
+        
         if ($attrs->parms) {
             //If parms argument is found restrict url to parms, controller and action attributes
             $linkAttrs = $this->toObject($attrs->parms);
@@ -102,12 +102,16 @@ class BasicTagLib extends TagLib {
                 $tagAttrs->style = $attrs->style;
             if ($attrs->title)
                 $tagAttrs->title = $attrs->title;
+            if ($attrs->rel)
+                $tagAttrs->rel = $attrs->rel;
             
             $linkAttrs = $attrs;
             unset($linkAttrs->class);
             unset($linkAttrs->style);
             unset($linkAttrs->title);
+            unset($linkAttrs->rel);
         }
+
 
 
         $link = $this->url($linkAttrs,$this->body(),$view);

@@ -31,6 +31,7 @@ class HtmlElement extends XmlElement implements HtmlNode {
 			case 'th':
 			case 'script':
 			case 'title':
+			case 'form':
 			case 'head':
 			case 'body':
 			case 'textarea':
