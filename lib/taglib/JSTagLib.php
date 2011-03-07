@@ -4,7 +4,7 @@ class JSTagLib extends TagLib {
 	private static $JS_WRAPPER_TAG = '';
 	private static $JS_EXPRESSION = '/js{(.*?)}/';
 	private static $JS_WIDGET_EXPRESSION = '/js{_widget(.*?)}/';
-	private static $JS_WIDGET_EXPRESSION_OUTER = '/js{_w(.*?)}/';
+	//private static $JS_WIDGET_EXPRESSION_OUTER = '/js{_w(.*?)}/';
 	private static $JS_WIDGET_EXPRESSION_REPLACEMENT = '';
 	
 	public function __construct() {
@@ -33,7 +33,7 @@ class JSTagLib extends TagLib {
 		$expressionMatches=array();
 		/* Change all widget expressions */
 		$string = preg_replace(self::$JS_WIDGET_EXPRESSION, '$p.getWidget(\'"+g+"\')$1', $string);
-		$string = preg_replace(self::$JS_WIDGET_EXPRESSION_OUTER, '"+$p.getWidget(g)$1+"', $string);
+		//$string = preg_replace(self::$JS_WIDGET_EXPRESSION_OUTER, '"+($p.getWidget(g)$1)+"', $string);
 		preg_match_all(self::$JS_EXPRESSION, $string, $expressionMatches);
 		if(count($expressionMatches) > 0) {
 			/* Let's ensure that our js-expression don't get addslashed */

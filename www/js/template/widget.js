@@ -1,5 +1,6 @@
 $p.Widget = function(template,container) {
-	this.guid = 'testgui';
+	var newDate = new Date;
+	this.guid = newDate.getTime();
 	$p.Widget.windows[this.guid] = this;
 	this.template = template;
 	this.container = $(container);
@@ -38,10 +39,12 @@ $p.Widget.prototype = {
 		this.data.totalRows = (this.data.origTotalRows > rowsPerPage) ? rowsPerPage : this.data.origTotalRows;
 		this.data.currentPageIndex = 0;
 	},
-	getPageIndex: function() {
-		return this.data.currentPageIndex;
-	},
 	getPage: function(pageIndex) {
+		this.setPage(pageIndex);
+		this.render();
+		return false;
+	},
+	setPage: function(pageIndex) {
 		var start = this.data.totalRows*pageIndex;
 		var end = ((start+this.data.rowsPerPage) > this.data.origTotalRows) ? this.data.origTotalRows : (start+this.data.rowsPerPage);
 		var newRows = new Array();
@@ -49,24 +52,10 @@ $p.Widget.prototype = {
 			newRows.push(this.rows[i]);
 		}
 		this.data.totalRows = newRows.length;
-		this.data.currentPageIndex = pageIndex;
+		this.data.currentPageIndex = parseInt(pageIndex);
 		this.data.rows = newRows;
-		this.render();
-		return false;
-		/*
-		2 rows per side
-		1 pageindex.
-		0 < 2
-		
-		*/
-		
-		/*this.setPage(pageIndex);
-		this.render();*/
 	},
-	setPage: function(pageIndex) {
-		var p = parseInt(pageIndex);
-		if(p <= this.data.totalPages) {
-			this.data.currentPageIndex = pageIndex;
-		}
+	setSort: function() {
+		// TODO: Make sorting...
 	}
 }
