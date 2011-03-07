@@ -4,6 +4,7 @@ class JSTagLib extends TagLib {
 	private static $JS_WRAPPER_TAG = '';
 	private static $JS_EXPRESSION = '/js{(.*?)}/';
 	private static $JS_WIDGET_EXPRESSION = '/js{_widget(.*?)}/';
+	private static $JS_WIDGET_EXPRESSION_OUTER = '/js{_w(.*?)}/';
 	private static $JS_WIDGET_EXPRESSION_REPLACEMENT = '';
 	
 	public function __construct() {
@@ -31,7 +32,8 @@ class JSTagLib extends TagLib {
 		$fixedExpressions=array();
 		$expressionMatches=array();
 		/* Change all widget expressions */
-		$string = preg_replace(self::$JS_WIDGET_EXPRESSION, '"+$p.getWidget(g)$1+"', $string);
+		$string = preg_replace(self::$JS_WIDGET_EXPRESSION, '$p.getWidget(\'"+g+"\')$1', $string);
+		$string = preg_replace(self::$JS_WIDGET_EXPRESSION_OUTER, '"+$p.getWidget(g)$1+"', $string);
 		preg_match_all(self::$JS_EXPRESSION, $string, $expressionMatches);
 		if(count($expressionMatches) > 0) {
 			/* Let's ensure that our js-expression don't get addslashed */
@@ -48,7 +50,7 @@ class JSTagLib extends TagLib {
 	
 	protected function tagContainer($attrs, $view) {
 		$this->requireAttributes($attrs, array('id'));
-		$output = sprintf('$.%1$s=function(d,g){var o="<%3$s>%2$s</%3$s>"; return o;};', $attrs->id, $this->makeJsString($this->body()), self::$JS_WRAPPER_TAG);
+		$output = sprintf('$.%1$s=function(d,g){guid=g;var o="<%3$s>%2$s</%3$s>"; return o;};', $attrs->id, $this->makeJsString($this->body()), self::$JS_WRAPPER_TAG);
 		$matches=array();
 		preg_match_all('%<'.self::$JS_WRAPPER_TAG.'>(.*?)</'.self::$JS_WRAPPER_TAG.'>%', $output, $matches);
 		if(isset($matches[1])) {
