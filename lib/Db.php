@@ -191,6 +191,18 @@ class DB {
         self::freeResult();
 		return $result;
 	}
+    public static function fetchKeyValue($sql) {
+		$args = func_get_args();
+		array_shift($args);
+
+		$r = self::_query($sql, $args);
+		$result = array();
+		while ($row = mysqli_fetch_row($r)) {
+			$result[$row[0]] = $row[1];
+		}
+        self::freeResult();
+		return $result;
+	}
 
 	public static function fetchAll($sql) {
 		$args = func_get_args();
