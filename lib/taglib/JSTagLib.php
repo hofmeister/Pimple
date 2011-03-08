@@ -63,7 +63,7 @@ class JSTagLib extends TagLib {
 	
 	protected function tagIf($attrs, $view) {
 		$this->requireAttributes($attrs, array('test'));
-		return sprintf('</%3$s>";if(%1$s){o+="<%3$s>%2$s</%3$s>"; } o += "<%3$s>', ((strstr($attrs->test, "'")) ? $attrs->test . "'" : $attrs->test), $this->body(), self::$JS_WRAPPER_TAG);
+		return sprintf('</%3$s>";if(%1$s){o+="<%3$s>%2$s</%3$s>"; } o += "<%3$s>', $this->makeJsString($attrs->test), $this->body(), self::$JS_WRAPPER_TAG);
 	}
 	
 	protected function tagElse($attrs, $view) {
