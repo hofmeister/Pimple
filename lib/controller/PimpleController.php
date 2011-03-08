@@ -85,7 +85,7 @@ class PimpleController extends Controller {
                             || String::StartsWith($file,"http://")
                             || String::StartsWith($file,"https://")) continue;
                     $used[] = $file;
-                    echo("/*FILE:".basename($file).'*/'.chr(10).String::normalize(file_get_contents($file),false));
+                    echo("/*FILE:".basename($file).'*/'.chr(10).String::normalize(@file_get_contents($file),false));
                     echo(chr(10));
                 }
             } else {
@@ -99,7 +99,7 @@ class PimpleController extends Controller {
                             || String::StartsWith($file,"http://")
                             || String::StartsWith($file,"https://")) continue;
                         $used[] = $file;
-                        File::append($cacheFile,"/*FILE:".basename($file).'*/'.chr(10).String::normalize(file_get_contents($file),false));
+                        File::append($cacheFile,"/*FILE:".basename($file).'*/'.chr(10).String::normalize(@file_get_contents($file),false));
                         File::append($cacheFile,chr(10));
                     }
                 }
