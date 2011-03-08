@@ -32,6 +32,7 @@ class Phtml {
     private $ignoreTags = false;
     private $ignoreChars = false;
     private $conditionalComment = false;
+    private $stringContainer = null;
 
     /**
      *
@@ -208,15 +209,16 @@ class Phtml {
     protected function onStringStart() {
         if ($this->stringStartChar && $this->stringStartChar != $this->char) return;
         $this->stringStartChar = $this->char;
-        $this->debug("STRING START");
-        
+        $this->debug("STRING START:$this->char");
+        $this->ignoreNextChar(3);
         $this->pushWithin(self::STRING);
         $this->current = substr($this->current,1);
     }
     protected function onStringEnd() {
         if ($this->stringStartChar != $this->char || $this->lastChar == '\\') return;
         $this->stringStartChar = '';
-        $this->debug("STRING END");
+        $this->debug("STRING END: $this->char");
+        $this->ignoreNextChar(3);
         $this->popWithin();
     }
     protected function getCurrent($alphanum = false,$erase = true) {
@@ -273,7 +275,7 @@ class Phtml {
                     $this->attrName = $current;
                     $this->debug("ATTR FOUND: $this->attrName");
                 } else {
-                    $val = trim($this->getCurrent(),"\"'");
+                    $val = $this->getCurrent();
                     $this->debug("ATTR VAL FOUND FOR: $this->attrName ($val)");
                     $this->getNode()->setAttribute($this->attrName,$val);
                     $this->attrName = '';
