@@ -18,8 +18,10 @@ $p.Widget.prototype = {
 		this.data = data;
 		this.rows = this.data.rows;
 		/* Preset variables */
-		this.data.totalRows = (this.data.origTotalRows!=null) ? this.data.origTotalRows : this.data.rows.length;
+		this.data.totalRows = (this.data.totalRows!=null) ? this.data.totalRows : this.data.rows.length;
 		this.data.rowsPerPage = this.data.totalRows;
+		this.data.totalPages = Math.ceil(this.data.origTotalRows/this.data.rowsPerPage);
+		this.data.currentPageIndex = (this.data.currentPageIndex!=null) ? this.data.currentPageIndex : 0;
 	},
 	setJSON: function(url) {
 		var c = this;
@@ -33,8 +35,11 @@ $p.Widget.prototype = {
 		    async: false
 		});
 	},
-	render: function() {
+	render: function(f) {
 		this.container.html(this.template(this.data, this.guid));
+		if(f!=null) {
+			f();
+		}
 	},
 	setPaging: function(rowsPerPage) {
 		this.data.totalPages = Math.ceil(this.data.origTotalRows/rowsPerPage);
