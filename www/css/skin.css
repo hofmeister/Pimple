@@ -517,7 +517,6 @@ input.no-checker {
     text-transform: uppercase;
     font-weight:bold;
     text-align: left;
-    margin-top:10px;
     font-size:12px;
     line-height:12px;
 }
@@ -614,7 +613,7 @@ input.button {
 
 
 .no-label-top {
-    margin-top:28px;
+    margin-top:18px;
 }
 
 img.captcha {

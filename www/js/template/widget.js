@@ -17,11 +17,12 @@ $p.Widget.prototype = {
 	setData: function(data) {
 		this.data = data;
 		this.rows = this.data.rows;
+	
 		/* Preset variables */
-		this.data.totalRows = (this.data.totalRows!=null) ? this.data.totalRows : this.data.rows.length;
-		this.data.rowsPerPage = this.data.totalRows;
-		this.data.totalPages = Math.ceil(this.data.origTotalRows/this.data.rowsPerPage);
 		this.data.currentPageIndex = (this.data.currentPageIndex!=null) ? this.data.currentPageIndex : 0;
+		this.data.totalRows = (this.data.totalRows!=null) ? this.data.totalRows : this.data.rows.length;
+		this.data.rowsPerPage = (this.data.rowsPerPage==null) ? this.data.totalRows : this.data.rowsPerPage;
+		this.data.totalPages = Math.ceil(this.data.origTotalRows/this.data.rowsPerPage);
 	},
 	setJSON: function(url) {
 		var c = this;
@@ -35,10 +36,10 @@ $p.Widget.prototype = {
 		    async: false
 		});
 	},
-	render: function(f) {
+	render: function(fn) {
 		this.container.html(this.template(this.data, this.guid));
-		if(f!=null) {
-			f();
+		if(fn!=null) {
+			fn();
 		}
 	},
 	setPaging: function(rowsPerPage) {
@@ -47,9 +48,12 @@ $p.Widget.prototype = {
 		this.data.totalRows = (this.data.origTotalRows > rowsPerPage) ? rowsPerPage : this.data.origTotalRows;
 		this.data.currentPageIndex = 0;
 	},
-	getPage: function(pageIndex) {
+	getData: function() {
+		return this.data;		
+	},
+	getPage: function(pageIndex, fn) {
 		this.setPage(pageIndex);
-		this.render();
+		this.render(fn);
 		return false;
 	},
 	setPage: function(pageIndex) {

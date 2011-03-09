@@ -72,7 +72,7 @@ class JSTagLib extends TagLib {
 	
 	protected function tagElseIf($attrs, $view) {
 		$this->requireAttributes($attrs, array('test'));
-		return sprintf('</%3$s>";}else if(%1$s){o+="<%3$s>%2$s";', $attrs->test, $this->makeJsString($this->body()), self::$JS_WRAPPER_TAG);
+		return sprintf('</%3$s>";}else if(%1$s){o+="<%3$s>%2$s', $attrs->test, $this->makeJsString($this->body()), self::$JS_WRAPPER_TAG);
 	}
 	
 	protected function tagWhile($attrs, $view) {
