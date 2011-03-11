@@ -63,6 +63,11 @@ ul.horizontal.right li,
 .tmarg {margin-top:10px !important;}
 .bmarg {margin-bottom:10px !important;}
 
+.x-rmarg {margin-right:5px!important;}
+.x-lmarg {margin-left:5px!important;}
+.x-tmarg {margin-top:5px!important;}
+.x-bmarg {margin-bottom:5px!important;}
+
 .horizontal.divided li:first-child
     ,ul.divided li {
     border-left:none;
