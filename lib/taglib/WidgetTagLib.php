@@ -76,7 +76,7 @@ class WidgetTagLib extends TagLib {
         
         $ctrl = Pimple::instance()->getControllerInstance();
         if ($ctrl && $ctrl->isSection($section)) {
-            $attrs->class = trim($attrs->class.' active');
+            $attrs->class = (isset($attrs->class) ? trim($attrs->class.' active') : 'active');
         }
         unset($attrs->section);
         
@@ -195,7 +195,7 @@ class Wizard {
      * @return Wizard
      */
     public static function get($id) {
-        if (!self::$_registry[$id]) {
+        if (!isset(self::$_registry[$id])) {
             self::$_registry[$id] = new self($id);
         }
         return self::$_registry[$id];

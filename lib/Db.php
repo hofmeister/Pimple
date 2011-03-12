@@ -166,7 +166,7 @@ class DB {
         self::freeResult();
         return $result;
 	}
-    private function ensureOneRow($sql) {
+    private static function ensureOneRow($sql) {
         if (!preg_match('/[^A-Z]LIMIT[^A-Z]/i', $sql)) {
             $sql .= ' LIMIT 1';
         }
@@ -214,7 +214,7 @@ class DB {
             while ($row = mysqli_fetch_object($r)) {
                 $result[] = $row;
             }
-        } while(mysqli_next_result(self::$link));
+        } while(mysqli_more_results(self::$link) && mysqli_next_result(self::$link));
         self::freeResult();
 		return $result;
 	}

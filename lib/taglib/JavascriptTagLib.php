@@ -14,7 +14,7 @@ class JavascriptTagLib extends TagLib {
             self::$jsScripts .= sprintf('<script type="text/javascript" src="%s"></script>',$attrs->path)."\n";
             return;
         }
-        if ($attrs->local == 'false') {
+        if (isset($attrs->local) && $attrs->local == 'false') {
 			$base = Settings::get(Pimple::URL);
             $view->addJsFile(Pimple::instance()->getBaseDir().'www/'.$attrs->path);
 		} else {

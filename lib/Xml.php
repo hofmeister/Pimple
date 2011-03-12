@@ -123,7 +123,7 @@ class XmlElement implements XmlNode {
 	}
 
 	public function getAttribute($name) {
-		return $this->attrs[$name];
+		return (isset($this->attrs[$name]) ? $this->attrs[$name] : null);
 	}
 
 	public function __toString() {

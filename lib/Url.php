@@ -341,7 +341,7 @@ class Url {
     }
     public static function basePath() {
         $host = $_SERVER['HTTP_HOST'];
-        if ($_SERVER['HTTPS'])
+        if (isset($_SERVER['HTTPS']))
             $p = 'https';
         else
             $p = 'http';

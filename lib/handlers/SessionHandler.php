@@ -42,7 +42,7 @@ class SessionHandler {
 	protected $sessionData;
 
 	public function __construct() {
-        $thus->expires = 3600*7*24;
+		$this->expires = 3600*7*24;
 		$this->remember = (3600 * 24 * 365);
 	}
 

@@ -6,8 +6,8 @@ class FormTagLib extends TagLib {
 		return $this->inputElement('text',$attrs,$view);
     }
     protected function tagDate($attrs,$view) {
-        if (!$attrs->class) $attrs->class = '';
-        if (!$attrs->format)
+        if (!isset($attrs->class)) $attrs->class = '';
+        if (!isset($attrs->format))
             $attrs->format = Settings::get(Date::DATE_FORMAT,'Y-m-d');
 
         $attrs->class = trim($attrs->class.' js-datepicker');
@@ -39,8 +39,8 @@ class FormTagLib extends TagLib {
 
         $attrs->simple = 'true';
         $attrs->id = $this->tagId($attrs);
-        if ($attrs->id)
-            $attrs->after = sprintf('<label for="%s">%s</label>',$attrs->id,$label).$attrs->after;
+        if (isset($attrs->id))
+            $attrs->after = sprintf('<label for="%s">%s</label>',$attrs->id,$label).(isset($attrs->after) ? $attrs->after : '');
         else
             $attrs->after = sprintf('<label>%s</label>',$label).$attrs->after;
 
@@ -137,7 +137,7 @@ class FormTagLib extends TagLib {
 		return $this->formElementContainer($selectElm,$attrs);
 	}
 	protected function tagForm($attrs,$view) {
-        if ($attrs->binary) {
+        if (isset($attrs->binary)) {
             $attrs->enctype = 'multipart/form-data';
         } else {
             $attrs->enctype = 'application/x-www-form-urlencoded ';
@@ -151,10 +151,12 @@ class FormTagLib extends TagLib {
 			}
 			$attrs->url = Url::makeLink($attrs->controller,$attrs->action,$_SERVER['QUERY_STRING']);
 		} else if ($attrs->action && $attrs->controller) {
-                $attrs->url = Url::makeLink($attrs->controller,$attrs->action,$attrs->parms);
+                $attrs->url = Url::makeLink((isset($attrs->controller) ? $attrs->controller : ''),
+                							(isset($attrs->action) ? $attrs->action : ''),
+                							(isset($attrs->parms) ? $attrs->parms : ''));
 		}
         unset($attrs->binary);
-        if ($attrs->data)
+        if (isset($attrs->data))
             $this->formData = $attrs->data;
         else
             $this->formData = $view->data;
@@ -165,10 +167,10 @@ class FormTagLib extends TagLib {
         $elm->setAttribute('enctype', $attrs->enctype);
         $elm->setAttribute('action', $attrs->url);
 
-        if ($attrs->id)
+        if (isset($attrs->id))
             $elm->setAttribute('id', $attrs->id);
 
-        if ($attrs->class)
+        if (isset($attrs->class))
             $elm->setAttribute('class', $attrs->class);
 
         $elm->addChild(new HtmlText($this->body()));
@@ -180,7 +182,7 @@ class FormTagLib extends TagLib {
             '</div>';
 	}
 	protected function tagId($attrs) {
-		if ($attrs->id) return $attrs->id;
+		if (isset($attrs->id)) return $attrs->id;
 		else if ($attrs->name && substr($attrs->name,-2) != '[]') {
 			return preg_replace('/[^A-Z0-9_]/i','_',$attrs->name);
 		}
@@ -203,12 +205,13 @@ class FormTagLib extends TagLib {
     }
 
     private function inputElement($type,$attrs,$view) {
-
-        $attrs->value = $this->getFieldValue($attrs,$attrs->value);
+		if(isset($attrs->value)) {
+        	$attrs->value = $this->getFieldValue($attrs,$attrs->value);
+		}
         
         $inputElm = '';
-        $checker = $attrs->checker;
-        $container = $attrs->container;
+        $checker = isset($attrs->checker) ? $attrs->checker : '';
+        $container = isset($attrs->container) ? $attrs->container : '';
         unset($attrs->container);
         
         if ($checker) {
@@ -216,18 +219,18 @@ class FormTagLib extends TagLib {
         }
         
 
-        $inputElm .= $attrs->before;
+        $inputElm .= isset($attrs->before) ? $attrs->before : '';
         $attrs->id = $this->tagId($attrs);
         if (!$attrs->id) unset($attrs->id);
         $attrs->type = $type;
-        $attrs->value = htmlentities($attrs->value,ENT_QUOTES,'UTF-8');
-        $attrs->class = trim("form-".$attrs->type.' '.$attrs->class);
+        $attrs->value = isset($attrs->value) ? htmlentities($attrs->value,ENT_QUOTES,'UTF-8') : '';
+        $attrs->class = isset($attrs->class) ? trim("form-".$attrs->type.' '.$attrs->class) : '';
 
         $elmAttr = $this->getElementAttr($attrs);
 
         $inputElm .= new HtmlElement('input',$elmAttr,false);
 
-        $inputElm .= $this->body().$attrs->after;
+        $inputElm .= $this->body().(isset($attrs->after) ? $attrs->after : '');
         if ($checker) {
             $inputElm .= '<div class="clear"></div></div>';
         }
@@ -242,22 +245,22 @@ class FormTagLib extends TagLib {
         $errorMessages = array();
         $errors = array();
         $classes[] = 'line';
-        if ($attrs->simple) {
+        if (isset($attrs->simple)) {
             $attrs->composit = 'false';
             $classes[] = 'simple';
         }
 
-        if ($attrs->small || $attrs->composit == 'false') { //Remove small attr...
+        if (isset($attrs->small) || isset($attrs->composit) && $attrs->composit == 'false') { //Remove small attr...
             $attrs->nolabel = true;
             $attrs->noinstructions = true;
         } else {
             $classes[] = 'composit';
         }
         
-        $label = $attrs->label;
-        $help = $attrs->help;
+        $label = isset($attrs->label) ? $attrs->label : '';
+        $help = isset($attrs->help) ? $attrs->help : '';
         $validators = Pimple::instance()->getControllerInstance()->getFieldValidation($attrs->name);
-        $hasValidators = ($attrs->readonly != 'true' && !$attrs->disabled && count($validators) > 0);
+        $hasValidators = (isset($attrs->readonly) && $attrs->readonly != 'true' && !isset($attrs->disabled) && count($validators) > 0);
         if ($hasValidators) {
             if (String::EndsWith($attrs->name,'[]')) {
                 $i = Util::count($attrs->name);
@@ -291,9 +294,9 @@ class FormTagLib extends TagLib {
             
         }
         unset($attrs->cClass);
-        $hasInstructions = ($attrs->help || $hasValidators || count($errors) > 0) && !$attrs->noinstructions;
+        $hasInstructions = (isset($attrs->help) || $hasValidators || count($errors) > 0) && !isset($attrs->noinstructions);
         unset($attrs->noinstructions);
-        if (!$hasInstructions && !$attrs->instructions) {
+        if (!$hasInstructions && !isset($attrs->instructions)) {
             $classes[] = 'no-instructions';
         }
         if ($attrs->nolabel) {
@@ -305,7 +308,7 @@ class FormTagLib extends TagLib {
             $classes[] = 'valid';
 
         $output = '<div class="form-item '.implode(' ',$classes).'"';
-        if ($attrs->cStyle) {
+        if (isset($attrs->cStyle)) {
             $output .= sprintf(' style="%s" ',$attrs->cStyle);
         }
         $output .= '>';
@@ -341,7 +344,7 @@ class FormTagLib extends TagLib {
                             current($errors),
                             implode(chr(10),$errorMessages));
             $renderedInstructions = true;
-        } else if ($attrs->instructions) {
+        } else if (isset($attrs->instructions)) {
             $output .= sprintf('<div class="instructions">
                                     %s
                                 </div>',$attrs->instructions);
@@ -350,7 +353,7 @@ class FormTagLib extends TagLib {
         if (!$renderedInstructions && (count($errors) > 0)) {
             $output .= '<div class="description error">'.current($errors).'</div>';
         } else {
-            if ($attrs->description) {
+            if (isset($attrs->description)) {
                 $output .= '<div class="description">'.$attrs->description.'</div>';
             }
         }
@@ -359,16 +362,18 @@ class FormTagLib extends TagLib {
     }
 
     private function handleBehaviour(&$attrs) {
-        $behaviours = explode(' ',$attrs->behaviour);
-        foreach($behaviours as $i=>$behaviour) {
-            if ($behaviour)
-                $behaviours[$i] = 'pb-'.$behaviour;
+        $behaviours = isset($attrs->behaviour) ? explode(' ',$attrs->behaviour) : null;
+        if($behaviours) {
+	        foreach($behaviours as $i=>$behaviour) {
+	            if ($behaviour)
+	                $behaviours[$i] = 'pb-'.$behaviour;
+	        }
+	        $attrs->class = trim($attrs->class.' '.implode(' ',$behaviours));
+        	unset($attrs->behaviour);
         }
-        $attrs->class = trim($attrs->class.' '.implode(' ',$behaviours));
-        unset($attrs->behaviour);
     }
     private function handleOptions(&$attrs,&$elmAttr) {
-        if ($attrs->options) {
+        if (isset($attrs->options)) {
             $elmAttr['p:options'] = (is_string($attrs->options)) ? $attrs->options : str_replace('"','\'',json_encode($attrs->options));
             unset($elmAttr['options']);
             unset($attrs->options);
@@ -396,7 +401,7 @@ class FormTagLib extends TagLib {
         return $elmAttr;
     }
     private function getFieldValue($attrs,$value) {
-        if ($attrs->name) {
+        if (isset($attrs->name)) {
             if (!$value && $this->formData) {
                 $name = $attrs->name;
                 if (is_array($this->formData))

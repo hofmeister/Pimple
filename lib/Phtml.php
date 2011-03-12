@@ -173,7 +173,7 @@ class Phtml {
 
         $node = $this->getNode();
         $this->clear();
-        if (Settings::get(Settings::DEBUG,false) && $_GET['__viewdebug'] == $file) {
+        if (Settings::get(Settings::DEBUG,false) && isset($_GET['__viewdebug']) && $_GET['__viewdebug'] == $file) {
             $test = new PhtmlException($this->phtmlRaw,$this->char,$this->lineCount,$this->charCount,$this->debugTrace);
             echo $test;
             Pimple::end();
@@ -469,8 +469,8 @@ class PhtmlNode extends HtmlElement {
         } else if ($method) {
             $str .= 'array(),';
         }
+        $taglibs = Pimple::instance()->getTagLibs();
         if ($this->isContainer()) {
-
             if (!$method)
                 $str .= '>';
             else
@@ -482,11 +482,11 @@ class PhtmlNode extends HtmlElement {
                 $str .= $this->getInnerPHP();
             
             if ($method) {
-                $taglibs = Pimple::instance()->getTagLibs();
                 if ($taglibs[$this->getNs()] && $taglibs[$this->getNs()]->isPreprocess()) {
                     $tag = $this->getTag();
                     $str = $taglibs[$this->getNs()]->callTag($tag,$this->getAttrs(),$body);
                 } else {
+                	$closureName = self::getNextClosure();
                     if (preg_match('/\%\{/',$body) || (preg_match('/<\?/',$body) && preg_match('/\$[A-Z]+\-\>[A-Z]+\(/is',$body))) {
                         //Body contains tags...
                         if (false && version_compare(PHP_VERSION, '5.3.0', '>=')) {
@@ -494,7 +494,6 @@ class PhtmlNode extends HtmlElement {
                             $closure = sprintf('function() use (&$view,&$data) {extract($view->taglibs);ob_start();?>%s<? return ob_get_clean();}',$body);;
                             $str .= sprintf('%s,$view);?>',$closure);
                         } else {
-                            $closureName = self::getNextClosure();
                             $str .= sprintf('new %s($view),$view);?>',$closureName);
                             self::$prepend .= chr(10).sprintf('<?
                                             //%1$s closure start
@@ -526,7 +525,7 @@ class PhtmlNode extends HtmlElement {
                 $str .= sprintf("</%s>",$this->getTag());
         } else {
             if ($method) {
-                if ($taglibs[$this->getNs()] && $taglibs[$this->getNs()]->isPreprocess()) {
+                if ($taglibs && $taglibs[$this->getNs()] && $taglibs[$this->getNs()]->isPreprocess()) {
                     $tag = $this->getTag();
                     $str = $taglibs[$this->getNs()]->$tag($this->getAttrs(),null,null);
                 } else {

@@ -106,7 +106,7 @@ class Controller {
         return true;
     }
     public function getFieldValidation($field) {
-        $validators = $this->validation[$field];
+        $validators = (isset($this->validation[$field]) ? $this->validation[$field] : null);
         if ($validators)
             return explode(',',preg_replace('/[\)\}]/',']',preg_replace('/[\(\{]/','[',$validators)));
         return null;

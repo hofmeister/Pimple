@@ -36,9 +36,9 @@ class ValueTagLib extends TagLib {
         return $this->tagDate($attrs);
 	}
     protected function tagDateTime($attrs) {
-        if (!$attrs->format)
+        if (!isset($attrs->format))
             $attrs->format = Settings::get(Date::DATETIME_FORMAT,'Y-m-d H:i:s');
-        if (!$attrs->value) $attrs->value = trim($this->body());
+        if (!isset($attrs->value)) $attrs->value = trim($this->body());
         return $this->tagDate($attrs);
 	}
     protected function tagInt($attrs) {

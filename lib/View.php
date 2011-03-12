@@ -121,7 +121,8 @@ class View {
         
         if ($this != self::top())
             self::top()->addJsFile($file,count(self::$_current));
-        elseif(!is_array($this->jsFiles[$lvl]) || !in_array($file,$this->jsFiles[$lvl])) {
+        elseif(isset($this->jsFiles[$lvl]) && !is_array($this->jsFiles[$lvl]) || 
+        		isset($this->jsFiles[$lvl]) && !in_array($file,$this->jsFiles[$lvl])) {
             if (!$this->jsFiles[$lvl])
                 $this->jsFiles[$lvl] = array();
             $this->jsFiles[$lvl][] = $file;
@@ -130,7 +131,7 @@ class View {
     public function addCssFile($file,$lvl = 0) {
         if ($this != self::top())
             self::top()->addCssFile($file,count(self::$_current));
-        elseif(!is_array($this->cssFiles[$lvl]) || !in_array($file,$this->cssFiles[$lvl])) {
+        elseif(isset($this->cssFiles[$lvl]) && !is_array($this->cssFiles[$lvl]) || isset($this->cssFiles[$lvl]) && !in_array($file,$this->cssFiles[$lvl])) {
             if (!$this->cssFiles[$lvl])
                 $this->cssFiles[$lvl] = array();
             $this->cssFiles[$lvl][] = $file;
