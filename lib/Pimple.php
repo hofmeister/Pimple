@@ -37,8 +37,9 @@ class Pimple {
     private $siteName;
     private $tagLibs = array();
     public function init() {
-        $this->getPath();
-        list($this->controller,$this->action) = explode('/',trim($this->getPath(),'/'));
+    	$tmp = explode('/',trim($this->getPath(),'/'));
+    	$this->controller = (isset($tmp[0]) ? $tmp[0] : '');
+    	$this->action = (isset($tmp[1]) ? $tmp[1] : '');
         $this->parms = $_GET;
 		if (!Settings::get(self::URL,false))
 			Settings::set(self::URL,'http://pimple.kweative.dk/');
@@ -128,9 +129,9 @@ class Pimple {
 					//Ignore for now
 				}
 			}
+			$data = null;
             try {
                 $data = $ctrl->$action();
-                
             } catch(ValidationException $e) {
                 //Do nothing...
             } catch(Interrupt $e) {

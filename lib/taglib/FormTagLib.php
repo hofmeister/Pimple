@@ -93,13 +93,11 @@ class FormTagLib extends TagLib {
         return $this->tagTextarea($attrs,$view);
     }
     protected function tagSelect($attrs,$view) {
-
-        $attrs->value = $this->getFieldValue($attrs,$attrs->value);
-
+        $attrs->value = $this->getFieldValue($attrs,(isset($attrs->value) ? $attrs->value : ''));
         $keyVal = $this->toObject($attrs->options);
-        
         $options = "";
-        if ($attrs->emptyText) {
+        
+        if (isset($attrs->emptyText)) {
             if (isset($attrs->emptyValue)) {
                 $options .= sprintf('<option value="%s">%s</option>',$attrs->emptyValue,$attrs->emptyText);
             } else {
@@ -110,8 +108,8 @@ class FormTagLib extends TagLib {
         $isMap = (is_object($keyVal) || ArrayUtil::isMap($keyVal));
         foreach($keyVal as $key=>$val) {
             if (is_object($val)) {
-                $propKey = $attrs->propKey ? $attrs->propKey : 'key';
-                $propVal = $attrs->propValue ? $attrs->propKey : 'value';
+                $propKey = isset($attrs->propKey) ? $attrs->propKey : 'key';
+                $propVal = isset($attrs->propValue) ? $attrs->propKey : 'value';
                 $key = $val->$propKey;
                 $val = $val->$propVal;
             } else {
@@ -129,11 +127,13 @@ class FormTagLib extends TagLib {
             }
         }
         $addon = '';
-        if ($attrs->id) {
+        if (isset($attrs->id)) {
             $addon .= sprintf(' id="%s"',$attrs->id);
         }
-        $selectElm = sprintf('<select name="%s" class="form-select %s" %s>%s</select>',
-					$attrs->name,$attrs->class,$addon,$options);
+        $selectElm = sprintf('<select name="%s" class="form-select %s" %s>%s</select>', (isset($attrs->name) ? $attrs->name : ''),
+        																				(isset($attrs->class) ? $attrs->class : ''),
+        																				$addon,
+        																				$options);
 		return $this->formElementContainer($selectElm,$attrs);
 	}
 	protected function tagForm($attrs,$view) {
@@ -142,15 +142,15 @@ class FormTagLib extends TagLib {
         } else {
             $attrs->enctype = 'application/x-www-form-urlencoded ';
         }
-		if (!$attrs->controller && !$attrs->action && !$attrs->parms) {
-            if (!$attrs->controller) {
+		if (!isset($attrs->controller) && !isset($attrs->action) && !isset($attrs->parms)) {
+            if (!isset($attrs->controller)) {
 				$attrs->controller = Pimple::instance()->getController();
-				if (!$attrs->action) {
+				if (!isset($attrs->action)) {
 					$attrs->action = Pimple::instance()->getAction();
 				}
 			}
 			$attrs->url = Url::makeLink($attrs->controller,$attrs->action,$_SERVER['QUERY_STRING']);
-		} else if ($attrs->action && $attrs->controller) {
+		} else if (isset($attrs->action) && isset($attrs->controller)) {
                 $attrs->url = Url::makeLink((isset($attrs->controller) ? $attrs->controller : ''),
                 							(isset($attrs->action) ? $attrs->action : ''),
                 							(isset($attrs->parms) ? $attrs->parms : ''));
@@ -160,7 +160,7 @@ class FormTagLib extends TagLib {
             $this->formData = $attrs->data;
         else
             $this->formData = $view->data;
-        $attrs->method = strtolower($attrs->method ? $attrs->method : 'post');
+        $attrs->method = strtolower(isset($attrs->method) ? $attrs->method : 'post');
         $this->formMethod = $attrs->method;
         $elm = new HtmlElement('form');
         $elm->setAttribute('method', $attrs->method);
@@ -177,13 +177,13 @@ class FormTagLib extends TagLib {
         return $elm->toHtml();
 	}
     protected function tagButtonGroup($attrs,$view) {
-		return '<div class="horizontal line buttongroup '.$attrs->class.'">'.chr(10).
+		return '<div class="horizontal line buttongroup'.(isset($attrs->class) ? ' ' . $attrs->class : '').'">'.chr(10).
                 $this->body().chr(10).
             '</div>';
 	}
 	protected function tagId($attrs) {
 		if (isset($attrs->id)) return $attrs->id;
-		else if ($attrs->name && substr($attrs->name,-2) != '[]') {
+		else if (isset($attrs->name) && !is_array($attrs->name)) {
 			return preg_replace('/[^A-Z0-9_]/i','_',$attrs->name);
 		}
 		return null;
@@ -289,7 +289,7 @@ class FormTagLib extends TagLib {
                     $label .= sprintf('<span class="required" title="%s">*</span>',$info);
             }
         }
-        if ($attrs->cClass) {
+        if (isset($attrs->cClass)) {
             $classes[] = $attrs->cClass;
             
         }
@@ -299,7 +299,7 @@ class FormTagLib extends TagLib {
         if (!$hasInstructions && !isset($attrs->instructions)) {
             $classes[] = 'no-instructions';
         }
-        if ($attrs->nolabel) {
+        if (isset($attrs->nolabel)) {
             $classes[] = 'no-label';
         }
         if ((count($errors) > 0))
@@ -317,8 +317,8 @@ class FormTagLib extends TagLib {
             $label = '&nbsp;';
 
         if ($label) {
-            if (!$attrs->nolabel || $attrs->small || ($attrs->composit == 'false')) {
-                if ($attrs->id)
+            if (!isset($attrs->nolabel) || isset($attrs->small) || (isset($attrs->composit) && $attrs->composit == 'false')) {
+                if (isset($attrs->id))
                     $output .= sprintf('<label for="%s">%s</label>',$attrs->id,$label);
                 else
                     $output .= sprintf('<label>%s</label>',$label);
@@ -405,7 +405,7 @@ class FormTagLib extends TagLib {
             if (!$value && $this->formData) {
                 $name = $attrs->name;
                 if (is_array($this->formData))
-                    $value = $this->formData[$name];
+                    $value = isset($this->formData[$name]) ? $this->formData[$name] : null;
                 else
                     $value = $this->formData->$name;
             }

@@ -7,9 +7,9 @@ class ValueTagLib extends TagLib {
     }
 
 	protected function tagDate($attrs) {
-        if (!$attrs->format)
+        if (!isset($attrs->format))
             $attrs->format = Settings::get(Date::DATE_FORMAT,'Y-m-d');
-        if (!$attrs->value) $attrs->value = trim($this->body());
+        if (!isset($attrs->value)) $attrs->value = trim($this->body());
         if (preg_match('/[^0-9]/',$attrs->value)) {
             //Not all numbers
             $attrs->value = strtotime($attrs->value);

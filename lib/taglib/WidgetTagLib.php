@@ -71,7 +71,7 @@ class WidgetTagLib extends TagLib {
      * @param View $view 
      */
     protected function tagMenuButton($attrs,$view) {
-        $section = $attrs->section ? $attrs->section : $attrs->action;
+        $section = isset($attrs->section) ? $attrs->section : $attrs->action;
         if (!$section) $section = 'index';
         
         $ctrl = Pimple::instance()->getControllerInstance();
@@ -79,7 +79,6 @@ class WidgetTagLib extends TagLib {
             $attrs->class = (isset($attrs->class) ? trim($attrs->class.' active') : 'active');
         }
         unset($attrs->section);
-        
         return $view->taglibs['p']->link($attrs,$this->body(),$view);
     }
     private function evt2css($type) {
@@ -107,13 +106,15 @@ class WidgetTagLib extends TagLib {
 	}
     protected function tagPanel($attrs) {
         $add = '';
-        if ($attrs->id) {
+        if (isset($attrs->id)) {
             $add .= sprintf(' id="%s"',$attrs->id);
         }
-        if ($attrs->style) {
+        if (isset($attrs->style)) {
             $add .= sprintf(' style="%s"',$attrs->style);
         }
-        return sprintf('<div class="panel %s"%s><h2>%s</h2>%s</div>',$attrs->class,$add,$attrs->title,$this->body());
+        return sprintf('<div class="panel %s"%s><h2>%s</h2>%s</div>',(isset($attrs->class) ? $attrs->class : ''),
+        																$add,(isset($attrs->title) ? $attrs->title : ''),
+        																$this->body());
     }
     protected function tagWizard($attrs) {
         $current = Pimple::instance()->getAction();

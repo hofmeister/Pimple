@@ -341,7 +341,7 @@ class String {
         return $uuid;
     }
     public static function isHtml($string) {
-        return preg_match('/<(img|p|pre|code|div|label|li|ul|ol|table|tbody|tr|td|th|thead|tfoot|font|span|em|strong|b|i|head|body|title|meta|style|script|html|\!DOCTYPE)[^>]*>/i',$html);
+        return preg_match('/<(img|p|pre|code|div|label|li|ul|ol|table|tbody|tr|td|th|thead|tfoot|font|span|em|strong|b|i|head|body|title|meta|style|script|html|\!DOCTYPE)[^>]*>/i',$string);
     }
 }
 

@@ -114,8 +114,6 @@ class BasicTagLib extends TagLib {
             unset($linkAttrs->rel);
         }
 
-
-
         $link = $this->url($linkAttrs,$this->body(),$view);
         if (!$this->body())
             $this->body($link);
@@ -126,7 +124,7 @@ class BasicTagLib extends TagLib {
 		return $a;
 	}
     protected function tagUrl($attrs,$view) {
-        $controller = (isset($attrs->action)) ? $attrs->controller : '';
+        $controller = (isset($attrs->controller)) ? $attrs->controller : '';
         $action = (isset($attrs->action)) ? $attrs->action : '';
         $host = (isset($attrs->host)) ? $attrs->host : '';
         $id = (isset($attrs->id)) ? $attrs->id : '';
@@ -173,23 +171,19 @@ class BasicTagLib extends TagLib {
                 $view->addCssFile(Pimple::instance()->getSiteDir().$attrs->path);
 			$base = Url::basePath();
 		}
-        
         $url = $base.$attrs->path;
-        if (isset($attrs->inline) && $attrs->inline != 'true') {
+        if (!isset($attrs->inline) || isset($attrs->inline) && $attrs->inline != 'true') {
             if ($view == null || Settings::get(Settings::DEBUG,false) && Request::get('__nominify',false)) {
                 return sprintf('<link href="%s" rel="stylesheet" type="text/css" />',$url);
             } 
             return '';
         }
-		//die(Pimple::instance()->getBaseDir());
-        //$path = Dir::normalize(BASEDIR).$attrs->path;
-        // FIXME: Der er ugler i mosen her aka. something is odd here.
-        // On my windows pc, it seems to try to get css-files from skybox/ that resides in the pimple project.
-        /*if(file_exists($path)) {
-        	$css = file_get_contents($path);
-        	$css = str_replace('url(../',"url($base",$css);
-        	return sprintf('<style type="text/css">%s</style>',$css);
-        }*/
+        $path = Dir::normalize(BASEDIR).$attrs->path;
+        if(file_exists($path)) {
+	        $css = file_get_contents($path);
+	        $css = str_replace('url(../',"url($base",$css);
+	        return sprintf('<style type="text/css">%s</style>',$css);
+        }
         return '';
 	}
 	protected function tagJavascript($attrs) {
