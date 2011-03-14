@@ -160,10 +160,14 @@ var Pimple = {
         else
             return optStr;
     },
-    addMessage: function(text,isError,timeout) {
+    addMessage: function(text,isError,timeout,append) {
+    	append = (append==null) ? true : false;
         var cls = (isError) ? 'error' : 'success';
-        $('.pimple-messages')
-                    .append('<div class="message '+cls+'">'+text+'</div>');
+    	if(!append && $('.pimple-messages div.message').length > 0) {
+    		$('.pimple-messages div.message').first().html(text).show();
+    	} else {
+    		$('.pimple-messages').append('<div class="message '+cls+'">'+text+'</div>');
+    	}
         return Pimple.showMessages(timeout);
     },
     showMessages: function(timeout) {

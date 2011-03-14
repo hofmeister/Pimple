@@ -210,7 +210,7 @@ class Phtml {
         if ($this->stringStartChar && $this->stringStartChar != $this->char) return;
         $this->stringStartChar = $this->char;
         $this->debug("STRING START:$this->char");
-        $this->ignoreNextChar(3);
+        //$this->ignoreNextChar(3);
         $this->pushWithin(self::STRING);
         $this->current = substr($this->current,1);
     }
@@ -218,7 +218,7 @@ class Phtml {
         if ($this->stringStartChar != $this->char || $this->lastChar == '\\') return;
         $this->stringStartChar = '';
         $this->debug("STRING END: $this->char");
-        $this->ignoreNextChar(3);
+        //$this->ignoreNextChar(3);
         $this->popWithin();
     }
     protected function getCurrent($alphanum = false,$erase = true) {
@@ -276,6 +276,7 @@ class Phtml {
                     $this->debug("ATTR FOUND: $this->attrName");
                 } else {
                     $val = $this->getCurrent();
+                    $val = substr($val,1,strlen($val)-2);
                     $this->debug("ATTR VAL FOUND FOR: $this->attrName ($val)");
                     $this->getNode()->setAttribute($this->attrName,$val);
                     $this->attrName = '';
