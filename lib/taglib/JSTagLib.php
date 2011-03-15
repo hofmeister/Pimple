@@ -50,7 +50,7 @@ class JSTagLib extends TagLib {
 	
 	protected function tagContainer($attrs, $view) {
 		$this->requireAttributes($attrs, array('id'));
-		$output = sprintf('$.%1$s=function(d,g){guid=g;var o="<%3$s>%2$s</%3$s>"; return o;};', $attrs->id, $this->makeJsString($this->body()), self::$JS_WRAPPER_TAG);
+		$output = sprintf('$.%1$s=function(d,g){var o="<%3$s>%2$s</%3$s>"; return o;};', $attrs->id, $this->makeJsString($this->body()), self::$JS_WRAPPER_TAG);
 		$matches=array();
 		preg_match_all('%<'.self::$JS_WRAPPER_TAG.'>(.*?)</'.self::$JS_WRAPPER_TAG.'>%', $output, $matches);
 		if(isset($matches[1])) {
@@ -78,6 +78,12 @@ class JSTagLib extends TagLib {
 	protected function tagWhile($attrs, $view) {
 		$this->requireAttributes($attrs, array('test'));
 		return sprintf('</%3$s>";while(%1$s){o+="<%3$s>%2$s</%3$s>";}o+="<%3$s>', $attrs->test, $this->makeJsString($this->body()), self::$JS_WRAPPER_TAG);
+	}
+	
+	protected function tagEach($attrs, $view) {
+		$this->requireAttributes($attrs, array('in'));
+		$row = (!isset($attrs->as)) ? 'row' : $attrs->as;
+		return sprintf('</%4$s>";for(var i=0;i<%1$s.length;i++){var %2$s=%1$s[i];o+="<%4$s>%3$s</%4$s>";}o+="<%4$s>', $attrs->in, $row, $this->makeJsString($this->body()), self::$JS_WRAPPER_TAG);
 	}
 	
 	protected function tagFor($attrs, $view) {

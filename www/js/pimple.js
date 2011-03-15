@@ -269,7 +269,22 @@ var Pimple = {
             felm.css('top',container.scrollTop()+40);
             felm.blur();
         }
-    }
+    },
+    format: {
+		date: function(format, str) {
+			return $.datepicker.formatDate(format, new Date(str));
+		}
+	},
+	utils: {
+		getFirst: function(arr) {
+			for(i=0;i<arr.length;i++) {
+				if(arr[i] != null) {
+					return arr[i];
+				}
+			}
+			return null;
+		}
+	}
 };
 window.$p = Pimple;
 // Get user selection text on page

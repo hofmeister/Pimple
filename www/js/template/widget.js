@@ -16,13 +16,14 @@ $p.getWidget = function(g) {
 $p.Widget.prototype = {
 	setData: function(data) {
 		this.data = data;
-		this.rows = this.data.rows;
-	
-		/* Preset variables */
-		this.data.currentPageIndex = (this.data.currentPageIndex!=null) ? this.data.currentPageIndex : 0;
-		this.data.totalRows = (this.data.totalRows!=null) ? this.data.totalRows : this.data.rows.length;
-		this.data.rowsPerPage = (this.data.rowsPerPage==null) ? this.data.totalRows : this.data.rowsPerPage;
-		this.data.totalPages = Math.ceil(this.data.origTotalRows/this.data.rowsPerPage);
+		if(this.data.rows != null) {
+			this.rows = this.data.rows;
+			/* Preset variables */
+			this.data.currentPageIndex = (this.data.currentPageIndex!=null) ? this.data.currentPageIndex : 0;
+			this.data.totalRows = (this.data.totalRows!=null) ? this.data.totalRows : this.data.rows.length;
+			this.data.rowsPerPage = (this.data.rowsPerPage==null) ? this.data.totalRows : this.data.rowsPerPage;
+			this.data.totalPages = Math.ceil(this.data.origTotalRows/this.data.rowsPerPage);
+		}
 	},
 	setJSON: function(url) {
 		var c = this;
