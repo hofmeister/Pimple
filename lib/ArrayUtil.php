@@ -109,5 +109,13 @@ class ArrayUtil {
 		}
 		return $arr;
 	}
+	public static function EscapeRegex(array $arr) {
+		if(count($arr) > 0) {
+			foreach($arr as $k=>$str) {
+				$arr[$k] = preg_quote($str);
+			}
+		}
+		return $arr;
+	}
 }
 
