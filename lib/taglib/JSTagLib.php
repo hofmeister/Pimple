@@ -12,18 +12,6 @@ class JSTagLib extends TagLib {
 		self::$JS_WRAPPER_TAG = $this->uid();
 	}
 	
-	private function requireAttributes($attrs, array $name) {
-		$errors = array();
-		foreach($name as $n) {
-			if(!isset($attrs->$n)) {
-				$errors[] = $n;
-			}
-		}
-		if(count($errors) > 0) {
-			throw new ErrorException('The current tag requires the attribute(s): '. join(', ', $errors));
-		}
-	}
-	
 	private function makeJsString($string) {
 		return preg_replace('/[\n\t\r](\s)*/', '', trim($string));
 	}

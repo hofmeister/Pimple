@@ -71,4 +71,15 @@ class TagLib {
         }
         return trim($out);
     }
+	protected function requireAttributes($attrs, array $name) {
+		$errors = array();
+		foreach($name as $n) {
+			if(!isset($attrs->$n)) {
+				$errors[] = $n;
+			}
+		}
+		if(count($errors) > 0) {
+			throw new ErrorException('The current tag requires the attribute(s): '. join(', ', $errors));
+		}
+	}
 }
