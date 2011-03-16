@@ -80,7 +80,7 @@ class JSTagLib extends TagLib {
 	}
 	
 	protected function tagCollect($attrs, $view) {
-		$output = array('<!-- JSTaglib output start --><script type="text/javascript">$(function(){');
+		$output = array('<!-- JSTaglib output start --><script type="text/javascript">$(document).ready(function() {');
 		if($this->containers) {
 			$functionJs = array();
 			foreach($this->containers as $c) {
