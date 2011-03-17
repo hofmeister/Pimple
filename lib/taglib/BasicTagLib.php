@@ -172,8 +172,6 @@ class BasicTagLib extends TagLib {
 			$base = Url::basePath();
 		}
 
-
-        
         $url = $base.$attrs->path;
         if ($attrs->inline != 'true') {
             if ($view == null || Settings::get(Settings::DEBUG,false) && Request::get('__nominify',false)) {
@@ -181,7 +179,6 @@ class BasicTagLib extends TagLib {
             } 
             return '';
         }
-
 
         $path = Dir::normalize(BASEDIR).$attrs->path;
         $css = file_get_contents($path);

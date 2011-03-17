@@ -31,7 +31,7 @@ Pimple.validators = {
             case 'int':
             case 'float':
             case 'double':
-                return parseFloat(value) <= max;
+                return parseFloat(value)<=max;
             default:
                 return value.length <= max;
         }

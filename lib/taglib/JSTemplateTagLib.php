@@ -1,5 +1,5 @@
 <?php
-class JSTagLib extends TagLib {
+class JSTemplateTagLib extends TagLib {
 	protected $containers = array();
 	private static $JS_WRAPPER_TAG = '';
 	private static $JS_EXPRESSION = '/js{(.*?)}/';
