@@ -13,7 +13,7 @@ class JSTemplateTagLib extends TagLib {
 	}
 	
 	private function makeJsString($string) {
-		return preg_replace('/[\n\t\r](\s)*/', '', trim($string));
+        return preg_replace('/[\n\r\t]\s*/', '', trim($string));
 	}
 	
 	private function replaceJsExpressions($string) {
@@ -26,8 +26,9 @@ class JSTemplateTagLib extends TagLib {
 		if(count($expressionMatches) > 0) {
 			/* Let's ensure that our js-expression don't get addslashed */
 			foreach($expressionMatches[1] as $match) {
-				$fixedExpressions[] = '"+'.String::RemoveSlashes($match).'+"';
+				$fixedExpressions[] = '"+eval("'.String::RemoveSlashes($match).'")+"';
 			}
+            
 			/* Now we replace the expression tags, with the fixed js expression */
 			for($i=0;$i<count($expressionMatches[0]);$i++) {
 				$string = str_replace($expressionMatches[0][$i], $fixedExpressions[$i], $string);
@@ -38,8 +39,9 @@ class JSTemplateTagLib extends TagLib {
 	
 	protected function tagContainer($attrs, $view) {
 		$this->requireAttributes($attrs, array('id'));
-		$output = sprintf('$.%1$s=function(d,g){var o="<%3$s>%2$s</%3$s>"; return o;};', $attrs->id, $this->makeJsString($this->body()), self::$JS_WRAPPER_TAG);
+		$output = sprintf('$.%1$s=function(d,g){var o="<%3$s>%2$s</%3$s>"; return o;};'.chr(10), $attrs->id, $this->makeJsString($this->body()), self::$JS_WRAPPER_TAG);
 		$matches=array();
+        
 		preg_match_all('%<'.self::$JS_WRAPPER_TAG.'>(.*?)</'.self::$JS_WRAPPER_TAG.'>%', $output, $matches);
 		if(isset($matches[1])) {
 			foreach($matches[1] as $m) {
@@ -47,11 +49,17 @@ class JSTemplateTagLib extends TagLib {
 			}
 		}
 		$this->containers[$attrs->id] = String::UTF8Encode($this->replaceJsExpressions($output));
+        if (Settings::get(Settings::DEBUG,false)) {
+            //Add some line breaks to make it easier to read
+            $this->containers[$attrs->id] = str_replace('o+=',"\no+=",$this->containers[$attrs->id]);
+            $this->containers[$attrs->id] = preg_replace('/";(\}else\{|for|if]switch)/i',"\";\n$1",$this->containers[$attrs->id]);
+
+        }
 	}
 	
 	protected function tagIf($attrs, $view) {
 		$this->requireAttributes($attrs, array('test'));
-		return sprintf('</%3$s>";if(%1$s){o+="<%3$s>%2$s</%3$s>"; } o += "<%3$s>', $this->makeJsString($attrs->test), $this->body(), self::$JS_WRAPPER_TAG);
+		return sprintf('</%3$s>";if(%1$s){o+="<%3$s>%2$s</%3$s>"; } o+="<%3$s>', $this->makeJsString($attrs->test), $this->body(), self::$JS_WRAPPER_TAG);
 	}
 	
 	protected function tagElse($attrs, $view) {

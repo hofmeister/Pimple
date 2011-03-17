@@ -3,6 +3,7 @@
 class SessionHandler {
     const COOKIE_DOMAIN = 'session_cookie_domain';
     const COOKIE_URL = 'session_cookie_url';
+    const SES_USER_KEY = 'PIMPLE_USER';
 
 	private static $_instance;
 
@@ -68,10 +69,10 @@ class SessionHandler {
 	public function setUser(IUser $user) {
 		if (!$user->isValid())
 			throw new ErrorException(t('Unknown username and/or password'), E_ERROR);
-		$this->getSession()->set('__PUSER', $user);
+		$this->getSession()->set(self::SES_USER_KEY, $user);
 	}
 	public function clearUser() {
-		$this->getSession()->set('__PUSER',null);
+		$this->getSession()->set(self::SES_USER_KEY,null);
 	}
 
 	/**
@@ -80,7 +81,7 @@ class SessionHandler {
 	 */
 	public function getUser() {
         if (!$this->session) return null;
-		return $this->getSession()->get('__PUSER');
+		return $this->getSession()->get(self::SES_USER_KEY);
 	}
 
 	public function getSID() {

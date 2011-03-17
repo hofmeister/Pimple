@@ -191,6 +191,10 @@ class Pimple {
 
         
     }
+    /**
+     * Get current path of url (without baseurl)
+     * @return string
+     */
     public static function getPath() {
         $uri = $_SERVER['REQUEST_URI'];
         $baseOffset = strlen(BASEURL)-1;
@@ -227,6 +231,10 @@ class Pimple {
     public function setSiteName($siteName) {
         $this->siteName = $siteName;
     }
+    /**
+     * Get pimple base dir
+     * @return string
+     */
     public function getBaseDir() {
         
         return Dir::normalize(realpath(dirname(__FILE__).'/../'));

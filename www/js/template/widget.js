@@ -43,14 +43,59 @@ $p.Widget.prototype = {
 			fn();
 		}
 	},
-	setPaging: function(rowsPerPage) {
+	getData: function() {
+		return this.data;		
+	},
+    getDataByPath: function(path,data) {
+        var parts = path.split('/');
+        var d = (data) ? data : this.data;
+        for(var i = 0;i < parts.length; i++) {
+            var p = parts[i];
+            var ix = 0;
+            if (p.indexOf("[") > -1) {
+                var nameIndex = p.split('[');
+                p = nameIndex[0];
+                ix = parseInt(nameIndex);
+            }
+            switch ($.type(d[p])) {
+                case 'array':
+                    d = d[p][ix];
+                    break;
+                default:
+                    d = d[p];
+                    break;
+            }
+        }
+        return d;
+    }
+}
+
+$p.WidgetList = $p.Widget;
+$p.WidgetList.prototype = $.extend({
+    getRow:function(path,value) {
+        for(var i = 0; i < this.data.rows.length;i++) {
+            var v = this.getDataByPath(path, this.data.rows[i]);
+            if (value == v) return this.data.rows[i];
+        }
+        return null;
+    },
+    removeRow:function(path,value) {
+        for(var i = 0; i < this.data.rows.length;i++) {
+            var v = this.getDataByPath(path, this.data.rows[i]);
+            if (value == v) {
+                this.data.rows.splice(i,1);
+            }
+        }
+        return null;
+    },
+    addRow:function(row) {
+        this.data.rows.push(row);
+    },
+    setPaging: function(rowsPerPage) {
 		this.data.totalPages = Math.ceil(this.data.origTotalRows/rowsPerPage);
 		this.data.rowsPerPage = rowsPerPage;
 		this.data.totalRows = (this.data.origTotalRows > rowsPerPage) ? rowsPerPage : this.data.origTotalRows;
 		this.data.currentPageIndex = 0;
-	},
-	getData: function() {
-		return this.data;		
 	},
 	getPage: function(pageIndex, fn) {
 		this.setPage(pageIndex);
@@ -89,4 +134,5 @@ $p.Widget.prototype = {
 		});
 		this.getPage(this.data.currentPageIndex);
 	}
-}
+  
+},$p.Widget.prototype);

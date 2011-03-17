@@ -126,6 +126,12 @@ class Controller {
 	protected function setStatus($code,$text) {
 		header(sprintf('HTTP/1.1 %s %s',$code,$text),true);
 	}
+    protected function fromJson($name,$data = null) {
+        if (!$data)
+            $data = Request::post();
+        $value = urldecode($data->__get($name));
+        return json_decode($value);
+    }
 	protected function asJson($value) {
         $this->setSkipView(true);
         header('Content-type: application/json');

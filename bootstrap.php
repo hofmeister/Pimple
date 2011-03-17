@@ -74,7 +74,9 @@ require_once 'lib/taglib/JavascriptTagLib.php';
 require_once 'lib/taglib/UserTagLib.php';
 require_once 'lib/taglib/JSTemplateTagLib.php';
 
-
+//Add pimple lib to include path
+IncludePath::instance()->addPath(Pimple::instance()->getBaseDir().'/lib');
+//Add pimple ressources lib to include path
 IncludePath::instance()->addPath(Pimple::instance()->getRessource('lib/'),1);
 
 define('CACHEDIR',Dir::normalize(BASEDIR).'cache');
@@ -83,6 +85,7 @@ Dir::ensure(CACHEDIR);
 Pimple::instance()->registerTagLib('c',new CoreTagLib());
 Pimple::instance()->registerTagLib('val',new ValueTagLib());
 Pimple::instance()->registerTagLib('p',new BasicTagLib());
+Pimple::instance()->registerTagLib('user',new UserTagLib());
 Pimple::instance()->registerTagLib('f',new FormTagLib());
 Pimple::instance()->registerTagLib('w',new WidgetTagLib());
 Pimple::instance()->registerTagLib('js',new JavascriptTagLib());
