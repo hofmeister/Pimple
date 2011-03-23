@@ -272,7 +272,7 @@ var Pimple = {
     },
     format: {
 		date: function(format, str) {
-			return $.datepicker.formatDate(format, new Date(str));
+			return dateFormat(new Date(str), format);
 		}
 	},
 	utils: {
