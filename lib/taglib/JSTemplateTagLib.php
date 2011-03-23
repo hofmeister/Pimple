@@ -5,7 +5,7 @@ class JSTemplateTagLib extends TagLib {
 	private static $JS_EXPRESSION = '/js{(.*?)}/';
 	private static $JS_WIDGET_EXPRESSION = '/js{_widget(.*?)}/';
 	//private static $JS_WIDGET_EXPRESSION_OUTER = '/js{_w(.*?)}/';
-	private static $JS_WIDGET_EXPRESSION_REPLACEMENT = '';
+	//private static $JS_WIDGET_EXPRESSION_REPLACEMENT = '';
 	
 	public function __construct() {
 		parent::__construct(false, true);
@@ -83,8 +83,8 @@ class JSTemplateTagLib extends TagLib {
 	}
 	
 	protected function tagFor($attrs, $view) {
-		$this->requireAttributes($attrs, array('test'));
-		return sprintf('</%3$s>";for(var i=0;%1$s;i++){o+="<%3$s>%2$s</%3$s>";}o+="<%3$s>', $attrs->test, $this->makeJsString($this->body()), self::$JS_WRAPPER_TAG);
+		$this->requireAttributes($attrs, array('limit', 'start', 'it'));
+		return sprintf('</%5$s>";for(var %1$s=%2$s;%1$s<%3$s;%1$s++){o+="<%5$s>%4$s</%5$s>";}o+="<%5$s>', $attrs->it, $attrs->start, $attrs->limit, $this->makeJsString($this->body()), self::$JS_WRAPPER_TAG);
 	}
 	
 	protected function tagCollect($attrs, $view) {
