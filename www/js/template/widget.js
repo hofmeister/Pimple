@@ -40,7 +40,7 @@ $p.Widget.prototype = {
 	render: function(fn) {
 		this.container.html(this.template(this.data, this.guid));
 		if(fn!=null) {
-			fn();
+			fn(this.data);
 		}
 	},
 	getData: function() {
