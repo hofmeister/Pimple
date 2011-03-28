@@ -108,24 +108,26 @@ class FormTagLib extends TagLib {
         }
         
         $isMap = (is_object($keyVal) || ArrayUtil::isMap($keyVal));
-        foreach($keyVal as $key=>$val) {
-            if (is_object($val)) {
-                $propKey = $attrs->propKey ? $attrs->propKey : 'key';
-                $propVal = $attrs->propValue ? $attrs->propKey : 'value';
-                $key = $val->$propKey;
-                $val = $val->$propVal;
-            } else {
-                $key = ($isMap) ? $key : $val;
-            }
-            if ($key == $attrs->value) {
-                $checked = 'selected="true"';
-            } else {
-                $checked = '';
-            }
-            if ($key != $val) {
-                $options .= sprintf('<option %s value="%s">%s</option>',$checked,$key,$val);
-            } else {
-                $options .= sprintf('<option %s>%s</option>',$checked,$val);
+        if (is_array($keyVal)) {
+            foreach($keyVal as $key=>$val) {
+                if (is_object($val)) {
+                    $propKey = $attrs->propKey ? $attrs->propKey : 'key';
+                    $propVal = $attrs->propValue ? $attrs->propKey : 'value';
+                    $key = $val->$propKey;
+                    $val = $val->$propVal;
+                } else {
+                    $key = ($isMap) ? $key : $val;
+                }
+                if ($key == $attrs->value) {
+                    $checked = 'selected="true"';
+                } else {
+                    $checked = '';
+                }
+                if ($key != $val) {
+                    $options .= sprintf('<option %s value="%s">%s</option>',$checked,$key,$val);
+                } else {
+                    $options .= sprintf('<option %s>%s</option>',$checked,$val);
+                }
             }
         }
         $addon = '';

@@ -52,7 +52,10 @@ class SessionHandler {
 		//var_dump($_COOKIE);
         $this->SID = $_COOKIE[$this->sessionKey];
 		if (!$this->SID) {
-			$this->SID = md5($this->sessionSecret . microtime());
+            $this->sessionData = null;
+            do {
+                $this->SID = md5($this->sessionSecret . microtime(true).rand(10000,90000));
+            } while($this->getSession()->hasSID($this->SID));
 		}
         $this->getSession()->loadFromSID($this->SID);
 		setcookie($this->sessionKey, $this->SID,$this->getExpires(),Settings::get(self::COOKIE_URL,'/'),Settings::get(self::COOKIE_DOMAIN,null));
@@ -69,7 +72,7 @@ class SessionHandler {
 	public function setUser(IUser $user) {
 		if (!$user->isValid())
 			throw new ErrorException(t('Unknown username and/or password'), E_ERROR);
-		$this->getSession()->set(self::SES_USER_KEY, $user);
+		$this->getSession()->set(self::SES_USER_KEY,$user);
 	}
 	public function clearUser() {
 		$this->getSession()->set(self::SES_USER_KEY,null);

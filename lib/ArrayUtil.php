@@ -75,6 +75,7 @@ class ArrayUtil {
 		return $array;
 	}
     public static function isMap($array) {
+        if (!is_array($array) && !is_object($array)) return false;
         $i = 0;
         foreach($array as $key=>$value) {
             if (!is_int($key)) return true;
