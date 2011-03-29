@@ -300,6 +300,9 @@ var Pimple = {
 			}
 			return null;
 		}
+	},
+	isset: function (obj){
+		return (typeof obj!='undefined' && obj!=null);
 	}
 };
 window.$p = Pimple;
