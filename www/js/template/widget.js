@@ -16,14 +16,6 @@ $p.getWidget = function(g) {
 $p.Widget.prototype = {
 	setData: function(data) {
 		this.data = data;
-		if(this.data.rows != null) {
-			this.rows = this.data.rows;
-			/* Preset variables */
-			this.data.currentPageIndex = (this.data.currentPageIndex!=null) ? parseInt(this.data.currentPageIndex) : 0;
-			this.data.totalRows = (this.data.totalRows!=null) ? this.data.totalRows : this.data.rows.length;
-			this.data.rowsPerPage = (this.data.rowsPerPage==null) ? this.data.totalRows : this.data.rowsPerPage;
-			this.data.totalPages = Math.ceil(this.data.origTotalRows/this.data.rowsPerPage);
-		}
 	},
 	setJSON: function(url) {
 		var c = this;
@@ -38,7 +30,7 @@ $p.Widget.prototype = {
 		});
 	},
 	render: function(fn) {
-		this.container.html(this.template(this.data, this.guid));
+        this.container.html(this.template(this.data, this.guid));
 		if(fn!=null) {
 			fn(this.data);
 		}
@@ -71,14 +63,39 @@ $p.Widget.prototype = {
 }
 
 $p.WidgetList = $p.Widget;
-$p.WidgetList.prototype = $.extend({
-    getRow:function(path,value) {
-        for(var i = 0; i < this.data.rows.length;i++) {
-            var v = this.getDataByPath(path, this.data.rows[i]);
-            if (value == v) return this.data.rows[i];
+$p.WidgetList.prototype = $.extend($p.Widget.prototype,{
+    getRowByValue:function(path,value) {
+        for(var i = 0; i < this.rows.length;i++) {
+            var v = this.getDataByPath(path, this.rows[i]);
+            if (value == v) return this.rows[i];
         }
         return null;
     },
+    getRowIndexByValue:function(path,value) {
+        for(var i = 0; i < this.rows.length;i++) {
+            var v = this.getDataByPath(path, this.rows[i]);
+            if (value == v) return i;
+        }
+        return null;
+    },
+    getRow:function(i) {
+        return this.rows[i];
+    },
+    getRows:function(i) {
+        return this.rows;
+    },
+    setData: function(data) {
+		this.data = data;
+        if(this.data.rows != null) {
+			this.rows = this.data.rows;
+			/* Preset variables */
+			this.data.currentPageIndex = (this.data.currentPageIndex!=null) ? parseInt(this.data.currentPageIndex) : 0;
+			this.data.totalRows = (this.data.totalRows!=null) ? this.data.totalRows : this.data.rows.length;
+			this.data.rowsPerPage = (this.data.rowsPerPage==null) ? this.data.totalRows : this.data.rowsPerPage;
+			this.data.totalPages = Math.ceil(this.data.origTotalRows/this.data.rowsPerPage);
+            this.setPage(0);
+		}
+	},
     removeRow:function(path,value) {
         for(var i = 0; i < this.data.rows.length;i++) {
             var v = this.getDataByPath(path, this.data.rows[i]);
@@ -97,11 +114,17 @@ $p.WidgetList.prototype = $.extend({
 		this.data.totalRows = (this.data.origTotalRows > rowsPerPage) ? rowsPerPage : this.data.origTotalRows;
 		this.data.currentPageIndex = 0;
 	},
-	getPage: function(pageIndex, fn) {
+	viewPage: function(pageIndex, fn) {
 		this.setPage(pageIndex);
 		this.render(fn);
 		return false;
 	},
+    getPage:function() {
+        return this.data.currentPageIndex;
+    },
+    getTotalPages:function() {
+        return this.data.totalPages;
+    },
 	setPage: function(pageIndex) {
 		var start = this.data.totalRows*pageIndex;
 		var end = ((start+this.data.rowsPerPage) > this.data.origTotalRows) ? this.data.origTotalRows : (start+this.data.rowsPerPage);
@@ -132,7 +155,7 @@ $p.WidgetList.prototype = $.extend({
 	            return 1;
 			}
 		});
-		this.getPage(this.data.currentPageIndex);
+		this.setPage(this.data.currentPageIndex);
 	}
   
-},$p.Widget.prototype);
+});

@@ -26,7 +26,7 @@ class JSTemplateTagLib extends TagLib {
 		if(count($expressionMatches) > 0) {
 			/* Let's ensure that our js-expression don't get addslashed */
 			foreach($expressionMatches[1] as $match) {
-				$fixedExpressions[] = '"+eval("'.String::RemoveSlashes($match).'")+"';
+				$fixedExpressions[] = '"+'.String::RemoveSlashes($match).'+"';
 			}
             
 			/* Now we replace the expression tags, with the fixed js expression */
