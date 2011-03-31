@@ -44,7 +44,10 @@ class Model {
                 if (in_array($key,$this->columns))
                     $this->$key($value);
             }
+        } else if (!$data) {
+            $this->data = new stdClass();
         }
+
         if ($this->primKey) {
             $this->new = $this->getPrimValue() == null;
         }
@@ -114,8 +117,7 @@ class Model {
             $keyName = $this->getPrimKey();
         }
 		$data = DB::fetchOne(sprintf('SELECT * FROM `%s` WHERE `%s` = %s',$this->name,$keyName,DB::value($value)));
-        if ($data)
-			$this->setData($data);
+        $this->setData($data);
 		return $this;
 	}
     public function refresh() {

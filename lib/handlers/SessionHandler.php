@@ -54,10 +54,12 @@ class SessionHandler {
 		if (!$this->SID) {
             $this->sessionData = null;
             do {
-                $this->SID = md5($this->sessionSecret . microtime(true).rand(10000,90000));
+                $this->SID = md5($this->sessionSecret . (microtime(true)*rand(10000,90000)));
             } while($this->getSession()->hasSID($this->SID));
 		}
+        
         $this->getSession()->loadFromSID($this->SID);
+        $_COOKIE[$this->sessionKey] = $this->SID;
 		setcookie($this->sessionKey, $this->SID,$this->getExpires(),Settings::get(self::COOKIE_URL,'/'),Settings::get(self::COOKIE_DOMAIN,null));
 	}
     public function save() {
