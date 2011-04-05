@@ -40,8 +40,8 @@ class TagLib {
             if (!is_array($attrs) && !is_object($attrs)) {
                 throw new InvalidArgumentException('Tags accept only arrays and objects as attributes');
             }
-            $attrs = (object)$attrs;
         }
+        $attrs = (object)$attrs;
 
         $result = $this->$method($attrs,$view);
         array_pop($this->bodies);
