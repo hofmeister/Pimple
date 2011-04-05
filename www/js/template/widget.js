@@ -93,7 +93,6 @@ $p.WidgetList.prototype = $.extend($p.Widget.prototype,{
 			this.data.totalRows = (this.data.totalRows!=null) ? this.data.totalRows : this.data.rows.length;
 			this.data.rowsPerPage = (this.data.rowsPerPage==null) ? this.data.totalRows : this.data.rowsPerPage;
 			this.data.totalPages = Math.ceil(this.data.origTotalRows/this.data.rowsPerPage);
-            this.setPage(0);
 		}
 	},
     removeRow:function(path,value) {

@@ -23,10 +23,7 @@ class JSTemplateTagLib extends TagLib {
 
         $result = "";
         for($i = 0; $i < count($parts);$i++) {
-            if ($i ==  (count($parts)-1)) //Last one
-                $result .= 'return '.$part.";";
-            else
-                $result .= $part.";";
+        	$result .= ($i ==  (count($parts)-1)) ? 'return '.$parts[$i].";" : $parts[$i].";";
         }
 
         return sprintf('(function(){%s})()',$result);
@@ -55,7 +52,7 @@ class JSTemplateTagLib extends TagLib {
 	
 	protected function tagContainer($attrs, $view) {
 		$this->requireAttributes($attrs, array('id'));
-		$output = sprintf('$.%1$s=function(d,g){var o="<%3$s>%2$s</%3$s>"; return o;};'.chr(10), $attrs->id, $this->makeJsString($this->body()), self::$JS_WRAPPER_TAG);
+		$output = sprintf('$.%1$s=function(d,g){var o="<%3$s>%2$s</%3$s>"; return o;};', $attrs->id, $this->makeJsString($this->body()), self::$JS_WRAPPER_TAG);
 		$matches=array();
         
 		preg_match_all('%<'.self::$JS_WRAPPER_TAG.'>(.*?)</'.self::$JS_WRAPPER_TAG.'>%', $output, $matches);
@@ -106,7 +103,6 @@ class JSTemplateTagLib extends TagLib {
 	protected function tagCollect($attrs, $view) {
 		$output = array('<!-- JSTaglib output start --><script type="text/javascript">$(document).ready(function() {');
 		if($this->containers) {
-			$functionJs = array();
 			foreach($this->containers as $c) {
 				$output[] = $c;
 			}

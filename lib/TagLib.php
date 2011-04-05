@@ -22,7 +22,6 @@ class TagLib {
         }
     }
 
-
     public function __call($name,$args) {
         return $this->callTag($name,$args[0],$args[1],$args[2]);
     }
@@ -37,19 +36,14 @@ class TagLib {
         if (!$view) {
             $view = View::current();
         }
-        $attrObj = new stdClass();
         if ($attrs) {
-            if (is_array($attrs) || is_object($attrs)) {
-                foreach($attrs as $key=>$value) {
-                    $attrObj->$key = $value;
-                }
-
-            } else {
+            if (!is_array($attrs) && !is_object($attrs)) {
                 throw new InvalidArgumentException('Tags accept only arrays and objects as attributes');
             }
+            $attrs = (object)$attrs;
         }
 
-        $result = $this->$method($attrObj,$view);
+        $result = $this->$method($attrs,$view);
         array_pop($this->bodies);
         return $result;
     }
