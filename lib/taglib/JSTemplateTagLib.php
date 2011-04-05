@@ -15,6 +15,22 @@ class JSTemplateTagLib extends TagLib {
 	private function makeJsString($string) {
         return preg_replace('/[\n\r\t]\s*/', '', trim($string));
 	}
+    private function handleInline($string) {
+        $string = String::RemoveSlashes($string);
+        $parts = preg_split('/[;\n]{1,2}/s',$string);
+        if (count($parts) <= 1)
+            return "($string)";
+
+        $result = "";
+        for($i = 0; $i < count($parts);$i++) {
+            if ($i ==  (count($parts)-1)) //Last one
+                $result .= 'return '.$part.";";
+            else
+                $result .= $part.";";
+        }
+
+        return sprintf('(function(){%s})()',$result);
+    }
 	
 	private function replaceJsExpressions($string) {
 		$fixedExpressions=array();
@@ -26,7 +42,7 @@ class JSTemplateTagLib extends TagLib {
 		if(count($expressionMatches) > 0) {
 			/* Let's ensure that our js-expression don't get addslashed */
 			foreach($expressionMatches[1] as $match) {
-				$fixedExpressions[] = '"+eval("'.String::RemoveSlashes($match).'")+"';
+				$fixedExpressions[] = '"+'.$this->handleInline($match).'+"';
 			}
             
 			/* Now we replace the expression tags, with the fixed js expression */
