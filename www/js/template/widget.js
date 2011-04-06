@@ -4,7 +4,7 @@ $p.Widget = function(template,container) {
 	$p.Widget.windows[this.guid] = this;
 	this.template = template;
 	this.container = $(container);
-	this.data = {};
+	this.data = { totalRows: 0, currentPageIndex: 0 };
 };
 
 $p.Widget.windows = {};
@@ -84,17 +84,6 @@ $p.WidgetList.prototype = $.extend($p.Widget.prototype,{
     getRows:function(i) {
         return this.rows;
     },
-    setData: function(data) {
-		this.data = data;
-        if(this.data.rows != null) {
-			this.rows = this.data.rows;
-			/* Preset variables */
-			this.data.currentPageIndex = (this.data.currentPageIndex!=null) ? parseInt(this.data.currentPageIndex) : 0;
-			this.data.totalRows = (this.data.totalRows!=null) ? this.data.totalRows : this.data.rows.length;
-			this.data.rowsPerPage = (this.data.rowsPerPage==null) ? this.data.totalRows : this.data.rowsPerPage;
-			this.data.totalPages = Math.ceil(this.data.origTotalRows/this.data.rowsPerPage);
-		}
-	},
     removeRow:function(path,value) {
         for(var i = 0; i < this.data.rows.length;i++) {
             var v = this.getDataByPath(path, this.data.rows[i]);
@@ -105,20 +94,53 @@ $p.WidgetList.prototype = $.extend($p.Widget.prototype,{
         return null;
     },
     addRow:function(row) {
-        this.data.rows.push(row);
+        this.rows.push(row);
     },
     setPaging: function(rowsPerPage) {
 		this.data.totalPages = Math.ceil(this.data.origTotalRows/rowsPerPage);
 		this.data.rowsPerPage = rowsPerPage;
 		this.data.totalRows = (this.data.origTotalRows > rowsPerPage) ? rowsPerPage : this.data.origTotalRows;
-		this.data.currentPageIndex = 0;
+		this.setPage(this.data.currentPageIndex);
 	},
 	viewPage: function(pageIndex, fn) {
 		this.setPage(pageIndex);
 		this.render(fn);
 		return false;
 	},
-    getPage:function() {
+	appendData: function(data) {
+		if(this.data.rows == null) {
+			this.setData(data);
+		} else {
+			for(var i=0;i<data.rows.length;i++) {
+				this.addRow(data.rows[i]);
+			}
+			this.data.maxRows = this.rows.length;
+		}
+	},
+	setData: function(data) {
+		this.data = data;
+        if(this.data.rows != null) {
+			this.rows = this.data.rows;
+			/* Preset variables */
+			this.data.currentPageIndex = (this.data.currentPageIndex!=null) ? parseInt(this.data.currentPageIndex) : 0;
+			this.data.totalRows = (this.data.totalRows!=null) ? this.data.totalRows : this.data.rows.length;
+			this.data.maxRows = this.data.totalRows;
+			this.data.rowsPerPage = (this.data.rowsPerPage==null) ? this.data.totalRows : this.data.rowsPerPage;
+			this.data.totalPages = Math.ceil(this.data.origTotalRows/this.data.rowsPerPage);
+		}
+	},
+	setCallBack: function(fn, pageIndex, pageOffset) {
+		pageIndex = parseInt(pageIndex);
+		console.log('Total rows: ' + this.data.maxRows + '   ::: Offset: ' + (this.data.rowsPerPage*pageOffset)*pageIndex);
+		if( this.data.origTotalRows != null && this.data.maxRows > (this.data.rowsPerPage*pageOffset)*pageIndex ) {
+			this.setPage(pageIndex);
+			this.render();
+		} else {
+			console.log('Loading new data!');
+			fn(this.data);
+		}
+	},
+    getPageIndex:function() {
         return this.data.currentPageIndex;
     },
     getTotalPages:function() {
