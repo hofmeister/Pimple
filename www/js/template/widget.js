@@ -1,20 +1,55 @@
+$p.Event = function(target) {
+    this.target = target;
+};
+$p.Event.prototype = {
+    target:null,
+    stopped:false,
+    stop:function() {
+        this.stopped = true;
+    }
+};
+$p.EventEmitter = function() {};
+$p.EventEmitter.prototype = {
+    _events:{},
+    bind:function(event,fn) {
+        if (!$p.isset(this._events[event]))
+            this._events[event] = [];
+        this._events[event].push(fn);
+    },
+    trigger:function(event,parms) {
+        if (!$p.isset(this._events[event])) return;
+        var evt = new $p.Event(this);
+        for(var i = 0;i < this._events[event].length;i++) {
+            this._events[event][i].apply(this,[evt,parms]);
+        }
+    }
+
+}
+
 $p.Widget = function(template,container) {
 	var newDate = new Date;
 	this.guid = newDate.getTime();
-	$p.Widget.windows[this.guid] = this;
+	$p.Widget._registry[this.guid] = this;
 	this.template = template;
 	this.container = $(container);
+    if (this.container.length == 0)
+        $p.log("widget.js: Container not found: "+container);
+    if (!$p.isset(template))
+        $p.log("widget.js: Template method not found for "+container);
+    
 	this.data = {};
 };
 
-$p.Widget.windows = {};
+$p.Widget._registry = {};
 
 $p.getWidget = function(g) {
-	return $p.Widget.windows[g];
+	return $p.Widget._registry[g];
 }
 
-$p.Widget.prototype = {
+
+$p.Widget.prototype = $.extend($p.EventEmitter.prototype,{
 	setData: function(data) {
+        this.trigger("data",data);
 		this.data = data;
 	},
 	setJSON: function(url) {
@@ -24,7 +59,9 @@ $p.Widget.prototype = {
 		    url: url,
 		    dataType: 'json',
 		    success: function(d) {
+                c.trigger("json",d);
 		    	c.setData(d);
+                
 		    },
 		    async: false
 		});
@@ -34,6 +71,7 @@ $p.Widget.prototype = {
 		if(fn!=null) {
 			fn(this.data);
 		}
+        this.trigger("render");
 	},
 	getData: function() {
 		return this.data;		
@@ -60,7 +98,7 @@ $p.Widget.prototype = {
         }
         return d;
     }
-}
+});
 
 $p.WidgetList = $p.Widget;
 $p.WidgetList.prototype = $.extend($p.Widget.prototype,{
@@ -92,14 +130,17 @@ $p.WidgetList.prototype = $.extend($p.Widget.prototype,{
 			this.data.currentPageIndex = (this.data.currentPageIndex!=null) ? parseInt(this.data.currentPageIndex) : 0;
 			this.data.totalRows = (this.data.totalRows!=null) ? this.data.totalRows : this.data.rows.length;
 			this.data.rowsPerPage = (this.data.rowsPerPage==null) ? this.data.totalRows : this.data.rowsPerPage;
-			this.data.totalPages = Math.ceil(this.data.origTotalRows/this.data.rowsPerPage);
+			this.data.totalPages = Math.ceil(this.data.origTotaelRows/this.data.rowsPerPage);
 		}
 	},
     removeRow:function(path,value) {
+
         for(var i = 0; i < this.data.rows.length;i++) {
             var v = this.getDataByPath(path, this.data.rows[i]);
             if (value == v) {
-                this.data.rows.splice(i,1);
+                var row = this.data.rows.splice(i,1);
+                this.trigger("removeRow",row);
+                return row;
             }
         }
         return null;
@@ -125,6 +166,7 @@ $p.WidgetList.prototype = $.extend($p.Widget.prototype,{
         return this.data.totalPages;
     },
 	setPage: function(pageIndex) {
+        this.trigger("page",pageIndex);
 		var start = this.data.totalRows*pageIndex;
 		var end = ((start+this.data.rowsPerPage) > this.data.origTotalRows) ? this.data.origTotalRows : (start+this.data.rowsPerPage);
 		var newRows = new Array();
