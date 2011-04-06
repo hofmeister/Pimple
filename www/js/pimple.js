@@ -5,7 +5,7 @@ var Pimple = {
     E_WARNING:3,
     E_DEBUG:4,
     E_INFO:5,
-    logLevel:0,
+    logLevel:2,
     settings:{
         basePath:'/'
     },
