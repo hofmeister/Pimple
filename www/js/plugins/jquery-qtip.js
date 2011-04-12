@@ -1,4 +1,4 @@
-/*!
+/*
  * jquery.qtip. The jQuery tooltip plugin
  *
  * Copyright (c) 2009 Craig Thompson
@@ -25,7 +25,7 @@
          // Make sure API data exists if requested
          if(typeof $(this).data('qtip') !== 'object')
             $.fn.qtip.log.error.call(self, 1, $.fn.qtip.constants.NO_TOOLTIP_PRESENT, false);
-
+         
          // Return requested object
          if(options == 'api')
             return $(this).data('qtip').interfaces[ $(this).data('qtip').current ];

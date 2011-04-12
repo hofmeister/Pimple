@@ -59,7 +59,8 @@ require_once 'lib/handlers/MessageHandler.php';
 require_once 'lib/handlers/SessionHandler.php';
 require_once 'lib/handlers/AccessHandler.php';
 
-
+// YUI Compressor
+require_once 'lib/YUICompressor.php';
 
 //Main class
 require_once 'lib/Pimple.php';

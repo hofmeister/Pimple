@@ -1,4 +1,3 @@
-/* nominify */
 if (!String.prototype.trim) {
     String.prototype.trim = function () {
         return this.replace(/^\s*/, "").replace(/\s*$/, "");
@@ -24,7 +23,6 @@ RegExp.escape = function(str) {
   var specials = new RegExp("[.*+?|()\\[\\]{}\\\\]", "g"); // .*+?|()[]{}\
   return str.replace(specials, "\\$&");
 };
-
 var Caret = {
     cc:'\u2009',
     restore:function() {

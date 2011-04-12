@@ -79,14 +79,27 @@ class PimpleController extends Controller {
                 $view = new View($template);
                 $files = $view->getInternalJsFiles();
                 
-                echo("/*FILES:\n\t".implode("\n\t",$files).'*/'.chr(10));
+                //echo("/*FILES:\n\t".implode("\n\t",$files).'*/'.chr(10));
+                
                 foreach($files as $file) {
-                    if (in_array($file,$used)
-                            || String::StartsWith($file,"http://")
-                            || String::StartsWith($file,"https://")) continue;
-                    $used[] = $file;
-                    echo("/*FILE:".basename($file).'*/'.chr(10).String::normalize(@file_get_contents($file),false));
-                    echo(chr(10));
+                    if(in_array($file,$used) || String::StartsWith($file,"http://") || String::StartsWith($file,"https://")) {
+                    	continue;        	
+					}
+					YUICompressor::Instance()->addFile(YUICompressor::TYPE_JAVASCRIPT, $file);
+                    /*$used[] = $file;
+                    echo("/*FILE:".basename($file).'*//*'.chr(10).String::normalize(@file_get_contents($file),false));
+                    echo(chr(10));*/
+                }
+                set_time_limit(99999);
+                try {
+                	YUICompressor::Instance()->setJarFile(Pimple::instance()->getRessource('java' . DIRECTORY_SEPARATOR . 'yuicompressor-2.4.2.jar'));
+                	$results = YUICompressor::Instance()->minify();
+                }catch(Exception $e) {
+                	die($e);
+                }
+                /* @var $result YUICompressor_Item */
+                foreach($results as $result) {
+                	echo ' /* COMPRESSED FILE: ' . $result->filename . ' */' . chr(10) . $result->minified . chr(10) . chr(10);
                 }
             } else {
                 if (!is_file($cacheFile)) {

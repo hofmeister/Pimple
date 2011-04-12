@@ -322,7 +322,6 @@ $.fn.selectRange = function(start, end) {
         });
 };
 /* add various bindings */
-
 $p.addBinding('.js-datepicker',function() {
     var dom = $(this);
     dom.attr('autocomplete','off');
@@ -336,8 +335,6 @@ $p.addBinding('.js-datepicker',function() {
         dateFormat:format
     });
 });
-
-
 $(function() {
     if (window.YAHOO != undefined) {
         if (YAHOO.widget && YAHOO.widget.Chart && Pimple.settings.pimplePath)
