@@ -105,6 +105,9 @@ $p.Widget.prototype = $.extend($p.EventEmitter.prototype,{
 
 $p.WidgetList = $p.Widget;
 $p.WidgetList.prototype = $.extend($p.Widget.prototype,{
+    cbLimit:5,
+    cbFunction:null,
+    rows:[],
     getRowByValue:function(path,value) {
         for(var i = 0; i < this.rows.length;i++) {
             var v = this.getDataByPath(path, this.rows[i]);
@@ -132,8 +135,10 @@ $p.WidgetList.prototype = $.extend($p.Widget.prototype,{
 			/* Preset variables */
 			this.data.currentPageIndex = (this.data.currentPageIndex!=null) ? parseInt(this.data.currentPageIndex) : 0;
 			this.data.totalRows = (this.data.totalRows!=null) ? this.data.totalRows : this.data.rows.length;
+			this.data.maxRows = this.data.totalRows;
 			this.data.rowsPerPage = (this.data.rowsPerPage==null) ? this.data.totalRows : this.data.rowsPerPage;
-			this.data.totalPages = Math.ceil(this.data.origTotaelRows/this.data.rowsPerPage);
+			this.data.totalPages = Math.ceil(this.data.origTotalRows/this.data.rowsPerPage);
+            this.setPage(0);
 		}
 	},
     removeRow:function(path,value) {
@@ -166,8 +171,8 @@ $p.WidgetList.prototype = $.extend($p.Widget.prototype,{
 		return false;
 	},
 	appendData: function(data) {
-		if(this.data.rows == null) {
-			this.setData(data);
+		if(!this.data.rows || this.data.rows.length == 0) {
+            this.setData(data);
 		} else {
 			for(var i=0;i<data.rows.length;i++) {
 				this.addRow(data.rows[i]);
@@ -175,28 +180,20 @@ $p.WidgetList.prototype = $.extend($p.Widget.prototype,{
 			this.data.maxRows = this.rows.length;
 		}
 	},
-	setData: function(data) {
-		this.data = data;
-        if(this.data.rows != null) {
-			this.rows = this.data.rows;
-			/* Preset variables */
-			this.data.currentPageIndex = (this.data.currentPageIndex!=null) ? parseInt(this.data.currentPageIndex) : 0;
-			this.data.totalRows = (this.data.totalRows!=null) ? this.data.totalRows : this.data.rows.length;
-			this.data.maxRows = this.data.totalRows;
-			this.data.rowsPerPage = (this.data.rowsPerPage==null) ? this.data.totalRows : this.data.rowsPerPage;
-			this.data.totalPages = Math.ceil(this.data.origTotalRows/this.data.rowsPerPage);
-		}
-	},
-	setCallBack: function(fn, pageIndex, pageOffset) {
-		pageIndex = parseInt(pageIndex);
-		console.log('Total rows: ' + this.data.maxRows + '   ::: Offset: ' + (this.data.rowsPerPage*pageOffset)*pageIndex);
-		if( this.data.origTotalRows != null && this.data.maxRows > (this.data.rowsPerPage*pageOffset)*pageIndex ) {
-			this.setPage(pageIndex);
-			this.render();
-		} else {
-			console.log('Loading new data!');
-			fn(this.data);
-		}
+
+	clear:function() {
+        this.data = {};
+        this.rows = [];
+    },
+    init:function(page) {
+        if (!page) page = 0;
+        this.clear();
+        this.cbFunction(this,0,page);
+    },
+	setCallback: function(fn, cbLimit) {
+        if (cbLimit > 0)
+            this.cbLimit = cbLimit;
+        this.cbFunction = fn;
 	},
     getPageIndex:function() {
         return this.data.currentPageIndex;
@@ -208,13 +205,31 @@ $p.WidgetList.prototype = $.extend($p.Widget.prototype,{
         this.trigger("page",pageIndex);
 		var start = this.data.totalRows*pageIndex;
 		var end = ((start+this.data.rowsPerPage) > this.data.origTotalRows) ? this.data.origTotalRows : (start+this.data.rowsPerPage);
-		var newRows = new Array();
-		for(var i=start;i<end;i++) {
-			newRows.push(this.rows[i]);
-		}
-		this.data.totalRows = newRows.length;
-		this.data.currentPageIndex = parseInt(pageIndex);
-		this.data.rows = newRows;
+		var newRows = [];
+        var moreRows = true;
+        if (start > (this.rows.length-1) && start < this.data.origTotalRows) {
+            //We have more rows - but we have not fetched them yet
+            moreRows = false;
+        }
+        if (this.data.origTotalRows > 0
+                && this.cbFunction != null
+                && this.rows.length < this.data.origTotalRows) {
+            //There are more rows available on the server
+            var pagesToEnd = Math.ceil((this.rows.length-end)/this.data.rowsPerPage);
+            if (pagesToEnd < 0) pagesToEnd = 0;
+            if (pagesToEnd < this.cbLimit) {
+                //Trigger the callback
+                this.cbFunction(this,this.rows.length,pageIndex);
+            }
+        }
+        if (moreRows) {
+            for(var i=start;i<end;i++) {
+                newRows.push(this.rows[i]);
+            }
+            this.data.totalRows = newRows.length;
+            this.data.currentPageIndex = parseInt(pageIndex);
+            this.data.rows = newRows;
+        }
 	},
 	setSort: function(field, order) {
 		this.data.sortOrder = order.toLowerCase();
@@ -237,5 +252,4 @@ $p.WidgetList.prototype = $.extend($p.Widget.prototype,{
 		});
 		this.setPage(this.data.currentPageIndex);
 	}
-  
 });
