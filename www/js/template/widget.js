@@ -52,7 +52,7 @@ $p.Widget.prototype = $.extend($p.EventEmitter.prototype,{
         this.trigger("data",data);
 		this.data = data;
 	},
-	setJSON: function(url) {
+	setJSON: function(url,fn) {
 		var c = this;
 		$.ajax({
 		    type: 'GET',
@@ -61,13 +61,16 @@ $p.Widget.prototype = $.extend($p.EventEmitter.prototype,{
 		    success: function(d) {
                 c.trigger("json",d);
 		    	c.setData(d);
-                
 		    },
 		    async: false
 		});
 	},
 	render: function(fn) {
-        this.container.html(this.template(this.data, this.guid));
+        try {
+            this.container.html(this.template(this.data, this.guid));
+        } catch(e) {
+            $p.log($p.E_FATAL,"Error rendering template:"+e);
+        }
 		if(fn!=null) {
 			fn(this.data);
 		}
@@ -144,6 +147,9 @@ $p.WidgetList.prototype = $.extend($p.Widget.prototype,{
             }
         }
         return null;
+    },
+    setRow:function(index,row) {
+        this.data.rows[index] = row ;
     },
     addRow:function(row) {
         this.data.rows.push(row);

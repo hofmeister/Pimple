@@ -101,13 +101,13 @@ class JSTemplateTagLib extends TagLib {
 	}
 	
 	protected function tagCollect($attrs, $view) {
-		$output = array('<!-- JSTaglib output start --><script type="text/javascript">$(document).ready(function() {');
+		$output = array('<!-- JSTaglib output start --><script type="text/javascript">');
 		if($this->containers) {
 			foreach($this->containers as $c) {
 				$output[] = $c;
 			}
 		}
-		$output[] = '});</script><!-- JSTaglib end -->';
+		$output[] = '</script><!-- JSTaglib end -->';
 		return join('', $output);
 	}
 }
