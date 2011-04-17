@@ -25,6 +25,14 @@ RegExp.escape = function(str) {
   return str.replace(specials, "\\$&");
 };
 
+Function.prototype.attach = function(scope) {
+  var _function = this;
+
+  return function() {
+    return _function.apply(scope, arguments);
+  }
+}
+
 var Caret = {
     cc:'\u2009',
     restore:function() {

@@ -4,6 +4,8 @@ class Http {
     public static function post($url,$data,$headers = array(),$nonBlock) {
         $ch = curl_init($url);
         curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT,60);
+        curl_setopt($ch, CURLOPT_TIMEOUT,120);
         curl_setopt($ch,CURLOPT_HTTPHEADER,$headers);
         curl_setopt($ch, CURLOPT_POSTFIELDS,$data);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER,true);
@@ -20,6 +22,8 @@ class Http {
         fwrite($fp,$data);
         fseek($fp, 0);
         curl_setopt($ch,CURLOPT_HTTPHEADER,$headers);
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT,60);
+        curl_setopt($ch, CURLOPT_TIMEOUT,60);
         curl_setopt($ch,CURLOPT_INFILE,$fp);
         curl_setopt($ch,CURLOPT_INFILESIZE,strlen($data));
         curl_setopt($ch, CURLOPT_POSTFIELDS,$data);
@@ -32,6 +36,8 @@ class Http {
     }
     public static function get($url,$headers = array()) {
         $ch = curl_init($url);
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT,60);
+        curl_setopt($ch, CURLOPT_TIMEOUT,120);
         curl_setopt($ch,CURLOPT_HTTPHEADER,$headers);
         curl_setopt($ch, CURLOPT_HTTPGET, true);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER,true);
