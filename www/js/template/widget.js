@@ -214,7 +214,7 @@ $p.WidgetList = $p.Class({
 	setPage: function(pageIndex) {
         this.trigger("page",pageIndex);
         this.data.rows = [];
-        this.data.totalRows = 0;
+        //this.data.totalRows = 0;
 		var start = this.data.totalRows*pageIndex;
 		var end = ((start+this.data.rowsPerPage) > this.data.origTotalRows) ? this.data.origTotalRows : (start+this.data.rowsPerPage);
 		var newRows = [];
