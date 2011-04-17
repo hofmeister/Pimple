@@ -24,6 +24,7 @@ class SessionHandler {
         return self::user() != null;
     }
     public static function get($name) {
+        if (!SessionHandler::instance()->hasSession()) return null;
         return self::instance()->getSession()->get($name);
     }
     public static function set($name,$value) {
