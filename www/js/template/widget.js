@@ -1,15 +1,15 @@
-$p.Event = function(target) {
-    this.target = target;
-};
-$p.Event.prototype = {
+$p.Event = $p.Class({
     target:null,
     stopped:false,
+    initialize:function(target) {
+        this.target = target;
+    },
     stop:function() {
         this.stopped = true;
     }
-};
-$p.EventEmitter = function() {};
-$p.EventEmitter.prototype = {
+});
+
+$p.EventEmitter = $p.Class({
     _events:{},
     bind:function(event,fn) {
         if (!$p.isset(this._events[event]))
@@ -23,31 +23,26 @@ $p.EventEmitter.prototype = {
             this._events[event][i].apply(this,[evt,parms]);
         }
     }
+});
 
-}
-
-$p.Widget = function(template,container) {
-	var newDate = new Date;
-	this.guid = newDate.getTime();
-	$p.Widget._registry[this.guid] = this;
-	this.template = template;
-	this.container = $(container);
-    if (this.container.length == 0)
-        $p.log("widget.js: Container not found: "+container);
-    if (!$p.isset(template))
-        $p.log("widget.js: Template method not found for "+container);
-    
-	this.data = {};
-};
-
-$p.Widget._registry = {};
-
-$p.getWidget = function(g) {
-	return $p.Widget._registry[g];
-}
-
-
-$p.Widget.prototype = $.extend($p.EventEmitter.prototype,{
+$p.Widget = $p.Class({
+    extend:$p.EventEmitter,
+    guid:null,
+    template:null,
+    container:null,
+    data:{},
+    initialize:function(template,container) {
+        var newDate = new Date();
+        this.guid = newDate.getTime();
+        $p.Widget._registry[this.guid] = this;
+        this.template = template;
+        this.container = $(container);
+        if (this.container.length == 0)
+            $p.log("widget.js: Container not found: "+container);
+        if (!$p.isset(template))
+            $p.log("widget.js: Template method not found for "+container);
+        
+    },
 	setData: function(data) {
         this.trigger("data",data);
 		this.data = data;
@@ -103,11 +98,19 @@ $p.Widget.prototype = $.extend($p.EventEmitter.prototype,{
     }
 });
 
-$p.WidgetList = $p.Widget;
-$p.WidgetList.prototype = $.extend($p.Widget.prototype,{
+$p.Widget._registry = {};
+$p.getWidget = function(g) {
+	return $p.Widget._registry[g];
+}
+
+$p.WidgetList = $p.Class({
+    extend:$p.Widget,
     cbLimit:5,
     cbFunction:null,
     rows:[],
+    initialize:function() {
+        
+    },
     getRowByValue:function(path,value) {
         for(var i = 0; i < this.rows.length;i++) {
             var v = this.getDataByPath(path, this.rows[i]);
@@ -142,11 +145,17 @@ $p.WidgetList.prototype = $.extend($p.Widget.prototype,{
 		}
 	},
     removeRow:function(path,value) {
-
-        for(var i = 0; i < this.data.rows.length;i++) {
-            var v = this.getDataByPath(path, this.data.rows[i]);
+        var v,i;
+        for(i = 0; i < this.data.rows.length;i++) {
+            v = this.getDataByPath(path, this.data.rows[i]);
             if (value == v) {
-                var row = this.data.rows.splice(i,1);
+                this.data.rows.splice(i,1);
+            }
+        }
+        for(i = 0; i < this.rows.length;i++) {
+            v = this.getDataByPath(path, this.rows[i]);
+            if (value == v) {
+                var row = this.rows.splice(i,1);
                 this.trigger("removeRow",row);
                 return row;
             }
@@ -154,10 +163,11 @@ $p.WidgetList.prototype = $.extend($p.Widget.prototype,{
         return null;
     },
     setRow:function(index,row) {
-        this.data.rows[index] = row ;
+        this.rows[index] = row ;
     },
     addRow:function(row) {
         this.rows.push(row);
+        this.data.rows.push(row);
     },
     setPaging: function(rowsPerPage) {
 		this.data.totalPages = Math.ceil(this.data.origTotalRows/rowsPerPage);
@@ -203,7 +213,9 @@ $p.WidgetList.prototype = $.extend($p.Widget.prototype,{
     },
 	setPage: function(pageIndex) {
         this.trigger("page",pageIndex);
-		var start = this.data.totalRows*pageIndex;
+        this.data.rows = [];
+        //this.data.totalRows = 0;
+		var start = this.data.rowsPerPage*pageIndex;
 		var end = ((start+this.data.rowsPerPage) > this.data.origTotalRows) ? this.data.origTotalRows : (start+this.data.rowsPerPage);
 		var newRows = [];
         var moreRows = true;
@@ -224,7 +236,8 @@ $p.WidgetList.prototype = $.extend($p.Widget.prototype,{
         }
         if (moreRows) {
             for(var i=start;i<end;i++) {
-                newRows.push(this.rows[i]);
+                if ($p.isset(this.rows[i]))
+                    newRows.push(this.rows[i]);
             }
             this.data.totalRows = newRows.length;
             this.data.currentPageIndex = parseInt(pageIndex);

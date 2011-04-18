@@ -153,6 +153,71 @@ var Pimple = {
         Pimple._uidCount++;
         return uid;
     },
+    clone:function(obj) {
+        var clone = {};
+        for(var i in obj) {
+            if ($.type(obj[i]) == 'object') {
+                clone[i] = $p.clone(obj[i]);
+            } else if ($.type(obj[i]) == 'array') {
+                clone[i] = [];
+                for(var x = 0; x < obj[i].length;x++) {
+                    clone[i][x] = $p.clone(obj[i][x]);
+                }
+            } else {
+                clone[i] = obj[i];
+            }
+        }
+        return clone;
+    },
+    Class:function(def) {
+        var cstr = $p.isset(def.initialize) ? def.initialize : function() {};
+        var methods = {};
+        var attrs = {};
+        var val,member;
+        for(member in def) {
+            val = def[member];
+            if ($.type(val) == 'function') {
+                methods[member] = val;
+            } else {
+                attrs[member] = val;
+            }
+        }
+
+        var baseClz = def.extend;
+        var clz = function() {
+            var parent = baseClz;
+            var parents = [];
+            while(parent) {
+                if (parent.prototype.initialize)
+                    parents.unshift(parent.prototype.initialize);
+                
+                $.extend(this,$p.clone(parent.prototype.__attrs));
+                parent = parent.prototype.extend;
+            }
+            for(var i = 0; i < parents.length; i++) {
+                parents[i].apply(this,arguments);
+            }
+            $.extend(this,$p.clone(attrs));
+            cstr.apply(this,arguments);
+        };
+        clz.prototype = methods;
+        clz.prototype.__attrs = attrs;
+        clz.prototype.extend = baseClz;
+        
+        if ($p.isset(baseClz)) {
+            for(member in baseClz.prototype) {
+                if (clz.prototype[member]) {
+                    continue;
+                }
+                
+                val = baseClz.prototype[member];
+                if ($.type(val) == 'function') {
+                    clz.prototype[member] = val;
+                }
+            }
+        }
+        return clz;
+    },
     opts: function(elm) {
         var optStr = elm.attr('p:options');
         if (optStr && (optStr.indexOf('[') > -1 || optStr.indexOf('{') || optStr.indexOf('\'')))
