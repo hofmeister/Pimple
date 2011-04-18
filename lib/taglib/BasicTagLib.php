@@ -120,7 +120,7 @@ class BasicTagLib extends TagLib {
         
         $tagAttrs->href = $link;
         $a = new HtmlElement('a', $tagAttrs);
-        $a->addChild(new HtmlText($this->body()));
+        $a->addChild(new HtmlText(trim($this->body())));
 		return $a;
 	}
     protected function tagUrl($attrs,$view) {
