@@ -84,15 +84,13 @@ class View {
         $this->parseTemplate();
 		ob_start();
 		try {
-
             $this->_include($cachename);
 		} catch(Exception $e) {
 			//TODO: Handle errors
 			echo $e;
 		}
         
-		//unlink($cachename);
-        $result = ob_get_clean();
+		$result = ob_get_clean();
         self::removeCurrent();
 		return $result;
     }
