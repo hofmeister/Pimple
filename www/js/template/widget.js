@@ -141,7 +141,7 @@ $p.WidgetList = $p.Class({
 			this.data.maxRows = this.data.totalRows;
 			this.data.rowsPerPage = (this.data.rowsPerPage==null) ? this.data.totalRows : this.data.rowsPerPage;
 			this.data.totalPages = Math.ceil(this.data.origTotalRows/this.data.rowsPerPage);
-            this.setPage(0);
+            this.setPage(this.data.currentPageIndex);
 		}
 	},
     removeRow:function(path,value) {
@@ -181,12 +181,15 @@ $p.WidgetList = $p.Class({
 		return false;
 	},
 	appendData: function(data) {
-		if(!this.data.rows || this.data.rows.length == 0) {
+		if(!this.rows || this.rows.length == 0) {
             this.setData(data);
 		} else {
 			for(var i=0;i<data.rows.length;i++) {
-				this.addRow(data.rows[i]);
+				this.rows.push(data.rows[i]);
 			}
+            if (this.data.rows == null || this.data.rows.length == 0) {
+                this.setPage(this.getPage());//Recalc page - probably a callback
+            }
 			this.data.maxRows = this.rows.length;
 		}
 	},
@@ -219,6 +222,11 @@ $p.WidgetList = $p.Class({
 		var end = ((start+this.data.rowsPerPage) > this.data.origTotalRows) ? this.data.origTotalRows : (start+this.data.rowsPerPage);
 		var newRows = [];
         var moreRows = true;
+
+        if (start >= this.data.origTotalRows) {
+            //Page not available
+            return false;
+        }
         if (start > (this.rows.length-1) && start < this.data.origTotalRows) {
             //We have more rows - but we have not fetched them yet
             moreRows = false;
@@ -239,11 +247,14 @@ $p.WidgetList = $p.Class({
                 if ($p.isset(this.rows[i]))
                     newRows.push(this.rows[i]);
             }
-            this.data.totalRows = newRows.length;
-            this.data.currentPageIndex = parseInt(pageIndex);
+            this.data.totalRows = newRows.length;    
             this.data.rows = newRows;
         }
+        this.data.currentPageIndex = parseInt(pageIndex);
 	},
+    getPage:function() {
+        return this.data.currentPageIndex;
+    },
 	setSort: function(field, order) {
 		this.data.sortOrder = order.toLowerCase();
 		this.rows.sort(function(x,y) {

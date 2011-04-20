@@ -71,7 +71,7 @@ class Mail {
         $html = self::preview($view,$data,$containerViewFile,false);
         $text = trim(self::preview($view,$data,$containerViewFile,true));
         if (String::isHtml($text) || $text == '')
-            $text = T("This is an HTML message. Please use an HTML capable mail program to read this message.");
+            $text = T("This is an HTML message. Please use a HTML capable mail program to read this message.");
 
 		$mail = new Zend_Mail(Settings::get(Settings::ENCODING));
 		$fromName = Settings::get(self::FROM_NAME);
