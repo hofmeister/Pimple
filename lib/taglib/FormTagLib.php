@@ -123,11 +123,7 @@ class FormTagLib extends TagLib {
                 } else {
                     $checked = '';
                 }
-                if ($key != $val) {
-                    $options .= sprintf('<option %s value="%s">%s</option>',$checked,$key,$val);
-                } else {
-                    $options .= sprintf('<option %s>%s</option>',$checked,$val);
-                }
+                $options .= ($isMap || $key != $val) ? sprintf('<option %s value="%s">%s</option>',$checked,$key,$val) : sprintf('<option %s>%s</option>',$checked,$val);
             }
         }
         $addon = '';
