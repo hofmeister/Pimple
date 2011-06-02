@@ -277,6 +277,9 @@ var Pimple = {
         tmp.detach();
         return result;
     },
+	getPath:function() {
+		return location.href.substr(Pimple.settings.basePath.length);;
+	},
     getParm:function(name) {
         if (Pimple._parms.indexOf('#') > -1) {
             var prop = Pimple._parms.substr(Pimple._parms.indexOf('#'));
@@ -358,7 +361,7 @@ var Pimple = {
 	},
 	utils: {
 		getFirst: function(arr) {
-			for(i=0;i<arr.length;i++) {
+			for(var i=0;i<arr.length;i++) {
 				if(arr[i] != null) {
 					return arr[i];
 				}

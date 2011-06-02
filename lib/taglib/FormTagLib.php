@@ -45,9 +45,13 @@ class FormTagLib extends TagLib {
             $attrs->after = sprintf('<label>%s</label>',$label).$attrs->after;
 
         unset($attrs->label);
-        if ($attrs->currentValue == $attrs->value) {
+        if (!isset($attrs->checked) && $attrs->currentValue == $attrs->value) {
             $attrs->checked = 'checked';
-        }
+        } else if (isset($attrs->checked)) {
+			$attrs->checked = (in_array(strtolower($attrs->checked),array('true','yes','checked'))) ? 'checked' : null;
+		}
+		if (!$attrs->checked)
+			unset($attrs->checked);
 		return $this->inputElement('checkbox',$attrs,$view);
     }
 	protected function tagRadio($attrs,$view) {

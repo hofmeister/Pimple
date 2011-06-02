@@ -111,6 +111,7 @@ class PimpleController extends Controller {
     }
     public function css() {
         $this->setContentType('text/css; charset=utf-8;');
+		$this->setCache(Date::SPAN_MONTH);
         require_once Pimple::instance()->getBaseDir().'lib/Stylesheet.php';
         $cacheDir = Pimple::instance()->getSiteDir().'cache/css/';
         Dir::ensure($cacheDir);

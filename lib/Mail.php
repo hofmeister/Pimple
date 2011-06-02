@@ -14,9 +14,10 @@ class Mail {
 	private static $init = false;
 	public static function init() {
 		if (!self::$init) {
-            require_once Pimple::instance()->getRessource('lib/Zend/Mail.php');
+			Zend::_use('Zend_Mail');
             if (Settings::get(self::SMTP_HOST,false)) {
-                require_once Pimple::instance()->getRessource('lib/Zend/Mail/Transport/Smtp.php');
+				Zend::_use('Zend_Mail_Transport_Smtp');
+                
                 $config = array(
                     'port'=>Settings::get(self::SMTP_PORT,25)
                 );

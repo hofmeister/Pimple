@@ -3,7 +3,7 @@ class JSTemplateTagLib extends TagLib {
 	protected $containers = array();
 	private static $JS_WRAPPER_TAG = '';
 	private static $JS_EXPRESSION = '/js{(.*?)}/';
-	private static $JS_WIDGET_EXPRESSION = '/js{_widget(.*?)}/';
+	private static $JS_WIDGET_EXPRESSION = '/\\$self(.*?)}/';
 	//private static $JS_WIDGET_EXPRESSION_OUTER = '/js{_w(.*?)}/';
 	//private static $JS_WIDGET_EXPRESSION_REPLACEMENT = '';
 	
@@ -92,7 +92,12 @@ class JSTemplateTagLib extends TagLib {
 	protected function tagEach($attrs, $view) {
 		$this->requireAttributes($attrs, array('in'));
 		$row = (!isset($attrs->as)) ? 'row' : $attrs->as;
-		return sprintf('</%4$s>";for(var i=0;i<%1$s.length;i++){var %2$s=%1$s[i];o+="<%4$s>%3$s</%4$s>";}o+="<%4$s>', $attrs->in, $row, $this->makeJsString($this->body()), self::$JS_WRAPPER_TAG);
+		if ($attrs->it)
+			return sprintf('</%4$s>";(function() {var _tmparr = %1$s;var i = 0;for(var %5$s in _tmparr){var %2$s=%1$s[%5$s];o+="<%4$s>%3$s</%4$s>";i++;}})()o+="<%4$s>', 
+					$attrs->in, $row, $this->makeJsString($this->body()), self::$JS_WRAPPER_TAG,$attrs->it);
+		else
+			return sprintf('</%4$s>";(function() {var _tmparr = %1$s; for(var i=0;i<_tmparr.length;i++){var %2$s=%1$s[i];o+="<%4$s>%3$s</%4$s>";}})()o+="<%4$s>', 
+					$attrs->in, $row, $this->makeJsString($this->body()), self::$JS_WRAPPER_TAG);
 	}
 	
 	protected function tagFor($attrs, $view) {

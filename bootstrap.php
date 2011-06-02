@@ -15,6 +15,8 @@ require_once 'lib/interfaces/wrappers.php';
 require_once 'lib/Settings.php';
 require_once 'lib/IncludePath.php';
 
+//Zend easy access 
+require_once 'lib/Zend.php';
 
 //DB Handling
 require_once 'lib/Db.php';
