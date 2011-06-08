@@ -62,12 +62,12 @@ class JSTemplateTagLib extends TagLib {
 			}
 		}
 		$this->containers[$attrs->id] = String::UTF8Encode($this->replaceJsExpressions($output));
-        if (Settings::get(Settings::DEBUG,false)) {
+        //if (Settings::get(Settings::DEBUG,false)) { @TODO: it sometimes breaks if this is not present - fix so it doesn't
             //Add some line breaks to make it easier to read
             $this->containers[$attrs->id] = str_replace('o+=',"\no+=",$this->containers[$attrs->id]);
             $this->containers[$attrs->id] = preg_replace('/";(\}else\{|for|if]switch)/i',"\";\n$1",$this->containers[$attrs->id]);
 
-        }
+        //}
 	}
 	
 	protected function tagIf($attrs, $view) {
