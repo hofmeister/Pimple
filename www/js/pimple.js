@@ -236,7 +236,7 @@ var Pimple = {
         return Pimple.showMessages(timeout);
     },
     showMessages: function(timeout) {
-        if (!timeout) timeout = 15000;
+        if (!timeout) timeout = 3000;
         $('.pimple-messages')
                     .show();
         if (Pimple._messageTimeout) {
