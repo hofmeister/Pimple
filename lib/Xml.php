@@ -212,7 +212,7 @@ class XmlElement implements XmlNode {
             if (!($this->children[$i] instanceof  XmlElement)) continue;
             if (strtolower($this->children[$i]->getNs()) == strtolower($ns)
                     && strtolower($this->children[$i]->getTag()) == strtolower($tagName)) {
-                $result[] = $this->children[$i];
+				$result[] = $this->children[$i];
             }
             ArrayUtil::append($result, $this->children[$i]->getElementsByTagNameNS($ns,$tagName));
         }
