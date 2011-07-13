@@ -78,7 +78,7 @@ class PimpleController extends Controller {
             if ($isDebug) {
                 $view = new View($template);
                 $files = $view->getInternalJsFiles();
-                
+				
                 echo("/*FILES:\n\t".implode("\n\t",$files).'*/'.chr(10));
                 foreach($files as $file) {
                     if (in_array($file,$used)

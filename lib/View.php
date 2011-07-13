@@ -154,7 +154,9 @@ class View {
     public function getInternalJsFiles() {
         $nodes = $this->getNodeTree()->getElementsByTagNameNS('js','include');
         $files = array();
-        foreach($nodes as $node) {
+		
+		foreach($nodes as $node) {
+			
             if ($node->getAttribute('local') == 'false')
                 $base = Pimple::instance()->getBaseDir().'www/';
             else

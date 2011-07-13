@@ -146,6 +146,12 @@ class Controller {
         echo $xml;
         Pimple::instance()->end();
     }
+	protected function asHTML($value) {
+        $this->setSkipView(true);
+		header('Content-type: text/html');
+        echo $value;
+        Pimple::instance()->end();
+    }
     protected function asText($value) {
         $this->setSkipView(true);
         header('Content-type: text/plain');

@@ -258,22 +258,24 @@ $p.WidgetList = $p.Class({
 	setSort: function(field, order) {
 		this.data.sortOrder = order.toLowerCase();
 		this.rows.sort(function(x,y) {
-			var first = x[field];
+			var first = this.getDataByPath(x,field);
+			var xValue = this.getDataByPath(x,field);
+			var yValue = this.getDataByPath(y,field);
 			if(!isNaN(parseInt(first))) {
 				if(order.toLowerCase() == 'desc') {
-					return x[field] - y[field];
+					return xValue - yValue;
 				}
-				return y[field] - x[field];
+				return yValue - xValue;
 			} else {
-				if(x[field]==y[field]){return 1;}
-	            if(order.toLowerCase() == 'asc'){
-	                if(x[field]<y[field]){return -1;}
-	            }else{
-	                if(x[field]>y[field]){return -1;}
+				if(xValue==yValue){return 0;}
+	            if (order.toLowerCase() == 'asc') {
+	                if(xValue<yValue){return -1;}
+	            } else {
+	                if(xValue>yValue){return -1;}
 	            }
 	            return 1;
 			}
 		});
-		this.setPage(this.data.currentPageIndex);
+		this.setPage(0);
 	}
 });

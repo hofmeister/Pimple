@@ -1,5 +1,5 @@
 <?php
-class Locale {
+class PimpleLocale {
     public static function T($format) {
         $args = func_get_args();
         array_shift($args);

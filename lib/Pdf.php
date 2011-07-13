@@ -2,7 +2,7 @@
 require_once 'Stylesheet.php';
 
 class Pdf {
-    public static function render($template,$data,$containerViewFile = null) {
+    public static function render($template,$data,$containerViewFile = null, $landscape = false) {
         require_once Pimple::instance()->getRessource('lib/mpdf50/mpdf.php');
         if ($containerViewFile)
             $container = new View($containerViewFile);
@@ -13,7 +13,11 @@ class Pdf {
         $cData = $data;
         $cData['body'] = $view->render($data);
         $css = "";
-        $pdf = new mPDF();
+        if ($landscape){
+        	$pdf = new mPDF('', 'A4-L');
+        } else {
+	        $pdf = new mPDF();
+	    }
         if ($container) {
             $html = $container->render($cData);
             self::readCss($pdf,$container);
