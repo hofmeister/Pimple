@@ -75,9 +75,12 @@ $p.Widget = $p.Class({
 		return this.data;		
 	},
     getDataByPath: function(path,data) {
-        var parts = path.split('/');
+		var parts = path.split('/');
         var d = (data) ? data : this.data;
+		var last = false;
         for(var i = 0;i < parts.length; i++) {
+			if (i == (parts.length-1))
+				last = true;
             var p = parts[i];
             var ix = 0;
             if (p.indexOf("[") > -1) {
@@ -87,8 +90,10 @@ $p.Widget = $p.Class({
             }
             switch ($.type(d[p])) {
                 case 'array':
-                    d = d[p][ix];
-                    break;
+					if (!last) {
+						d = d[p][ix];
+						break;
+					}
                 default:
                     d = d[p];
                     break;
@@ -109,7 +114,7 @@ $p.WidgetList = $p.Class({
     cbFunction:null,
     rows:[],
     initialize:function() {
-        
+		
     },
     getRowByValue:function(path,value) {
         for(var i = 0; i < this.rows.length;i++) {
@@ -255,27 +260,43 @@ $p.WidgetList = $p.Class({
     getPage:function() {
         return this.data.currentPageIndex;
     },
-	setSort: function(field, order) {
-		this.data.sortOrder = order.toLowerCase();
-		this.rows.sort(function(x,y) {
-			var first = this.getDataByPath(x,field);
-			var xValue = this.getDataByPath(x,field);
-			var yValue = this.getDataByPath(y,field);
-			if(!isNaN(parseInt(first))) {
-				if(order.toLowerCase() == 'desc') {
+	sortArray: function(arrayPath,fieldPath, sortOrder) {
+		var first = null;
+		var array = this.getDataByPath(arrayPath,this.data);
+		if (array.length > 0)
+			first = this.getDataByPath(fieldPath,array[0]);
+		else
+			return;
+		var self = this;
+		var isNumber = $.type(first) == "number";
+		array.sort(function(x,y) {
+			var xValue = self.getDataByPath(fieldPath,x);
+			var yValue = self.getDataByPath(fieldPath,y);
+			
+			if(isNumber) {
+				if(sortOrder.toLowerCase() == 'asc') {
 					return xValue - yValue;
 				}
 				return yValue - xValue;
 			} else {
-				if(xValue==yValue){return 0;}
-	            if (order.toLowerCase() == 'asc') {
-	                if(xValue<yValue){return -1;}
-	            } else {
-	                if(xValue>yValue){return -1;}
-	            }
-	            return 1;
+				var out = 1;
+				if(xValue==yValue)
+					out = 0;
+				else {
+					if (sortOrder.toLowerCase() == 'asc') {
+						if(xValue<yValue){ out = -1;}
+					} else {
+						if(xValue>yValue){ out = -1;}
+					}
+				}
+				
+	            return out;
 			}
 		});
+	},
+	setSort: function(fieldPath, sortOrder) {
+		this.data.sortOrder = sortOrder.toLowerCase();
+		this.sortArray('rows',fieldPath,sortOrder);
 		this.setPage(0);
 	}
 });
