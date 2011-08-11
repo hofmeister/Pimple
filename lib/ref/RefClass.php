@@ -20,7 +20,7 @@ class RefProperty extends RefBase {
     public $access = 'public';
     public $default;
 }
-class RefParm {
+class RefMethodParm {
     public $name;
     public $default;
 }

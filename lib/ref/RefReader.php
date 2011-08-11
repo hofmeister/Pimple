@@ -103,7 +103,7 @@ class RefReader  {
         preg_match_all($this->RGX_ARG_MATCH,$parmStr,$matches);
         $out = array();
         foreach($matches[1] as $i=>$match) {
-            $parm = new RefParm();
+            $parm = new RefMethodParm();
             $parm->name = $match;
             $parm->default = $matches[2][$i];
             $out[] = $parm;
