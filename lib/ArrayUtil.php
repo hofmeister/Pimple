@@ -71,6 +71,21 @@ class ArrayUtil {
 		}
 		return $array;
 	}
+    /**
+	 * Trim values
+	 *
+	 * @param array $array
+	 * @return array
+	 */
+	public static function trimValues(&$array,$filter = null) {
+		foreach ($array as $key=>$value) {
+            if ($filter)
+                $array[$key] = trim($value,$filter);
+            else
+                $array[$key] = trim($value);
+		}
+		return $array;
+	}
     public static function isMap($array) {
          return ($array != array_values($array));
     }

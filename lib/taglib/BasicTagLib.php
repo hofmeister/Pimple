@@ -94,15 +94,6 @@ class BasicTagLib extends TagLib {
             '</div>';
 	}
     /**
-     * Renders a tabpage container - this can only contain page elements.
-     * @container true
-     */
-    protected function tagTabPage($attrs,$view) {
-        return '<div class="tabpage" id="'.$this->uid().'">'.chr(10).
-                $this->body().chr(10).
-            '</div>';
-    }
-    /**
      * Renders a page container - used in tabpages
      * @container true
      */

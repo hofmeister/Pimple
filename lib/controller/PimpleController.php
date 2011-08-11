@@ -180,4 +180,24 @@ class PimpleController extends Controller {
 
         Pimple::end();
     }
+    /**
+     * Show pimple reference (only available in dev mode)
+     */
+    public function ref() {
+        if (Pimple::getEnvironment() != 'development') {
+            Pimple::end('Not allowed');
+        }
+        include_once 'ref/RefReader.php';
+        $this->setSkipLayout(true);
+        $reader = new RefReader();
+        $reader->read(BASEDIR.'/taglib/','RefTagLib','RefTagLibMethod');
+        $reader->read(PIMPLEBASE.'/lib/taglib/','RefTagLib','RefTagLibMethod');
+        
+        $taglibs = $reader->getClasses();
+        $reader->clear();
+        $reader->read(BASEDIR.'/controller/','RefController','RefControllerMethod');
+        $reader->read(PIMPLEBASE.'/lib/controller/','RefController','RefControllerMethod');
+        $controllers = $reader->getClasses();
+        return array('taglibs'=>$taglibs,'controllers'=>$controllers);
+    }
 }

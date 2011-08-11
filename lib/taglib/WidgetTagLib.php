@@ -154,8 +154,9 @@ class WidgetTagLib extends TagLib {
     /**
      * Render a tab panel (notice - must be within a tabpage to make sence)
      *
-     * @param <type> $attrs
-     * @return string
+     * @param string title title of tab button
+     * @param string class optional css class of tab panel
+     * @container
      */
     protected function tagTabPanel($attrs) {
         
@@ -173,8 +174,7 @@ class WidgetTagLib extends TagLib {
     /**
      * Render a tab page (notice - must contain tabPanels to make sence)
      *
-     * @param <type> $attrs
-     * @return string
+     * @container
      */
     protected function tagTabPage($attrs) {
         $body= $this->body();

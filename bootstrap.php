@@ -2,7 +2,7 @@
 require_once 'lib/Server.php';
 
 define('BASEDIR', Server::IsPlatform(Server::PLATFORM_WINDOWS) ? exec('echo %cd%') : exec('pwd'));
-
+define('PIMPLEBASE', dirname(__FILE__));
 if (BASEURL == 'BASEURL')
     throw new Exception("BASEURL must be defined!");
     

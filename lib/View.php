@@ -32,7 +32,7 @@ class View {
     
     public function  __construct($template) {
         $this->template = ltrim($template,'/');
-        if (!is_file($this->getTemplateFile())) {
+        if ($this->getTemplateFile() == null) {
             throw new Exception(T('View not found: %s',$this->template));
         }
         // $this->parent = $parent; // Parent is never set?
@@ -42,7 +42,15 @@ class View {
         return $this->template;
     }
     protected function getTemplateFile() {
-        return VIEWDIR.$this->template.'.php';
+        $file = VIEWDIR.$this->template.'.php';
+        
+        if (is_file($file))
+            return $file;
+            
+        $file = Dir::concat(PIMPLEBASE,'view').$this->template.'.php';
+        if (is_file($file))
+            return $file;
+        return null;
     }
     public function getCacheName() {
         return Pimple::getCacheFile($this->getTemplateFile());
