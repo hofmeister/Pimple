@@ -1,6 +1,8 @@
 <?php
 require_once 'Abstract.php';
-
+/**
+ * Validate that 2 values are equeal
+ */
 class EqualsValidate extends AbstractValidate {
     public function validate($value,$data) {
         $equals = $this->args[0];

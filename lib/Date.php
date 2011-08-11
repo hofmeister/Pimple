@@ -1,5 +1,8 @@
 <?php
-
+/**
+ * Class representing dates
+ * Contains several constants usefull for date calculations and provides methods for calculations as well
+ */
 class Date {
     const DATE_FORMAT = 'DATE_DATE_FORMAT';
     const DATETIME_FORMAT = 'DATE_DATETIME_FORMAT';

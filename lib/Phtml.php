@@ -1,6 +1,8 @@
 <?php
 require_once 'Html.php';
-
+/**
+ * The PHTML parsing and compilation engine
+ */
 class Phtml {
     const NOTHING = 'NOTHING';
     const STRING = 'STRING';

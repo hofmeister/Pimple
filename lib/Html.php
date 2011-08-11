@@ -4,7 +4,9 @@ require_once 'Xml.php';
 interface HtmlNode extends XmlNode {
 	
 }
-
+/**
+ * Representation of a HTML Element.
+ */
 class HtmlElement extends XmlElement implements HtmlNode {
 
 	public function isContainer() {

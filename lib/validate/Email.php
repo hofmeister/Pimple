@@ -1,6 +1,8 @@
 <?php
 require_once 'Abstract.php';
-
+/**
+ * Validate email value
+ */
 class EmailValidate extends AbstractValidate {
     const REGEX = '[A-Å0-9\.\_\-\+]+@[A-Å0-9\._\-]+\.[A-Å0-9\._\-]{2,}';
     public function validate($value,$data) {

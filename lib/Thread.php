@@ -1,6 +1,8 @@
 <?php
 declare(ticks = 1);
-
+/**
+ * A JAVA Like Thread class
+ */
 abstract class Thread {
     private $pid;
     public final function execute() {

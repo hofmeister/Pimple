@@ -1,4 +1,8 @@
 <?php
+/**
+ * Interface that session instances must implement
+ * @See SessionHandler
+ */
 interface ISession {
 	/**
 	 * Get and/or create session given session id

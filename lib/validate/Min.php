@@ -1,6 +1,8 @@
 <?php
 require_once 'Abstract.php';
-
+/**
+ * Validate that value is no smaller than min
+ */
 class MinValidate extends AbstractValidate {
     public function validate($value,$data) {
         if (!$value) return true; //No value is allowed - use required to require

@@ -1,5 +1,8 @@
 <?php
-
+/**
+ * Model implementation
+ * Notice: Mainly targeted SQL / Table based models
+ */
 class Model {
 	private $data;
 	private $columns = array();

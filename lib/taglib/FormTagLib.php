@@ -1,5 +1,8 @@
 <?php
-
+/**
+ * Form tags
+ * @namespace f
+ */
 class FormTagLib extends TagLib {
     private $formData,$formMethod;
     protected function tagText($attrs,$view) {
@@ -100,7 +103,7 @@ class FormTagLib extends TagLib {
 
         $attrs->value = $this->getFieldValue($attrs,$attrs->value);
 
-        $keyVal = $this->toObject($attrs->options);
+		$keyVal = $this->toObject($attrs->options);
         
         $options = "";
         if ($attrs->emptyText) {

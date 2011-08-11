@@ -10,7 +10,9 @@ require_once 'validate/Captcha.php';
 require_once 'validate/Optional.php';
 require_once 'validate/Integer.php';
 require_once 'validate/Number.php';
-
+/**
+ * Validation handling
+ */
 class Validate {
     private static $validators = array();
     private static $errors = array();

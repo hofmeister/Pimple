@@ -10,7 +10,9 @@ interface XmlNode {
      */
     public function getParent();
 }
-
+/**
+ * Represents and XML node
+ */
 class Xml {
 	public static function toXml($data,$parent = 'root') {
 		
@@ -59,7 +61,9 @@ class Xml {
 		return $parent;
 	}
 }
-
+/**
+ * Represents an Xml element
+ */
 class XmlElement implements XmlNode {
 
 	private $tag;

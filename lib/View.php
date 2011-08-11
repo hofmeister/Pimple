@@ -2,6 +2,9 @@
 if (!defined('VIEWDIR')) {
     define('VIEWDIR',Dir::concat(BASEDIR,'view'));
 }
+/**
+ * The view class - represents a template bound with a set of data. Ensures template are compiled if needed etc.
+ */
 class View {
     const CACHE = 'VIEW_CACHE';
     private static $_current = array();

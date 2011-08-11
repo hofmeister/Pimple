@@ -1,4 +1,7 @@
 <?php
+/**
+ * Util for manipulating array maps or objects (auto detected)
+ */
 class DataUtil {
 
     public static function set(&$ds,$key,$value) {

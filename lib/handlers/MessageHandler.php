@@ -1,5 +1,8 @@
 <?php
-
+/**
+ * Handles "pimple messages" - which are shown using the <p:messages /> tag
+ * Provides methods for showing errors and status updates
+ */
 class MessageHandler {
 
 	private static $_instance;

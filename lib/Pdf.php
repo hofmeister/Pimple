@@ -1,6 +1,8 @@
 <?php
 require_once 'Stylesheet.php';
-
+/**
+ * PDF Util class - can convert views (and html) to PDF documents
+ */
 class Pdf {
     public static function render($template,$data,$containerViewFile = null, $landscape = false) {
         require_once Pimple::instance()->getRessource('lib/mpdf50/mpdf.php');

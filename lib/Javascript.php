@@ -1,4 +1,7 @@
 <?php
+/**
+ * JS util class
+ */
 class Javascript {
 
     public static function minify($filename) {

@@ -1,5 +1,7 @@
 <?php
-
+/**
+ * Session handler - requires an instance that implements ISession
+ */
 class SessionHandler {
     const COOKIE_DOMAIN = 'session_cookie_domain';
     const COOKIE_URL = 'session_cookie_url';
@@ -142,6 +144,4 @@ class SessionHandler {
 	public function setSession($session) {
 		$this->session = $session;
 	}
-
-
 }

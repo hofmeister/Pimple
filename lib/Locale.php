@@ -1,4 +1,7 @@
 <?php
+/**
+ * Provides locale - uses gettext if available
+ */
 class PimpleLocale {
     public static function T($format) {
         $args = func_get_args();

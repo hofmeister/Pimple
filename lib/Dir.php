@@ -1,4 +1,7 @@
 <?php
+/**
+ * Provides methods for manipulating directory structures
+ */
 class Dir {
     /**
      * Dir concatenate

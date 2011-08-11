@@ -1,4 +1,7 @@
 <?php
+/**
+ * Stylesheet util class
+ */
 class Stylesheet {
     public static function minify($filename) {
         require_once Pimple::instance()->getRessource('lib/minify/min/lib/Minify/CSS.php');

@@ -1,6 +1,8 @@
 <?php
 require_once 'Interrupt.php';
-
+/**
+ * Base class of all controllers
+ */
 class Controller {
     protected $skipView = false;
     protected $skipLayout = false;

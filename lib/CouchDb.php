@@ -3,8 +3,6 @@
  * Just a wrapper around PHP-On-Couch
  * @link https://github.com/dready92/PHP-on-Couch
  */
-
-
 class CouchDB {
     const URL = "COUCHDB:URL";
     const NAME = "COUCHDB:NAME";

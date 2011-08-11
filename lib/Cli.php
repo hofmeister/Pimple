@@ -1,5 +1,8 @@
 <?php
 require_once 'Browser.php';
+/**
+ * Provides several methods for creating CLI interfaces
+ */
 class Cli {
 	protected static $instance;
 	protected $parmCharPrefix 	= '-';
@@ -15,10 +18,6 @@ class Cli {
 	protected $currentProgress = 0;
     protected $currentPid = null;
     protected $daemon = false;
-    /**
-     *
-     * @var Basic_View_Form
-     */
     protected $view = null;
     protected $inputCount = 0;
 

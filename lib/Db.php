@@ -1,5 +1,7 @@
 <?php
-
+/**
+ * SQL DB Abstraction layer
+ */
 class DB {
     const HOST = 'db_host';
     const NAME = 'db_name';

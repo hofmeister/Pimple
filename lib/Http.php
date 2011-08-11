@@ -1,4 +1,7 @@
 <?php
+/**
+ * Methods for sending HTTP requests (uses CURL)
+ */
 class Http {
 
     public static function post($url,$data,$headers = array(),$nonBlock) {

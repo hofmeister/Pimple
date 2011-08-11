@@ -1,6 +1,8 @@
 <?php
 require_once 'Abstract.php';
-
+/**
+ * Validate captcha value
+ */
 class CaptchaValidate extends AbstractValidate {
     public function validate($value,$data) {
         return strtolower($value) == strtolower(SessionHandler::get('CAPTCHA'));

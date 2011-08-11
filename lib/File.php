@@ -1,9 +1,7 @@
 <?php
 /**
- * @author New Dawn Technologies
- * @version 1.0
- * @license BSD
- * @package Basic
+ * Representation of a file 
+ * Provides methods for manipulating files
  */
 class File {
 	protected $path;

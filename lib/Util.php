@@ -1,4 +1,7 @@
 <?php
+/**
+ * General util methods
+ */
 class Util {
     private static $counters = array();
     public static function count($name) {

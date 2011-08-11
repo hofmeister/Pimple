@@ -1,4 +1,7 @@
 <?php
+/**
+ * Provides methods for sending e-mails. Is able to render views and send them as e-mails
+ */
 class Mail {
     const SMTP_HOST		= 'mail_smtp_host';
     const SMTP_PORT		= 'mail_smtp_port';

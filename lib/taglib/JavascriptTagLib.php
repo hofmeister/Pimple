@@ -1,5 +1,8 @@
 <?php
-
+/**
+ * Javascript tags
+ * @namespace js
+ */
 class JavascriptTagLib extends TagLib {
     private static $jsScripts = '';
     /**

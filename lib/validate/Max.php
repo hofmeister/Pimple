@@ -1,6 +1,8 @@
 <?php
 require_once 'Abstract.php';
-
+/**
+ * Validate that value is no larger than max 
+ */
 class MaxValidate extends AbstractValidate {
     public function validate($value,$data) {
         if (!$value) return true; //No value is allowed - use required to require

@@ -1,5 +1,6 @@
 <?php
-//To be done
+//To be done - is to pre-compile a sites views
+
 return;
 require_once '../bootstrap.php';
 

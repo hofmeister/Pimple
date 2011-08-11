@@ -1,4 +1,8 @@
 <?php
+/**
+ * Javascript template tags
+ * @namespace jst
+ */
 class JSTemplateTagLib extends TagLib {
 	protected $containers = array();
 	private static $JS_WRAPPER_TAG = '';

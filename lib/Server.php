@@ -1,4 +1,7 @@
 <?php
+/**
+ * Provides information about the local server
+ */
 class Server {
 	const PLATFORM_WINDOWS = 'win';
 	const PLATFORM_MAC = 'darwin';

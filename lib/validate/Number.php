@@ -1,6 +1,8 @@
 <?php
 require_once 'Abstract.php';
-
+/**
+ * Validate that value is number
+ */
 class NumberValidate extends AbstractValidate {
     const REGEX = '[0-9,\.]+';
     public function validate($value,$data) {

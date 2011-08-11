@@ -1,9 +1,6 @@
 <?php
 /**
- * @author New Dawn Technologies
- * @version 1.0
- * @license BSD
- * @package Basic
+ * Provides several methods for getting information of the user agent
  */
 class Browser {
 	const CODE_FIREFOX 	= 'ff';

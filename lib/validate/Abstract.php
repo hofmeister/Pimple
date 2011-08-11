@@ -1,4 +1,7 @@
 <?php
+/**
+ * Abstract base class for all validators
+ */
 abstract class AbstractValidate {
     protected $args;
     abstract public function validate($value,$data);

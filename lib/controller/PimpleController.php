@@ -1,6 +1,13 @@
 <?php
+/**
+ * The pimple controller is used to give some basic functionality that has to be exposed via urls
+ */
 class PimpleController extends Controller {
 
+    /**
+     * Renders a captcha
+     * @See FormTagLib::tagCaptcha
+     */
     public function captcha() {
         $width = Request::get('w',210);
         $height = Request::get('h',40);
@@ -41,6 +48,13 @@ class PimpleController extends Controller {
         SessionHandler::set('CAPTCHA',$code);
         Pimple::end();
     }
+    /**
+     * Previews an email - as it would look rendered
+     * Uses all GET parms as variables
+     * @param string view | the name of the view
+     * @param string container | the name of the container - defaults to {view/mail.php}
+     * @param boolean textonly | show the text only version - defaults to false
+     */
     public function mailpreview() {
         $data = Request::get();
         $view = $data->view;
@@ -53,6 +67,11 @@ class PimpleController extends Controller {
         }
         Pimple::end();
     }
+    /**
+     * Outputs concatenated javascript for the specified view
+     * @param string view | the view - optional
+     * @param boolean skipLayout | skip {view/application.php} - defaults to false 
+     */
     public function javascript() {
         $this->setContentType('text/javascript; charset=utf-8;');
         $this->setCache(Date::SPAN_MONTH);
@@ -109,6 +128,10 @@ class PimpleController extends Controller {
 
         Pimple::end();
     }
+    /**
+     * Outputs concatenated CSS for the specified view
+     * @param string view | the view - optional
+     */
     public function css() {
         $this->setContentType('text/css; charset=utf-8;');
 		$this->setCache(Date::SPAN_MONTH);

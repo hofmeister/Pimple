@@ -1,4 +1,7 @@
 <?php
+/**
+ * Class representing binary image - provides several methods for manipulating images
+ */
 class Image {
 	protected static $sizes = array();
 	protected $originalBinary;

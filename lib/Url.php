@@ -1,4 +1,7 @@
 <?php
+/**
+ * Represents an URL
+ */
 class Url {
     private $url;
 	private $protocol;

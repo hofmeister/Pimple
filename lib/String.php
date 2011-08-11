@@ -1,9 +1,6 @@
 <?php
 /**
- * @author New Dawn Technologies
- * @version 1.0
- * @license BSD
- * @package Basic
+ * Provides several string manipulation methods
  */
 
 class String {

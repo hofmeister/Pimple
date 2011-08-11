@@ -1,4 +1,7 @@
 <?php
+/**
+ * Settings (name / value) implementation
+ */
 class Settings {
 	const ENCODING = 'g_encoding';
     const DEBUG = 'g_debug';

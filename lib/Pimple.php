@@ -1,4 +1,7 @@
 <?php
+/**
+ * Main class in pimple - provides methods for handling requests and other very general stuff
+ */
 class Pimple {
 	const URL = 'PIMPLE_URL';
 	

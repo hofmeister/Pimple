@@ -1,4 +1,7 @@
 <?php
+/**
+ * Wrapper for $_GET,$_POST and §_FILES
+ */
 class Request {
 	private static $post;
 	private static $get;

@@ -1,5 +1,9 @@
 <?php
-
+/**
+ * Access handler for handling ACL
+ * Notice: Not implemented
+ * @TODO: Implement proper access handling
+ */
 class AccessHandler {
 
 	private static $instance;

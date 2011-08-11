@@ -1,5 +1,8 @@
 <?php
-
+/**
+ * Widget tag libs - contains more complex html structures that usually requires JS bindings
+ * @namespace w
+ */
 class WidgetTagLib extends TagLib {
 	const CSS_LIST			= 'pw-list';
 	const CSS_BTN			= 'pw-button';

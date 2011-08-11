@@ -1,4 +1,7 @@
 <?php
+/**
+ * The base class of all tag libs
+ */
 class TagLib {
     private static $uidCount = 0;
     private $preprocess = false;
@@ -16,7 +19,7 @@ class TagLib {
 	}
     protected function toObject($value) {
         if (is_string($value)) {
-            return json_decode(str_replace('\'','"',stripslashes($value)));
+			return json_decode(str_replace('\'','"',stripslashes($value)));
         } else {
             return $value;
         }

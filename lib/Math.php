@@ -1,4 +1,8 @@
 <?php
+/**
+ * Provides some math methods
+ */
+
 class Math {
 
     public static function DMStoDECfromString($str) {
