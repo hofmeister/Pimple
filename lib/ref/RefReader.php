@@ -12,12 +12,12 @@ class RefReader  {
         $this->RGX_ARG = '(?:\\$[A-Z][A-Z0-9_]*(?: *= *.*?)?)';
         $this->RGX_ARG_MATCH = '/(?:(\\$[A-Z][A-Z0-9_]*)(?: *= *([^,]+))?)/is';
         $this->RGX_ARGS = "(?:{$this->RGX_ARG}(?:\\s*,\\s*{$this->RGX_ARG})*)";
-        $RGX_DOC_FRAGMENT = "\\/\\*\\* *(?:\n +\\*[^\n]*)+\\/";
+        $RGX_DOC_FRAGMENT = "\\/\\*\\* *(?:\n +\\*[^\n]*(?:\n\\s*)?)+\\/";
         $this->RGX_DOC = "/{$RGX_DOC_FRAGMENT}/i";
-        $this->RGX_DOCPARM = "/\\@([A-Z][A-Z0-9_]+)(\\s+[^\\@]*)?/is";
+        $this->RGX_DOCPARM = "/\\@([A-Z][A-Z0-9_\\|]+)(\\s+[^\\@]*)?/is";
         
-        $this->RGX_METHOD = "/({$RGX_DOC_FRAGMENT}[\n\\s]*\n\\s*)?(abstract\\s+)?(public|protected|private)(\\s+static)?\\s+function\\s+([A-Z][A-Z0-9_]+)\\s*\\(({$this->RGX_ARGS})?\\)/is";
-        $this->RGX_CLASS = "/({$RGX_DOC_FRAGMENT}[\n\\s]*\n\\s*)?(abstract\\s+)?class\\s+([A-Z][A-Z0-9_]+)(?:\\s+extends\\s+([A-Z][A-Z0-9_]+))?(?:\\s+implements\\s+([A-Z][A-Z0-9_]+(?:[\n\\s]*,[\n\\s]*[A-Z][A-Z0-9_]+)*))?/is";
+        $this->RGX_METHOD = "/({$RGX_DOC_FRAGMENT}[\n\\s]*)?\n\\s*(abstract\\s+)?(public|protected|private)(\\s+static)?\\s+function\\s+([A-Z][A-Z0-9_]+)\\s*\\(({$this->RGX_ARGS})?\\)/is";
+        $this->RGX_CLASS = "/({$RGX_DOC_FRAGMENT}[\n\\s]*)?\n\\s*(abstract\\s+)?class\\s+([A-Z][A-Z0-9_]+)(?:\\s+extends\\s+([A-Z][A-Z0-9_]+))?(?:\\s+implements\\s+([A-Z][A-Z0-9_]+(?:[\n\\s]*,[\n\\s]*[A-Z][A-Z0-9_]+)*))?/is";
     }
 
     public function clear() {
@@ -74,9 +74,11 @@ class RefReader  {
     }
     protected function readMethods(RefClass $class,$methodType) {
         preg_match_all($this->RGX_METHOD,$class->source,$matches,PREG_OFFSET_CAPTURE);
+        
         $lastMethod = null;
         foreach($matches[0] as $i=>$match) {
             $method = new $methodType();
+            $method->reader = $this;
             $method->file = $class->file;
             $method->offset = $class->offset+intval($match[1]);
             $method->doc = $this->readDoc($matches[1][$i][0]);
@@ -92,9 +94,12 @@ class RefReader  {
             
             if ($parmStr)
                 $method->parms = $this->readParms($parmStr);
+            
             $class->methods[] = $method;
             $lastMethod = $method;
         }
+        
+        
         if ($lastMethod != null) {
             $lastMethod->limit = $class->limit-1;
         }
@@ -117,6 +122,7 @@ class RefReader  {
         $classes = array();
         foreach($matches[0] as $i=>$match) {
             $class = new $classTypes();
+            $class->reader = $this;
             $class->file = $file;
             $class->offset = intval($match[1]);
             $class->isAbstract= $matches[2][$i][1] != -1;
@@ -139,18 +145,34 @@ class RefReader  {
         foreach($classes as $class) {
             $class->source = substr($contents,$class->offset,$class->limit-$class->offset);
             $this->readMethods($class,$methodTypes);
+            $class->source = '';
             foreach($class->methods as $m) {
-                $m->source = substr($contents,$m->offset,$m->limit-$m->offset);
+                //$m->source = substr($contents,$m->offset,$m->limit-$m->offset);
             }
                     
         }
         
         ArrayUtil::append($this->classes,$classes);
     }
-    protected function readControllers($contents) {
-        
+    public function getClass($className) {
+        foreach($this->classes as $class) {
+            if ($class->name == $className) {
+                return $class;
+            }
+        }
+        throw new Exception("$className NOT FOUND");
     }
-    protected function readTagLibs($contents) {
-        
+    public function getMethod($className,$methodName) {
+        $class = $this->getClass($className);
+        if ($class != null) {
+            foreach($class->methods as $method) {
+                if (strtolower(trim($method->name)) == strtolower(trim($methodName)))
+                    return $method;
+            }
+            throw new Exception("$className::$methodName NOT FOUND");
+            return null;
+        }
+        throw new Exception("$className::$methodName NOT FOUND");
+        return null;
     }
 }

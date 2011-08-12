@@ -5,9 +5,21 @@
  */
 class FormTagLib extends TagLib {
     private $formData,$formMethod;
+    
+    /**
+     * Render a text input field
+     * @uses FormTagLib::inputElement
+     */
     protected function tagText($attrs,$view) {
 		return $this->inputElement('text',$attrs,$view);
     }
+    /**
+     * Render a date input field
+     * @param string class CSS class
+     * @param string format Date format (for the date() method). Defaults to Pimple default
+     * @param integer|string value unix timestamp or date string
+     * @uses FormTagLib::inputElement
+     */
     protected function tagDate($attrs,$view) {
         if (!$attrs->class) $attrs->class = '';
         if (!$attrs->format)
@@ -19,22 +31,46 @@ class FormTagLib extends TagLib {
         }
 		return $this->inputElement('text',$attrs,$view);
     }
+    
+    /**
+     * Render a submit button 
+     * @uses FormTagLib::inputElement
+     */
 	protected function tagSubmit($attrs,$view) {
         $attrs->container = 'false';
         $attrs->class .= ' button';
 		return $this->inputElement('submit',$attrs,$view);
     }
+    /**
+     * Render a button 
+     * @uses FormTagLib::inputElement
+     */
 	protected function tagButton($attrs,$view) {
         $attrs->container = 'false';
         $attrs->class .= ' button';
 		return $this->inputElement('button',$attrs,$view);
     }
+    /**
+     * Render a password input field
+     * @uses FormTagLib::inputElement
+     */
 	protected function tagPassword($attrs,$view) {
 		return $this->inputElement('password',$attrs,$view);
     }
+    /**
+     * Render a password input field
+     * @uses FormTagLib::inputElement
+     */
 	protected function tagFile($attrs,$view) {
 		return $this->inputElement('file',$attrs,$view);
     }
+    /**
+     * Render a checkbox
+     * @param string currentValue | if currentValue and value match - checbox is checked
+     * @param string|boolean checked | Values checked,yes and true will cause the checkbox to be checked
+     * @param boolean simple | Forced to true
+     * @uses FormTagLib::inputElement
+     */
 	protected function tagCheckbox($attrs,$view) {
         $label = trim($attrs->label);
         if (!$label)
@@ -57,6 +93,13 @@ class FormTagLib extends TagLib {
 			unset($attrs->checked);
 		return $this->inputElement('checkbox',$attrs,$view);
     }
+    /**
+     * Render a radio button
+     * @param string currentValue | if currentValue and value match - radio button is checked
+     * @param string|boolean checked | Values checked,yes and true will cause the checkbox to be checked
+     * @param boolean simple | Forced to true
+     * @uses FormTagLib::inputElement
+     */
 	protected function tagRadio($attrs,$view) {
         
         $label = trim($attrs->label);
@@ -71,15 +114,29 @@ class FormTagLib extends TagLib {
             $attrs->after = sprintf('<label>%s</label>',$label).$attrs->after;
 
         unset($attrs->label);
-        if ($attrs->currentValue == $attrs->value) {
+        if (isset($attrs->checked)) {
+			$attrs->checked = (in_array(strtolower($attrs->checked),array('true','yes','checked'))) ? 'checked' : null;
+		} elseif ($attrs->currentValue == $attrs->value) {
             $attrs->checked = 'checked';
-        }
+        } 
+        if (!$attrs->checked)
+			unset($attrs->checked);
         
 		return $this->inputElement('radio',$attrs,$view);
     }
+    /**
+     * Render a html area (not implemented - just renders a text area at the moment)
+     * @todo implement text area
+     * @uses FormTagLib::tagTextArea
+     */
     protected function tagHtmlArea($attrs,$view) {
         return $this->tagTextArea($attrs,  $view);
     }
+    /**
+     * Render a textarea
+     * @uses FormTagLib::formElementContainer
+     * @container
+     */
     protected function tagTextArea($attrs,$view) {
         $value = $this->body();
         
@@ -90,15 +147,26 @@ class FormTagLib extends TagLib {
         $elm->addChild(new HtmlText(htmlentities($value,ENT_QUOTES,'UTF-8')));
 		return $this->formElementContainer($elm,$attrs);
 	}
+    /**
+     * Render a token input (Facebook-like label input field)
+     * @uses FormTagLib::tagTextarea
+     */
     protected function tagTokenInput($attrs,$view) {
         $attrs->behaviour = 'tokeninput';
         if ($attrs->options)
             $attrs->options = new stdClass();
         $attrs->options->url = $attrs->url;
         unset($attrs->url);
-        $this->setFieldValue($attrs,'');//Not supported yet
+        $this->setFieldValue($attrs,'');//@todo implement setting token field value
         return $this->tagTextarea($attrs,$view);
     }
+    /**
+     * Render select box
+     * @param object|array|json | options a map or array of options
+     * @param string propKey | name of map property to be used as key (defaults to "key")
+     * @param string propValue | name of map property to be used as value (defaults to "value")
+     * @uses FormTagLib::formElementContainer
+     */
     protected function tagSelect($attrs,$view) {
 
         $attrs->value = $this->getFieldValue($attrs,$attrs->value);
@@ -119,7 +187,7 @@ class FormTagLib extends TagLib {
             foreach($keyVal as $key=>$val) {
                 if (is_object($val)) {
                     $propKey = $attrs->propKey ? $attrs->propKey : 'key';
-                    $propVal = $attrs->propValue ? $attrs->propKey : 'value';
+                    $propVal = $attrs->propValue ? $attrs->propValue : 'value';
                     $key = $val->$propKey;
                     $val = $val->$propVal;
                 } else {
@@ -141,6 +209,18 @@ class FormTagLib extends TagLib {
 					$attrs->name,$attrs->class,$addon,$options);
 		return $this->formElementContainer($selectElm,$attrs);
 	}
+    /**
+     * Render form tags
+     * @param boolean binary | if set - renders a multipart form - else a url encoded form.
+     * @param string controller | if set - sets the controller of the target url for this form 
+     * @param string action | if set - sets the action of the target url for this form
+     * @param string parms | if set - sets the parameters of the target url for this form
+     * @param array|object | A map of data for this form - will be propegated to fields within this form.
+     * @param string method | sets the HTTP method to used (post or get) - defaults to post
+     * @param string url | sets the url of the form - only used if controller is not set
+     * @param string id | sets the id on the form element
+     * @param string class | sets the css class for the form element
+     */
 	protected function tagForm($attrs,$view) {
         if ($attrs->binary) {
             $attrs->enctype = 'multipart/form-data';
@@ -179,11 +259,21 @@ class FormTagLib extends TagLib {
         $elm->addChild(new HtmlText($this->body()));
         return $elm->toHtml();
 	}
+    /**
+     * Renders a button group - used to place buttons correctly when building forms
+     * @param string class | Addition css class for the button group container
+     * @container
+     */
     protected function tagButtonGroup($attrs,$view) {
 		return '<div class="horizontal line buttongroup '.$attrs->class.'">'.chr(10).
                 $this->body().chr(10).
             '</div>';
 	}
+    /**
+     * Returns id based on field name
+     * @param string name | Generate id from this name (required unless id is specified)
+     * @param string id | overrides and returns simply this id
+     */
 	protected function tagId($attrs) {
 		if ($attrs->id) return $attrs->id;
 		else if ($attrs->name && substr($attrs->name,-2) != '[]') {
@@ -191,6 +281,12 @@ class FormTagLib extends TagLib {
 		}
 		return null;
 	}
+    /**
+     * Render a captcha input field
+     * @param string name | name of field
+     * @param string id | id of field
+     * @uses FormTagLib::formElementContainer
+     */
     protected function tagCaptcha($attrs) {
 
         $inputElm = sprintf('<input type="text" name="%s"  class="form-captcha" id="%s" />'
@@ -198,15 +294,40 @@ class FormTagLib extends TagLib {
         $img = sprintf('<img src="%s" alt="Captcha" class="captcha" />',Url::makeLink('pimple','captcha'));
         return $img.$this->formElementContainer($inputElm,$attrs);
     }
+    /**
+     * Renders a custom form element container - used to create custom input fields
+     * 
+     * @container
+     * @uses FormTagLib::formElementContainer
+     */
     protected function tagCostum($attrs) {
         return $this->formElementContainer($this->body(),$attrs);
     }
+    /**
+     * Renders a hidden field
+     * @param boolean container | forced to false
+     * @param boolean composit | forced to false
+     * @uses FormTagLib::formElementContainer
+     */
     protected function tagHidden($attrs,$view) {
         $attrs->container = 'false';
         $attrs->composit = 'false';
         return $this->inputElement('hidden',$attrs, $view);
     }
 
+    /**
+     * Base method for almost all input elements
+     * 
+     * @param mixed value | Value of the field
+     * @param string type  | input type
+     * @param string class | css class
+     * @param string id | input element id
+     * @param boolean container | render element container
+     * @param boolean checker | render checkout to enable/disable field
+     * @param string before | output this before input element (within element container)
+     * @param string after | output this after input element (within element container)
+     * @uses FormTagLib::formElementContainer
+     */
     private function inputElement($type,$attrs,$view) {
 
         $attrs->value = $this->getFieldValue($attrs,$attrs->value);
@@ -241,6 +362,27 @@ class FormTagLib extends TagLib {
                 return $inputElm;
         return $this->formElementContainer($inputElm,$attrs);
 	}
+    
+    /**
+     * Render form element container
+     * 
+     * @param string id | Id of input element
+     * @param string label | the label of the field
+     * @param string help  | help text for this field
+     * @param string instructions | intructions on how to fill out field
+     * @param string description | Description of the field / value
+     * @param string name | name of the input element
+     * @param string cClass | CSS class to apply to form element container
+     * @param string cStyle | CSS styles to apply to form element container
+     * @param boolean readonly | make field readonly (defaults to false)
+     * @param boolean disabled | make field disabled (defaults to false)
+     * @param boolean simple | Makes the field behave more as a std html input field (defaults to false)
+     * @param boolean composit | Render the field with label, input and instructions (defaults to true)
+     * @param boolean small | render field without label and instructions (defaults to false)
+     * @param boolean nolabel | render field without label (defaults to false)
+     * @param boolean noinstructions | render field without instructions (defaults to false)
+     
+     */
     private function formElementContainer($formElement,$attrs) {
         $classes = array();
         $elmClasses = array();

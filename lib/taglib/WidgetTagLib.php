@@ -36,6 +36,11 @@ class WidgetTagLib extends TagLib {
 		parent::__construct(false);
 	}
 
+    /**
+     * Renders a list (unused)
+     * @deprecated
+     * @container
+     */
 	protected function tagList($attrs, $view) {
 		if (!$attrs->elm)
 			$attrs->elm = 'div';
@@ -51,6 +56,14 @@ class WidgetTagLib extends TagLib {
         return $elm;
 	}
 
+    /**
+     * Renders a button. All attributes not listed below will be forwarded to the actual html element
+     * @param string elm | tag type - defaults to a
+     * @param string class | CSS class to apply to button 
+     * @param string event | event to trigger when clicked
+     * @deprecated
+     * @container
+     */
 	protected function tagButton($attrs,$view) {
 		if (!$attrs->elm)
 			$attrs->elm = 'a';
@@ -69,9 +82,12 @@ class WidgetTagLib extends TagLib {
         return $elm;
 	}
     /**
-     *
-     * @param stdClass $attrs
-     * @param View $view 
+     * Renders a menu button. Menu buttons detect if they are one of the active actions (section argument) and adds 
+     * the CSS class "active" if true
+     * @param string section | the section of this button (define which section is current in the controller)
+     * @param string class | additional CSS class to apply to this button
+     * @uses BasicTagLib::tagLink
+     * @container
      */
     protected function tagMenuButton($attrs,$view) {
         $section = $attrs->section ? $attrs->section : $attrs->action;
@@ -108,6 +124,14 @@ class WidgetTagLib extends TagLib {
 		}
 		return '';
 	}
+    /**
+     * Renders a panel container with a header 
+     * @param string id | Id of panel container $attrs
+     * @param string title | Title of panel
+     * @param string class | CSS class of panel
+     * @param string style | additional CSS style to apply to container
+     * @container
+     */
     protected function tagPanel($attrs) {
         $add = '';
         if ($attrs->id) {
@@ -118,6 +142,12 @@ class WidgetTagLib extends TagLib {
         }
         return sprintf('<div class="panel %s"%s><h2>%s</h2>%s</div>',$attrs->class,$add,$attrs->title,$this->body());
     }
+    /**
+     * Renders a wizard section. Each wizard section must be defined in the controller and a wizard section must 
+     * corrospond to a method in the controller
+     * @param string id | id of the section
+     * @container
+     */
     protected function tagWizard($attrs) {
         $current = Pimple::instance()->getAction();
         $w = Wizard::get($attrs->id);
@@ -152,7 +182,7 @@ class WidgetTagLib extends TagLib {
     }
 
     /**
-     * Render a tab panel (notice - must be within a tabpage to make sence)
+     * Render a tab panel (notice - must be within a tabpage to make sense)
      *
      * @param string title title of tab button
      * @param string class optional css class of tab panel
@@ -172,7 +202,7 @@ class WidgetTagLib extends TagLib {
         return sprintf('<div class="pw-tabpanel %s" id="%s">%s</div>',$attrs->class,$id,$this->body());
     }
     /**
-     * Render a tab page (notice - must contain tabPanels to make sence)
+     * Render a tab page (notice - must contain tabPanels to make sense)
      *
      * @container
      */

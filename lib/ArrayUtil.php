@@ -7,9 +7,9 @@ class ArrayUtil {
 	 * Merge this array with another array object or instance
 	 *
 	 * @param ArrayUtil|array $array
-	 * @return ArrayUtil
+	 
 	 */
-	public static function merge($array1,$array2) {
+	public static function merge(&$array1,$array2) {
 		$keyI = 0;
 		foreach($array2 as $key=>$value) {
 			if ($key == $keyI)
@@ -18,7 +18,7 @@ class ArrayUtil {
 				$array1[$key] = $value;
 			$keyI++;
 		}
-		return $this;
+		return $array1;
 	}
     public static function append(&$array1,$array2) {
         for($i = 0;$i < count($array2);$i++) {

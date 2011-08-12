@@ -190,11 +190,16 @@ class PimpleController extends Controller {
         include_once 'ref/RefReader.php';
         $this->setSkipLayout(true);
         $reader = new RefReader();
+        //$reader->read(PIMPLEBASE.'/lib/taglib/FormTagLib.php','RefTagLib','RefTagLibMethod');
+        
         $reader->read(BASEDIR.'/taglib/','RefTagLib','RefTagLibMethod');
         $reader->read(PIMPLEBASE.'/lib/taglib/','RefTagLib','RefTagLibMethod');
+        $tags = $reader->getClass('FormTagLib')->getTags();
         
         $taglibs = $reader->getClasses();
-        $reader->clear();
+        
+        
+        $reader = new RefReader();
         $reader->read(BASEDIR.'/controller/','RefController','RefControllerMethod');
         $reader->read(PIMPLEBASE.'/lib/controller/','RefController','RefControllerMethod');
         $controllers = $reader->getClasses();

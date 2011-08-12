@@ -53,14 +53,30 @@
                                 <c:if test="$class->getNamespace()">
                                     <c:each in="$class->getTags()" as="$m">
                                         <tr>
-                                            <td>
-                                                &lt;%{$class->getNamespace()}:%{$m->getTagName()} 
-                                            <c:if test="$m->isContainer()">
-                                                &gt; ... &lt;/%{$class->getNamespace()}:%{$m->getTagName()}&gt 
+                                            <td style="font-size:12px;">
+                                            <c:if test="$m->isDeprecated()">  
+                                                <span style="text-decoration: line-through;color:red" title="Deprecated">        
+                                                    &lt;%{$class->getNamespace()}:%{$m->getTagName()} 
+                                                    <c:if test="$m->isContainer()">
+                                                        &gt; ... &lt;/%{$class->getNamespace()}:%{$m->getTagName()}&gt 
+                                                        <c:else>
+                                                            /&gt;
+                                                        </c:else>
+                                                    </c:if>
+                                                </span>
                                                 <c:else>
-                                                    /&gt;
+                                                    &lt;%{$class->getNamespace()}:%{$m->getTagName()} 
+                                                    <c:if test="$m->isContainer()">
+                                                        &gt; ... &lt;/%{$class->getNamespace()}:%{$m->getTagName()}&gt 
+                                                        <c:else>
+                                                            /&gt;
+                                                        </c:else>
+                                                    </c:if>
                                                 </c:else>
                                             </c:if>
+                                                <c:if test="$m->hasDocValue('todo')">
+                                                    <br/><b>TODO: %{implode('<br/>',$m->getDocValue('todo'))}</b>
+                                                </c:if>
                                             </td>
                                             <td style="font-size: 10px;padding:5px">
                                                 <c:each in="$m->getParms()" as="$parm">
@@ -68,7 +84,9 @@
                                                     <p style="padding-left: 10px;padding-bottom: 5px;">%{$parm->description}</p>
                                                 </c:each>
                                             </td>
-                                            <td style="font-size: 10px;">%{$m->getDescription()}</td>
+                                            <td style="font-size: 10px;">
+                                                %{$m->getDescription()}
+                                            </td>
                                             <td style="font-size: 10px;">%{$class->name.'::'.$m->name.'()'}</td>
                                         </tr>
                                     </c:each>

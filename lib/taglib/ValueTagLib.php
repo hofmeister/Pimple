@@ -13,7 +13,7 @@ class ValueTagLib extends TagLib {
      * Format value as date
      * @param string format | date format - defaults to @Setting(Date::DATE_FORMAT)
      * @param string|int value | date string or unix timestamp (defaults to body)
-     * @container both
+     * @container
      */
 	protected function tagDate($attrs) {
         if (!$attrs->format)
@@ -30,7 +30,7 @@ class ValueTagLib extends TagLib {
     /**
      * Shorten string if mor that max - and outputs span with original text in title
      * @param int max | max length
-     * @container true
+     * @container
      */
     protected function tagShort($attrs) {
         $max = intval($attrs->max);
@@ -47,7 +47,7 @@ class ValueTagLib extends TagLib {
      * Format value as time
      * @param string format | date format - defaults to @Setting(Date::DATE_FORMAT)
      * @param string|int value | date string or unix timestamp (defaults to body)
-     * @container both
+     * @container
      */
     protected function tagTime($attrs) {
         if (!$attrs->format)
@@ -68,15 +68,17 @@ class ValueTagLib extends TagLib {
         return $this->tagDate($attrs);
 	}
     /**
-     * Format as integer (from body)
+     * Format as integer
+     * @container
      */
     protected function tagInt($attrs) {
         $int = intval($this->body());
         return number_format($int,0);
     }
     /**
-     * Format as number (from body)
+     * Format as number
      * @param int decimals | how many decimals to show - defaults to 2
+     * @container
      */
     protected function tagNumber($attrs) {
         if (!isset($attrs->decimals)) $attrs->decimals = 2;
