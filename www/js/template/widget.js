@@ -143,6 +143,8 @@ $p.WidgetList = $p.Class({
 			/* Preset variables */
 			this.data.currentPageIndex = (this.data.currentPageIndex!=null) ? parseInt(this.data.currentPageIndex) : 0;
 			this.data.totalRows = (this.data.totalRows!=null) ? this.data.totalRows : this.data.rows.length;
+            if (!this.data.origTotalRows)
+                this.data.origTotalRows = this.data.totalRows;
 			this.data.maxRows = this.data.totalRows;
 			this.data.rowsPerPage = (this.data.rowsPerPage==null) ? parseInt(this.data.totalRows) : parseInt(this.data.rowsPerPage);
 			this.data.totalPages = Math.ceil(this.data.origTotalRows/this.data.rowsPerPage);
