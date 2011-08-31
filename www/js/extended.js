@@ -1,10 +1,21 @@
 /* nominify */
+
+/** 
+ * Trims the string
+ * @function String.trim
+ */
 if (!String.prototype.trim) {
-	String.prototype.trim = function () {
+    String.prototype.trim = function () {
 		return this.replace(/^\s*/, "").replace(/\s*$/, "");
 	};
 }
 
+
+/** 
+ * Trims the string
+ * @function Array.indexOf
+ * @param mixed elt
+ */
 if (!Array.prototype.indexOf) {
 	Array.prototype.indexOf = function(elt) {
 		var len = this.length;
@@ -21,11 +32,22 @@ if (!Array.prototype.indexOf) {
 	};
 }
 
+
+/** 
+ * Escape regex special chars
+ * @function RegExp.escape
+ * @param mixed elt
+ */
 RegExp.escape = function(str) {
 	var specials = new RegExp("[.*+?|()\\[\\]{}\\\\]", "g"); // .*+?|()[]{}\
 	return str.replace(specials, "\\$&");
 };
 
+/** 
+ * Attach function to object
+ * @function Function.attache
+ * @param object scope
+ */
 Function.prototype.attach = function(scope) {
 	var _function = this;
 
@@ -34,12 +56,17 @@ Function.prototype.attach = function(scope) {
 	}
 }
 
+/** 
+ * Colleciton of methods for handling caret
+ * @class Caret
+ */
 var Caret = {
 	cc:'\u2009',
+    /** 
+     * restore caret to a previously saved position
+     * @method restore
+     */
 	restore:function() {
-
-
-
 		switch(true) {
 			case $.browser.msie:
 				var range = document.body.createTextRange();
@@ -70,6 +97,10 @@ var Caret = {
 
 		}
 	},
+    /** 
+     * save caret position
+     * @method save
+     */
 	save:function() {
 		switch(true) {
 			case $.browser.msie:
@@ -85,6 +116,11 @@ var Caret = {
 				} catch(e) {}
 		}
 	},
+    /** 
+     * insert text at caret 
+     * @method insertText
+     * @param string text
+     */
 	insertText:function(text) {
 		switch(true) {
 			case $.browser.msie:
@@ -95,6 +131,11 @@ var Caret = {
 		}
 		this.restore();
 	},
+    /** 
+     * insert dom node at caret 
+     * @method insertNode
+     * @param DOMNode node
+     */
 	insertNode:function(node) {
 		switch(true) {
 			case $.browser.msie:
