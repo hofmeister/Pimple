@@ -80,6 +80,33 @@ var Pimple = {
                 console.log(msg);
         }
     },
+    ajaxLog:function(path, msg, lvl, cbFn) {
+        if ((typeof msg) == "undefined") {
+            msg = lvl;
+            lvl = 0;
+        }
+        switch(lvl) {
+            case Pimple.E_DEBUG:
+                prefix = "DEBUG";
+                break;
+            case Pimple.E_INFO:
+                prefix = "INFO";
+                break;
+            case Pimple.E_ERROR:
+                prefix = "ERROR";
+                break;
+            case Pimple.E_FATAL:
+                prefix = "SYSTEM";
+                break;
+            case Pimple.E_WARNING:
+                prefix = "WARNING";
+                break;
+        }
+        $.get(path, {msg:msg, lvl:prefix}, function(){
+        	if (typeof cbFn == 'function')
+        		cbFn();
+        });
+    },
     bind:function(elm) {
         
         for(var sel in this._bindings) {
