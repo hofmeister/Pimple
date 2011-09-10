@@ -374,6 +374,8 @@ class FormTagLib extends TagLib {
      * @param string name | name of the input element
      * @param string cClass | CSS class to apply to form element container
      * @param string cStyle | CSS styles to apply to form element container
+     * @param string eClass | CSS class to apply to div element 
+     * @param string eStyle | CSS styles to apply to div element
      * @param boolean readonly | make field readonly (defaults to false)
      * @param boolean disabled | make field disabled (defaults to false)
      * @param boolean simple | Makes the field behave more as a std html input field (defaults to false)
@@ -385,7 +387,7 @@ class FormTagLib extends TagLib {
      */
     private function formElementContainer($formElement,$attrs) {
         $classes = array();
-        $elmClasses = array();
+        $elmClasses = explode(' ',$attrs->eClass);
         $errorMessages = array();
         $errors = array();
         $classes[] = 'line';
@@ -474,7 +476,7 @@ class FormTagLib extends TagLib {
         unset($attrs->small);
         unset($attrs->currentValue);
 
-        $output .= '<div class="element '.implode(' ',$elmClasses).'">'.$formElement.'</div>';
+        $output .= '<div class="element '.implode(' ',$elmClasses).'" style="'.$attrs->eStyle.'">'.$formElement.'</div>';
         $renderedInstructions = false;
         if ($hasInstructions) {
             $output .= sprintf('<div class="instructions">
