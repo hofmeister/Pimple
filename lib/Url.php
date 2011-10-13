@@ -306,16 +306,12 @@ class Url {
             $url = '/';
         else
             $url = Dir::normalize(BASEURL);
-        
+
         if (!$controller && $action)
             $controller = Pimple::instance()->getController();
 
-        if ($controller) {
-            $url .= String::UrlEncode($controller) .'/';
-            if ($action) {
-                $url .= String::UrlEncode($action).'/';
-            }
-        }
+        $url .= Pimple::instance()->getRouter()->getUrl($controller, $action).'/';
+
         if ($parms) {
 			if (is_string($parms)) {
 				$url .= '?'.ltrim($parms,'?');
@@ -326,7 +322,7 @@ class Url {
 					$url .= '?'.self::Array2GetParms($parms);
 				}
 			}
-			
+
 		}
 		if (!$host)
             $host = trim($_SERVER['HTTP_HOST'],'/');
