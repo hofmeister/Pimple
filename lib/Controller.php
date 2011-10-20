@@ -21,8 +21,11 @@ class Controller {
         return in_array($section,$this->section);
     }
 
-    public function setSection($section) {
-        array_push($this->section, $section);
+    public function setSection($section, $addToArray = true) {
+        if ($addToArray)
+            array_push($this->section, $section);
+        else 
+            $this->section = array($section);
     }
     public function getSection() {
         return $this->section;
