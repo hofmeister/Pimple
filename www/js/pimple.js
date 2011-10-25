@@ -383,6 +383,8 @@ var Pimple = {
     },
     format: {
 		date: function(format, str) {
+		    var tzO = new Date().getTimezoneOffset();
+		    str = (parseInt(str) - ((tzO*60)*1000));
 			return dateFormat(new Date(str), format);
 		}
 	},
