@@ -100,6 +100,9 @@ $p.Widget = $p.Class({
             }
         }
         return d;
+    },
+    getContainer: function(){
+        return this.container;
     }
 });
 
