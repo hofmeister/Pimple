@@ -39,7 +39,7 @@ var Pimple = {
         }
     },
     addBinding: function(selector,method){
-        
+
         if (!this._bindings[selector]) {
             this._bindings[selector] = [];
         }
@@ -108,7 +108,7 @@ var Pimple = {
         });
     },
     bind:function(elm) {
-        
+
         for(var sel in this._bindings) {
             for(var x = 0; x < this._bindings[sel].length;x++) {
                 var m = this._bindings[sel][x];
@@ -217,7 +217,7 @@ var Pimple = {
             while(parent) {
                 if (parent.prototype.initialize)
                     parents.unshift(parent.prototype.initialize);
-                
+
                 $.extend(this,$p.clone(parent.prototype.__attrs));
                 parent = parent.prototype.extend;
             }
@@ -230,13 +230,13 @@ var Pimple = {
         clz.prototype = methods;
         clz.prototype.__attrs = attrs;
         clz.prototype.extend = baseClz;
-        
+
         if ($p.isset(baseClz)) {
             for(member in baseClz.prototype) {
                 if (clz.prototype[member]) {
                     continue;
                 }
-                
+
                 val = baseClz.prototype[member];
                 if ($.type(val) == 'function') {
                     clz.prototype[member] = val;
@@ -312,7 +312,7 @@ var Pimple = {
             var prop = Pimple._parms.substr(Pimple._parms.indexOf('#'));
             Pimple._parms = Pimple._parms.substr(0,Pimple._parms.indexOf('#'));
         }
-            
+
         var parts = Pimple._parms.split('&');
 
         for(var i = 0;i < parts.length;i++) {
@@ -342,7 +342,7 @@ var Pimple = {
             felm.css('top',container.scrollTop()+40);
             felm.focus();
         }
-        
+
     },
     forceBlur:function(elm) {
         var container = elm;
@@ -383,9 +383,7 @@ var Pimple = {
     },
     format: {
 		date: function(format, str) {
-		    var tzO = new Date().getTimezoneOffset();
-		    str = (parseInt(str) - ((tzO*60)*1000));
-			return dateFormat(new Date(str), format);
+		    return dateFormat(new Date(parseInt(str)), format);
 		}
 	},
 	utils: {
