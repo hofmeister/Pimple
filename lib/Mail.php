@@ -12,7 +12,8 @@ class Mail {
     const FROM_MAIL		= 'mail_from_mail';
     const REPLY_MAIL	= 'mail_reply_mail';
     const RETURN_MAIL	= 'mail_return_mail';
-    const TEST_MAIL	= 'mail_test_mail';
+    const TEST_MAIL	    = 'mail_test_mail';
+    const SELF_EMAIL    = 'mail_self_email';
 	
 	private static $init = false;
 	public static function init() {
@@ -87,6 +88,8 @@ class Mail {
         $mail->setBodyHtml($html);
 		$mail->addTo($email, $name);
 		$mail->setBodyText($text);
+		if (Settings::get(self::SELF_EMAIL, false))
+		    $mail->addBcc(Settings::get(self::SELF_EMAIL));
         $mail->send();
     }
 }
