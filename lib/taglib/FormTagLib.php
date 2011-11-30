@@ -162,9 +162,9 @@ class FormTagLib extends TagLib {
     }
     /**
      * Render select box
-     * @param json|object|array options | a map or array of options
-     * @param string propKey | name of map property to be used as key (defaults to "key")
-     * @param string propValue | name of map property to be used as value (defaults to "value")
+     * @param json|object|array options | a map or array of options. If its a list of objects use propKey and propValue to specify which fields should be used.
+     * @param string propKey | name of map property to be used as key (defaults to "key") (See options parm)
+     * @param string propValue | name of map property to be used as value (defaults to "value") (See options parm)
      * @uses FormTagLib::formElementContainer
      */
     protected function tagSelect($attrs,$view) {
