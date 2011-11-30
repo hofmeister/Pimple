@@ -14,7 +14,7 @@ class RefReader  {
         $this->RGX_ARGS = "(?:{$this->RGX_ARG}(?:\\s*,\\s*{$this->RGX_ARG})*)";
         $RGX_DOC_FRAGMENT = "\\/\\*\\* *(?:\n +\\*[^\n]*(?:\n\\s*)?)+\\/";
         $this->RGX_DOC = "/{$RGX_DOC_FRAGMENT}/i";
-        $this->RGX_DOCPARM = "/\\@([A-Z][A-Z0-9_\\|,]+)(\\s+[^\\@]*)?/is";
+        $this->RGX_DOCPARM = "/\\@([A-Z][A-Z0-9_\\|,\\[\\]]+)(\\s+[^\\@]*)?/is";
 
         $this->RGX_METHOD = "/({$RGX_DOC_FRAGMENT}[\n\\s]*)?\n\\s*(abstract\\s+)?(public|protected|private)(\\s+static)?\\s+function\\s+([A-Z][A-Z0-9_]+)\\s*\\(({$this->RGX_ARGS})?\\)/is";
         $this->RGX_CLASS = "/({$RGX_DOC_FRAGMENT}[\n\\s]*)?\n\\s*(abstract\\s+)?class\\s+([A-Z][A-Z0-9_]+)(?:\\s+extends\\s+([A-Z][A-Z0-9_]+))?(?:\\s+implements\\s+([A-Z][A-Z0-9_]+(?:[\n\\s]*,[\n\\s]*[A-Z][A-Z0-9_]+)*))?/is";

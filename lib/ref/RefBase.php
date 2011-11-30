@@ -35,7 +35,7 @@ class RefBase {
         }
 
         foreach($this->getDocValue('param') as $parmStr) {
-            preg_match('/([A-Z\\|,]+)\\s+([A-Z]+)\\s+(.*)/is', $parmStr,$matches);
+            preg_match('/([A-Z\\|,\\[\\]]+)\\s+([A-Z]+)\\s+(.*)/is', $parmStr,$matches);
             $parm = new RefParm();
             if (!$matches[1]) continue;
             $parm->name = $matches[2];
