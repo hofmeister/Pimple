@@ -4,18 +4,18 @@ include_once 'RefController.php';
 include_once 'RefTagLib.php';
 
 class RefReader  {
-    
+
     private $classes = array();
     private $RGX_ARG,$RGX_ARGS,$RGX_METHOD,$RGX_DOC,$RGX_DOCPARM,$RGX_CLASS;
-    
+
     function __construct() {
         $this->RGX_ARG = '(?:\\$[A-Z][A-Z0-9_]*(?: *= *.*?)?)';
         $this->RGX_ARG_MATCH = '/(?:(\\$[A-Z][A-Z0-9_]*)(?: *= *([^,]+))?)/is';
         $this->RGX_ARGS = "(?:{$this->RGX_ARG}(?:\\s*,\\s*{$this->RGX_ARG})*)";
         $RGX_DOC_FRAGMENT = "\\/\\*\\* *(?:\n +\\*[^\n]*(?:\n\\s*)?)+\\/";
         $this->RGX_DOC = "/{$RGX_DOC_FRAGMENT}/i";
-        $this->RGX_DOCPARM = "/\\@([A-Z][A-Z0-9_\\|]+)(\\s+[^\\@]*)?/is";
-        
+        $this->RGX_DOCPARM = "/\\@([A-Z][A-Z0-9_\\|,]+)(\\s+[^\\@]*)?/is";
+
         $this->RGX_METHOD = "/({$RGX_DOC_FRAGMENT}[\n\\s]*)?\n\\s*(abstract\\s+)?(public|protected|private)(\\s+static)?\\s+function\\s+([A-Z][A-Z0-9_]+)\\s*\\(({$this->RGX_ARGS})?\\)/is";
         $this->RGX_CLASS = "/({$RGX_DOC_FRAGMENT}[\n\\s]*)?\n\\s*(abstract\\s+)?class\\s+([A-Z][A-Z0-9_]+)(?:\\s+extends\\s+([A-Z][A-Z0-9_]+))?(?:\\s+implements\\s+([A-Z][A-Z0-9_]+(?:[\n\\s]*,[\n\\s]*[A-Z][A-Z0-9_]+)*))?/is";
     }
@@ -29,10 +29,10 @@ class RefReader  {
     /**
      *
      * @param type $path
-     * @return type 
+     * @return type
      */
     public function read($path,$classTypes = 'RefClass',$methodTypes = 'RefMethod') {
-        if ($path[0] == '.') 
+        if ($path[0] == '.')
             return;
         //echo "<br>Path:$path";
         if (is_dir($path)) {
@@ -67,14 +67,14 @@ class RefReader  {
             $firstOffset = strlen($doc);
         $text = substr($doc,0,$firstOffset);
         $lines = ArrayUtil::trimValues(preg_split("/\n/",$text),"\n \t*");
-        
+
         $out['description'] = trim(implode("\n",$lines));
         return $out;
-        
+
     }
     protected function readMethods(RefClass $class,$methodType) {
         preg_match_all($this->RGX_METHOD,$class->source,$matches,PREG_OFFSET_CAPTURE);
-        
+
         $lastMethod = null;
         foreach($matches[0] as $i=>$match) {
             $method = new $methodType();
@@ -87,19 +87,19 @@ class RefReader  {
             $method->isStatic = $matches[4][$i][1] != -1;
             $method->name = trim($matches[5][$i][0]);
             $parmStr = trim($matches[6][$i][0]);
-            
+
             if ($lastMethod != null) {
                 $lastMethod->limit = $method->offset-1;
             }
-            
+
             if ($parmStr)
                 $method->parms = $this->readParms($parmStr);
-            
+
             $class->methods[] = $method;
             $lastMethod = $method;
         }
-        
-        
+
+
         if ($lastMethod != null) {
             $lastMethod->limit = $class->limit-1;
         }
@@ -129,11 +129,11 @@ class RefReader  {
             $class->name = $matches[3][$i][0];
             $class->extends = $matches[4][$i][0];
             $class->interfaces = !empty($matches[5][$i][0]) ? ArrayUtil::trimValues(explode(',',$matches[5][$i][0])) : array();
-            
+
             if ($lastClass != null) {
                 $lastClass->limit = $class->offset-1;
             }
-            
+
             $doc = $matches[1][$i][0];
             $class->doc = $this->readDoc($doc);
             $classes[] = $class;
@@ -149,9 +149,9 @@ class RefReader  {
             foreach($class->methods as $m) {
                 //$m->source = substr($contents,$m->offset,$m->limit-$m->offset);
             }
-                    
+
         }
-        
+
         ArrayUtil::append($this->classes,$classes);
     }
     public function getClass($className) {
