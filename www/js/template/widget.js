@@ -41,7 +41,7 @@ $p.Widget = $p.Class({
             $p.log("widget.js: Container not found: "+container);
         if (!$p.isset(template))
             $p.log("widget.js: Template method not found for "+container);
-        
+
     },
 	setData: function(data) {
         this.trigger("data",data);
@@ -72,7 +72,7 @@ $p.Widget = $p.Class({
         this.trigger("render");
 	},
 	getData: function() {
-		return this.data;		
+		return this.data;
 	},
     getDataByPath: function(path,data) {
 		var parts = path.split('/');
@@ -111,13 +111,14 @@ $p.getWidget = function(g) {
 	return $p.Widget._registry[g];
 }
 
+
 $p.WidgetList = $p.Class({
     extend:$p.Widget,
     cbLimit:5,
     cbFunction:null,
     rows:[],
     initialize:function() {
-		
+
     },
     getRowByValue:function(path,value) {
         for(var i = 0; i < this.rows.length;i++) {
@@ -257,7 +258,7 @@ $p.WidgetList = $p.Class({
                 if ($p.isset(this.rows[i]))
                     newRows.push(this.rows[i]);
             }
-            this.data.totalRows = newRows.length;    
+            this.data.totalRows = newRows.length;
             this.data.rows = newRows;
         }
         this.data.currentPageIndex = parseInt(pageIndex);
@@ -277,7 +278,7 @@ $p.WidgetList = $p.Class({
 		array.sort(function(x,y) {
 			var xValue = self.getDataByPath(fieldPath,x);
 			var yValue = self.getDataByPath(fieldPath,y);
-			
+
 			if(isNumber) {
 				if(sortOrder.toLowerCase() == 'asc') {
 					return xValue - yValue;
@@ -294,7 +295,7 @@ $p.WidgetList = $p.Class({
 						if(xValue>yValue){ out = -1;}
 					}
 				}
-				
+
 	            return out;
 			}
 		});
@@ -303,5 +304,78 @@ $p.WidgetList = $p.Class({
 		this.data.sortOrder = sortOrder.toLowerCase();
 		this.sortArray('rows',fieldPath,sortOrder);
 		this.setPage(0);
+	}
+});
+
+$p.WidgetListSimple = $p.Class({
+    extend:$p.Widget,
+    data: {
+        pageIndex:0,
+        totalPages:1,
+        rows:[]
+    },
+    initialize:function() {
+
+    },
+    getRowByValue:function(path,value) {
+        for(var i = 0; i < this.data.rows.length;i++) {
+            var v = this.getDataByPath(path, this.data.rows[i]);
+            if (value == v) return this.data.rows[i];
+        }
+        return null;
+    },
+    getRowIndexByValue:function(path,value) {
+        for(var i = 0; i < this.data.rows.length;i++) {
+            var v = this.getDataByPath(path, this.data.rows[i]);
+            if (value == v) return i;
+        }
+        return null;
+    },
+    getRow:function(i) {
+        return this.data.rows[i];
+    },
+    getRows:function(i) {
+        return this.data.rows;
+    },
+    setRows: function(rows) {
+		this.data.rows = rows;
+	},
+    removeRow:function(path,value) {
+        var v,i;
+        for(i = 0; i < this.data.rows.length;i++) {
+            v = this.getDataByPath(path, this.data.rows[i]);
+            if (value == v) {
+                var row = this.data.rows.splice(i,1);
+                this.trigger("removeRow",row);
+                return row;
+            }
+        }
+        return null;
+    },
+    setRow:function(index,row) {
+        this.data.rows[index] = row ;
+    },
+    addRow:function(row) {
+        this.data.rows.push(row);
+    },
+    setProperty:function(name,value) {
+        this.data[name] = value;
+    },
+	reset:function() {
+        this.data = {
+            pageIndex:0,
+            totalPages:1,
+            rows:[]
+        };
+    },
+    getPageIndex:function() {
+        return this.data.pageIndex;
+    },
+    getTotalPages:function() {
+        return this.data.totalPages;
+    },
+	setPage: function(pageIndex,totalPages) {
+        this.data.totalPages = totalPages;
+        this.data.pageIndex = pageIndex;
 	}
 });
