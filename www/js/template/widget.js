@@ -140,7 +140,7 @@ $p.WidgetList = $p.Class({
     getRows:function(i) {
         return this.rows;
     },
-    setData: function(data) {
+    setData: function(data, doNotSetPage) {
 		this.data = data;
         if(this.data.rows != null) {
 			this.rows = this.data.rows;
@@ -152,7 +152,8 @@ $p.WidgetList = $p.Class({
 			this.data.maxRows = this.data.totalRows;
 			this.data.rowsPerPage = (this.data.rowsPerPage==null) ? parseInt(this.data.totalRows) : parseInt(this.data.rowsPerPage);
 			this.data.totalPages = Math.ceil(this.data.origTotalRows/this.data.rowsPerPage);
-            this.setPage(this.data.currentPageIndex);
+			if (!$p.isset(doNotSetPage) || !doNotSetPage)
+                this.setPage(this.data.currentPageIndex);
 		}
 	},
     removeRow:function(path,value) {
