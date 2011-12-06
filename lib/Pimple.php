@@ -339,8 +339,8 @@ class UrlRouter {
 
     public function getUrl($controller, $action) {
         $key = $this->getKey($controller, $action);
-        $url = $this->methodToUrl[$key];
-        if (!isset($url)) {
+        $url = array_key_exists($key,$this->urlToMethod) ? $this->methodToUrl[$key] : null;
+        if (!$url) {
             $url = '';
             if ($controller) {
                 $url .= String::UrlEncode($controller) .'/';
@@ -369,7 +369,7 @@ class UrlRouter {
             $base = '/';
 
         $url = $this->normalize($url);
-        $key = $this->urlToMethod[$url];
+        $key = array_key_exists($url,$this->urlToMethod) ? $this->urlToMethod[$url] : null;
         if ($key) {
             $out = $this->methods[$key];
         } else {

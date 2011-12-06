@@ -11,20 +11,20 @@ class JavascriptTagLib extends TagLib {
      * @param View $view
      * @return string
      */
-	protected function tagInclude($attrs,$view) {            
+	protected function tagInclude($attrs,$view) {
         if (String::StartsWith($attrs->path,'http')) {
-            
+
             self::$jsScripts .= sprintf('<script type="text/javascript" src="%s"></script>',$attrs->path)."\n";
             return;
         }
-        if ($attrs->local == 'false') {
+        if (isset($attrs->local) && $attrs->local == 'false') {
 			$base = Settings::get(Pimple::URL);
             $view->addJsFile(Pimple::instance()->getBaseDir().'www/'.$attrs->path);
 		} else {
             $view->addJsFile(Pimple::instance()->getSiteDir().$attrs->path);
 			$base = Url::basePath();
 		}
-        
+
         if (Settings::get(Settings::DEBUG,false) && Request::get('__nominify',false)) {
             self::$jsScripts .= sprintf('<script type="text/javascript" src="%s"></script>',$base.$attrs->path)."\n";
         }
@@ -66,5 +66,5 @@ class JavascriptTagLib extends TagLib {
         $result = Zend_Json::encode($value);
         return $result;
     }
-    
+
 }
