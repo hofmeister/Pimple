@@ -113,11 +113,11 @@ class Pimple {
         try {
             if (!String::isAlphaNum($this->controller)) {
                 header("HTTP/1.0 404 Invalid url");
-                throw new Exception(T('Invalid controller: %s', $this->controller));
+                throw new HttpNotFoundException(T('Invalid controller: %s', $this->controller));
             }
             if (!String::isAlphaNum($this->action)) {
                 header("HTTP/1.1 404 Invalid url");
-                throw new Exception(T('Invalid action: %s', $this->action));
+                throw new HttpNotFoundException(T('Invalid action: %s', $this->action));
             }
 
 
@@ -129,21 +129,21 @@ class Pimple {
                 $ctrlFile = Dir::normalize(BASEDIR) . 'controller/' . $ctrlClass . '.php';
                 if (!File::exists($ctrlFile)) {
                     header("HTTP/1.1 404 Controller not found");
-                    throw new Exception(T('Controller not found: %s', $ctrlFile));
+                    throw new HttpNotFoundException(T('Controller not found: %s', $ctrlFile));
                 }
                 require_once $ctrlFile;
             }
 
             if (!class_exists($ctrlClass)) {
                 header("HTTP/1.1 404 Controller not Found");
-                throw new Exception(T('Controller not found: %s', $ctrlClass));
+                throw new HttpNotFoundException(T('Controller not found: %s', $ctrlClass));
             }
 
             $ctrl = new $ctrlClass();
             $this->controllerInstance = $ctrl;
             if (!method_exists($ctrl, $this->action)) {
                 header("HTTP/1.1 404 Action not Found");
-                throw new Exception(T('Action not found: %s::%s', $ctrlClass, $this->action));
+                throw new HttpNotFoundException(T('Action not found: %s::%s', $ctrlClass, $this->action));
             }
             $action = $this->action;
 
@@ -178,6 +178,10 @@ class Pimple {
                     }
                 }
             }
+        } catch (HttpNotFoundException $e) {
+            if (!Request::isAjax())
+                Url::redirect('error', 'notfound');
+            Pimple::end();
         } catch (Exception $e) {
             header("HTTP/1.1 500 Internal error");
             if (Request::isAjax()) {
@@ -393,4 +397,8 @@ class UrlRouter {
 
         return $out;
     }
+}
+
+class HttpNotFoundException extends Exception {
+
 }
