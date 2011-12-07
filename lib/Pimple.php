@@ -179,7 +179,7 @@ class Pimple {
                 }
             }
         } catch (HttpNotFoundException $e) {
-            trigger_error(sprintf("Path not found %s:\n\t%s",self::getPath()),E_USER_ERROR);
+            trigger_error(sprintf("Path not found %s",self::getPath()),E_USER_ERROR);
             if (!Request::isAjax())
                 Url::redirect('error', 'notfound');
             Pimple::end();
