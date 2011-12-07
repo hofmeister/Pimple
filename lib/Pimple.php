@@ -190,7 +190,7 @@ class Pimple {
                     }
                     $this->body = $body;
                 } else {
-                    trigger_error(sprintf("Unexpected exception thrown in %s:\n\t%s",self::getPath(),$e->__toString()),E_ERROR);
+                    trigger_error(sprintf("Unexpected exception thrown in %s:\n\t%s",self::getPath(),$e->__toString()),E_USER_ERROR);
                     Url::redirect('error', 'internal');
                 }
             }
