@@ -61,6 +61,7 @@ $p.Widget = $p.Class({
 		});
 	},
 	render: function(fn) {
+        this.trigger("before-render");
         try {
             this.container.html(this.template(this.data, this.guid));
         } catch(e) {
@@ -77,6 +78,8 @@ $p.Widget = $p.Class({
     getDataByPath: function(path,data) {
 		var parts = path.split('/');
         var d = (data) ? data : this.data;
+        if (!data)
+            return null;
 		var last = false;
         for(var i = 0;i < parts.length; i++) {
 			if (i == (parts.length-1))
@@ -192,6 +195,11 @@ $p.WidgetList = $p.Class({
 		this.render(fn);
 		return false;
 	},
+    gotoPage: function(path,value,fn) {
+        var ix = this.getRowIndexByValue(path,value);
+        var page = Math.floor(ix / this.data.rowsPerPage);
+        this.viewPage(page,fn);
+    },
 	appendData: function(data) {
 		if(!this.rows || this.rows.length == 0) {
             this.setData(data);
