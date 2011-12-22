@@ -86,7 +86,9 @@ class FormTagLib extends TagLib {
         unset($attrs->label);
         if (!isset($attrs->checked) && $attrs->currentValue == $attrs->value) {
             $attrs->checked = 'checked';
-        } else if (isset($attrs->checked)) {
+        } else if (is_bool($attrs->checked)) {
+			$attrs->checked = $attrs->checked ? 'checked' : null;
+		} else if (isset($attrs->checked)) {
 			$attrs->checked = (in_array(strtolower($attrs->checked),array('true','yes','checked'))) ? 'checked' : null;
 		}
 		if (!$attrs->checked)
