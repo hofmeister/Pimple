@@ -351,6 +351,11 @@ class FormTagLib extends TagLib {
         $attrs->value = htmlentities($attrs->value,ENT_QUOTES,'UTF-8');
         $attrs->class = trim("form-".$attrs->type.' '.$attrs->class);
 
+
+        if (!$attrs->disabled || in_array(strtolower($attrs->disabled),array('no','false')))
+            unset($attrs->disabled);
+
+
         $elmAttr = $this->getElementAttr($attrs);
 
         $inputElm .= new HtmlElement('input',$elmAttr,false);
@@ -404,6 +409,7 @@ class FormTagLib extends TagLib {
         } else {
             $classes[] = 'composit';
         }
+
 
         $label = $attrs->label;
         $help = $attrs->help;
@@ -544,6 +550,8 @@ class FormTagLib extends TagLib {
         $elmAttr = ArrayUtil::fromObject($attrs);
         $this->handleOptions($attrs,$elmAttr);
         $this->clearNonHtmlAttributes($elmAttr);
+
+
         return $elmAttr;
     }
     private function getFieldValue($attrs,$value) {
