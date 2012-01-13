@@ -214,6 +214,13 @@ class BasicTagLib extends TagLib {
         if($attrs->collect == 'true') {
             if (Settings::get(Settings::DEBUG,false) && Request::get('__nominify',false))
                 return '';
+            
+            $ctrl = Pimple::instance()->getControllerInstance();
+            $skipLayout = 0;
+            if ($ctrl && $ctrl->getSkipLayout()) {
+                $skipLayout = 1;
+            }
+            
             Dir::ensure(Pimple::instance()->getSiteDir().'cache/css/');
             $cacheFile = Pimple::instance()->getSiteDir().'cache/css/counter.tmp';
             if (File::exists($cacheFile))
@@ -222,7 +229,7 @@ class BasicTagLib extends TagLib {
                 $stamp = time();
                 file_put_contents($cacheFile,$stamp);
             }
-            return sprintf('<link href="%s" rel="stylesheet" type="text/css" />',Url::makeLink('pimple','css',array('view'=> Pimple::instance()->getViewFile(),'stamp'=>$stamp)))."\n";
+            return sprintf('<link href="%s" rel="stylesheet" type="text/css" />',Url::makeLink('pimple','css',array('view'=> Pimple::instance()->getViewFile(),'stamp'=>$stamp,'skipLayout'=>$skipLayout)))."\n";
         }
 
 		if ($attrs->local == 'false') {
