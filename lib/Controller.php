@@ -163,6 +163,12 @@ class Controller {
         echo $value;
         Pimple::instance()->end();
     }
+    protected function asBinary($contentType,$value) {
+        $this->setSkipView(true);
+        header('Content-type: '.$contentType);
+        echo $value;
+        Pimple::instance()->end();
+    }
     protected function setContentType($type) {
         header('Content-type: '.$type,true);
     }
