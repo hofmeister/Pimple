@@ -65,7 +65,17 @@ $p.Widget = $p.Class({
         try {
             this.container.html(this.template(this.data, this.guid));
         } catch(e) {
-            $p.log($p.E_FATAL,"Error rendering template:"+e);
+            var error = "Unknown";
+            if ($.type(e) == 'string')
+                error = e;
+            else if (e.description)
+                error = e.description;
+            else if (e.message)
+                error = e.message;
+            else if (e.name)
+                error = e.name;
+            
+            $p.log($p.E_FATAL,"Error rendering template:"+error);
         }
 		if(fn!=null) {
 			fn(this.data);
