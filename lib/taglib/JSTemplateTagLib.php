@@ -6,6 +6,7 @@
 class JSTemplateTagLib extends TagLib {
 	protected $containers = array();
 	private static $JS_WRAPPER_TAG = '';
+    private static $JS_EXPRESSION_START = '/js{/';
 	private static $JS_EXPRESSION = '/js{(.*?)}/';
 	private static $JS_WIDGET_EXPRESSION = '/\\$self(.*?)}/';
 	//private static $JS_WIDGET_EXPRESSION_OUTER = '/js{_w(.*?)}/';
@@ -39,16 +40,49 @@ class JSTemplateTagLib extends TagLib {
 		/* Change all widget expressions */
 		$string = preg_replace(self::$JS_WIDGET_EXPRESSION, '$p.getWidget(\'"+g+"\')$1', $string);
 		//$string = preg_replace(self::$JS_WIDGET_EXPRESSION_OUTER, '"+($p.getWidget(g)$1)+"', $string);
-		preg_match_all(self::$JS_EXPRESSION, $string, $expressionMatches);
-		if(count($expressionMatches) > 0) {
+		preg_match_all(self::$JS_EXPRESSION_START, $string, $expressionMatches,PREG_OFFSET_CAPTURE);
+        
+        
+        $expressions = array();
+        foreach($expressionMatches[0] as $match) {
+            
+            $mText = $match[0];
+            $offset = $match[1];
+            $searchOffset = $offset+strlen($mText);
+            $curlies = 1;
+            $end = 0;
+            for($i = $searchOffset;$i < strlen($string);$i++) {
+                switch($string[$i]) {
+                    case '{':
+                        $curlies++;
+                        break;
+                    case '}':
+                        $curlies--;
+                        break;
+                }
+                if ($curlies == 0) {
+                    $end = $i;
+                    break;
+                }
+            }
+            if ($end >= $mOffset) {
+                $expressions[] = array(
+                    'raw'=>substr($string,$offset,$end-$offset+1),
+                    'js'=>substr($string,$searchOffset,$end-$searchOffset)
+                );
+            }
+            
+        }
+        
+		if(count($expressions) > 0) {
 			/* Let's ensure that our js-expression don't get addslashed */
-			foreach($expressionMatches[1] as $match) {
-				$fixedExpressions[] = '"+'.$this->handleInline($match).'+"';
+			foreach($expressions as $expr) {
+				$fixedExpressions[] = '"+'.$this->handleInline($expr['js']).'+"';
 			}
             
 			/* Now we replace the expression tags, with the fixed js expression */
-			for($i=0;$i<count($expressionMatches[0]);$i++) {
-				$string = str_replace($expressionMatches[0][$i], $fixedExpressions[$i], $string);
+			for($i=0;$i<count($expressions);$i++) {
+				$string = str_replace($expressions[$i]['raw'],$fixedExpressions[$i], $string);
 			}
 		}
 		return $string;
