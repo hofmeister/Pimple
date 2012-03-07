@@ -39,7 +39,7 @@ class FormTagLib extends TagLib {
 	protected function tagSubmit($attrs,$view) {
         $attrs->container = 'false';
         $attrs->class .= ' button';
-		return $this->inputElement('submit',$attrs,$view);
+        return $this->inputElement('submit',$attrs,$view);
     }
     /**
      * Render a button
