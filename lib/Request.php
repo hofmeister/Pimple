@@ -81,6 +81,10 @@ class Request_Parms implements POPOWrapper {
     public function  __isset($name) {
         return array_key_exists($name,$this->_data);
     }
+    public function  __unset($name) {
+        unset($this->_data[$name]);
+    }
+    
     public function get() {
         $args = func_get_args();
         if (count($args) == 1) {
