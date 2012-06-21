@@ -82,7 +82,7 @@ class Phtml {
                         
                     } elseif ($this->nextChar == '!') {
                         $this->pushWithin(self::DOCTYPE);
-                    } elseif (preg_match('/[A-Z0-9]/i',$this->nextChar)) {
+                    } elseif (preg_match('/[A-Z0-9]/i',$this->nextChar) && !$this->isWithin(self::SCRIPT)) {
                         $this->onTagStart();
                     }
                     
@@ -314,8 +314,6 @@ class Phtml {
     }
 
     protected function onTagStart() {
-        if ($this->ignoreTags()) return;
-
         if ($this->ignoreTags()) return;
         $node = new PhtmlNode();
         $text = $this->getCurrent();
@@ -641,11 +639,11 @@ class PhtmlException extends Exception {
     private $phtml,$chr,$lineNum,$chrNum,$debugTrace;
     public function __construct($phtml,$chr,$lineNum,$chrNum,$debugTrace) {
         $this->phtml = $phtml;
-        $this->char = $char;
+        $this->char = $chr;
         $this->lineNum = $lineNum;
         $this->chrNum = $chrNum;
         $this->debugTrace = $debugTrace;
-        parent::__construct(sprintf('Failed parsing PHTML at line %s:%s - CHR: %s',$lineNum,$chrNum,$chr),E_ERROR);
+        parent::__construct(sprintf('Failed parsing PHTML at line %s:%s - CHR: <pre>%s</pre>',$lineNum,$chrNum,$chr),E_ERROR);
     }
     public function __toString() {
         $lines = explode("\n",$this->phtml);
